@@ -1,0 +1,11 @@
+{
+    "name": "Umum",
+    "alias": "umum",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Umum\\Providers\\UmumServiceProvider"
+    ],
+    "files": []
+}
