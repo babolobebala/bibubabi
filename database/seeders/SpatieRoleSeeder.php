@@ -15,7 +15,7 @@ class SpatieRoleSeeder extends Seeder
     public function run(): void
     {
 
-        $user1 = User::where('nama', 'fatih')->first();
-        $user1->assignRole(['superadmin']);
+        $user1 = User::where('username', 'fatihwisesa')->first();
+        $user1->assignRole(['super_admin']);
     }
 }

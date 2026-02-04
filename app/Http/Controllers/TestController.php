@@ -1,14 +1,10 @@
 <?php
 
-namespace Modules\Main\Http\Controllers;
+namespace App\Http\Controllers;
 
-use App\Models\User;
 use Inertia\Inertia;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
-
-class TestController
+class TestController extends Controller
 {
     public function TestPage(Request $request)
     {

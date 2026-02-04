@@ -121,7 +121,7 @@ class SSOBPSController extends Controller
     public function bypassLogin(Request $request)
     {
         try {
-            $username = $_GET['username'];
+            $username = $_GET['name'];
             $user = User::where('username', $username)->first();
 
             if (! $user) {

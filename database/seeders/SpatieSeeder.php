@@ -14,8 +14,6 @@ class SpatieSeeder extends Seeder
      */
     public function run(): void
     {
-        // Role
-        Role::create(['name' => 'superadmin', 'description' => 'Memiliki semua akses dan kontrol penuh terhadap sistem.']);
-
+        Role::create(['name' => 'super_admin', 'description' => 'Memiliki semua akses dan kontrol penuh terhadap sistem.']);
     }
 }
