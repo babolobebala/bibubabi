@@ -2,4 +2,4 @@
 
 @section('title', __('Not Found'))
 @section('code', '404')
-@section('message', __('Not Found'))
+@section('message', __('Halaman yang Anda cari tidak dapat ditemukan. Silakan periksa kembali alamat yang dituju.'))

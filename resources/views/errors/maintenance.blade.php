@@ -19,20 +19,20 @@
         <div class="container mx-auto">
             <div class="text-center">
 
-                <div class="my-2 max-w-md mx-auto [text-wrap:_balance]">
+                <div class="my-2 max-w-md mx-auto text-balance">
                     <img src="{{ env('VITE_CPANELPATH') }}img/logo/maintenance.png" alt="maintenance">
                 </div>
 
-                <div class="my-6 max-w-xl mx-auto [text-wrap:_balance] text-3xl font-bold">
+                <div class="my-6 max-w-xl mx-auto text-balance text-3xl font-bold">
                     SAKU Sedang dalam Maintenance
                 </div>
-                <div class="text-foreground max-w-xl mx-auto [text-wrap:_balance] text-xl my-4">
+                <div class="text-foreground max-w-xl mx-auto text-balance text-xl my-4">
                     Saat ini aplikasi SAKU (Satu Aplikasi untuk Kinerja Unggul) sedang dalam proses pemeliharaan rutin
                     untuk
                     meningkatkan kualitas layanan dan keamanan. Terima kasih atas pengertian dan kesabaran Anda 🙏
                 </div>
 
-                <div class="text-foreground max-w-xl mx-auto [text-wrap:_balance] text-xl">
+                <div class="text-foreground max-w-xl mx-auto text-balance text-xl">
                     - Dengan ❤️, Tim Pengembang SAKU
                 </div>
 
