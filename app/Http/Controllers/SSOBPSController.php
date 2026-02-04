@@ -116,12 +116,12 @@ class SSOBPSController extends Controller
 
     /**
      * Bypass login, cuma buat di development local!
-     * /bypass/?email_bps=
+     * /bypass/?nama=
      */
     public function bypassLogin(Request $request)
     {
         try {
-            $username = $_GET['name'];
+            $username = $_GET['nama'];
             $user = User::where('username', $username)->first();
 
             if (! $user) {

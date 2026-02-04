@@ -36,6 +36,7 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
           if (moduleConfig.paths && Array.isArray(moduleConfig.paths)) {
             paths.push(...moduleConfig.paths);
           }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           // vite.config.js does not exist, skip this module
         }

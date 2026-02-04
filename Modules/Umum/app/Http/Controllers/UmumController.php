@@ -3,6 +3,7 @@
 namespace Modules\Umum\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class UmumController extends Controller
@@ -12,45 +13,8 @@ class UmumController extends Controller
      */
     public function index()
     {
-        return view('umum::index');
+        return Inertia::render(
+            'umum::UmumPage'
+        );
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('umum::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('umum::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('umum::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }

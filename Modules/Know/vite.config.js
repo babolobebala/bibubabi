@@ -6,14 +6,14 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
-        outDir: '../../public/build-umum',
+        outDir: '../../public/build-know',
         emptyOutDir: true,
         manifest: true,
     },
     plugins: [
         laravel({
             publicDirectory: '../../public',
-            buildDirectory: 'build-umum',
+            buildDirectory: 'build-know',
             input: [
                 __dirname + '/resources/assets/sass/app.scss',
                 __dirname + '/resources/assets/js/app.js'
@@ -32,7 +32,7 @@ export default defineConfig({
 //            const filePath = join(currentPath, file);
 //            const stats = statSync(filePath);
 //            if (stats.isFile() && !file.startsWith('.')) {
-//                const relativePath = 'Modules/Umum/'+relative(__dirname, filePath);
+//                const relativePath = 'Modules/Know/'+relative(__dirname, filePath);
 //                filePaths.push(relativePath);
 //            } else if (stats.isDirectory()) {
 //                walkDirectory(filePath);
@@ -52,6 +52,6 @@ export default defineConfig({
 
 
 //export const paths = [
-//    'Modules/Umum/resources/assets/sass/app.scss',
-//    'Modules/Umum/resources/assets/js/app.js',
+//    'Modules/Know/resources/assets/sass/app.scss',
+//    'Modules/Know/resources/assets/js/app.js',
 //];

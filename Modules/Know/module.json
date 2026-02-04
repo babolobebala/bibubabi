@@ -1,0 +1,11 @@
+{
+    "name": "Know",
+    "alias": "know",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Know\\Providers\\KnowServiceProvider"
+    ],
+    "files": []
+}
