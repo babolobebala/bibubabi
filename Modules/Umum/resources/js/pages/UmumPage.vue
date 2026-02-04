@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import UmumComponent from '../components/UmumComponent.vue';
+
 </script>
 
 <template>

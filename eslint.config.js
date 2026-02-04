@@ -14,11 +14,18 @@ const moduleNames = fs.existsSync(modulesRoot)
       .map((entry) => entry.name)
   : []
 
-const crossModuleZones = moduleNames.map((moduleName) => ({
-  target: `Modules/${moduleName}/resources/js/**/*`,
-  from: ['Modules/*/resources/js/**/*'],
-  except: [`Modules/${moduleName}/resources/js/**/*`],
-}))
+const restrictedModules = moduleNames.filter(
+  (moduleName) => moduleName !== 'Core' && moduleName !== 'Shared',
+)
+
+const crossModuleZones = restrictedModules.flatMap((fromModule) =>
+  restrictedModules
+    .filter((targetModule) => targetModule !== fromModule)
+    .map((targetModule) => ({
+      from: [`Modules/${fromModule}/resources/js/**/*`],
+      target: `Modules/${targetModule}/resources/js/**/*`,
+    })),
+)
 
 export default defineConfigWithVueTs(
   // Base
@@ -62,6 +69,7 @@ export default defineConfigWithVueTs(
       'boundaries/elements': [
         { type: 'app', pattern: 'resources/js/**/*' },
         { type: 'shared', pattern: 'Modules/Shared/resources/js/**/*' },
+        { type: 'core', pattern: 'Modules/Core/resources/js/**/*' },
 
         // capture nama modul dari path: Modules/<ModuleName>/resources/js/...
         { type: 'module', pattern: 'Modules/*/resources/js/**/*', capture: ['module'] },
@@ -86,7 +94,7 @@ export default defineConfigWithVueTs(
       'import/no-restricted-paths': [
         'error',
         {
-          zones: crossModuleZones,
+          zones: [...crossModuleZones,]
         },
       ],
 
@@ -107,6 +115,7 @@ export default defineConfigWithVueTs(
           rules: [
             { from: 'app', allow: ['app', 'shared', 'module'] },
             { from: 'shared', allow: ['app', 'shared'] },
+            { from: 'core', allow: ['app', 'shared', 'module', 'core'] },
             {
               from: 'module',
               allow: ['app', 'shared', ['module', { module: '${from.module}' }]],

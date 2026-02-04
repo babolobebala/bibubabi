@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,6 +43,26 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'flash' => fn () => $request->session()->get('bps'),
+            'modules' => [
+                'statuses' => $this->moduleStatuses(),
+            ],
         ];
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function moduleStatuses(): array
+    {
+        $path = config('modules.activators.file.statuses-file');
+
+        if (! is_string($path) || $path === '' || ! File::exists($path)) {
+            return [];
+        }
+
+        $contents = File::get($path);
+        $decoded = json_decode($contents, true);
+
+        return is_array($decoded) ? $decoded : [];
     }
 }
