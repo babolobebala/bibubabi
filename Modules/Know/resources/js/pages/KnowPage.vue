@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import UmumComponent from '../../../../Umum/resources/js/components/UmumComponent.vue';
 
 </script>
 
@@ -9,5 +8,4 @@ import UmumComponent from '../../../../Umum/resources/js/components/UmumComponen
         <a href="/"> Ini Know ya beb ya </a>
     </Button>
 
-    <UmumComponent />
 </template>

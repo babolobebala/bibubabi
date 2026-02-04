@@ -1,8 +1,24 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import prettier from 'eslint-config-prettier'
 import boundaries from 'eslint-plugin-boundaries'
 import importPlugin from 'eslint-plugin-import'
 import vue from 'eslint-plugin-vue'
+
+const modulesRoot = path.resolve('Modules')
+const moduleNames = fs.existsSync(modulesRoot)
+  ? fs
+      .readdirSync(modulesRoot, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+  : []
+
+const crossModuleZones = moduleNames.map((moduleName) => ({
+  target: `Modules/${moduleName}/resources/js/**/*`,
+  from: ['Modules/*/resources/js/**/*'],
+  except: [`Modules/${moduleName}/resources/js/**/*`],
+}))
 
 export default defineConfigWithVueTs(
   // Base
@@ -44,11 +60,11 @@ export default defineConfigWithVueTs(
        * - module: Modules/<Name>/resources/js (feature modules)
        */
       'boundaries/elements': [
-        { type: 'app', pattern: 'resources/js/*' },
-        { type: 'shared', pattern: 'Modules/Shared/resources/js/*' },
+        { type: 'app', pattern: 'resources/js/**/*' },
+        { type: 'shared', pattern: 'Modules/Shared/resources/js/**/*' },
 
         // capture nama modul dari path: Modules/<ModuleName>/resources/js/...
-        { type: 'module', pattern: 'Modules/*/resources/js/*', capture: ['module'] },
+        { type: 'module', pattern: 'Modules/*/resources/js/**/*', capture: ['module'] },
       ],
     },
 
@@ -65,6 +81,12 @@ export default defineConfigWithVueTs(
         {
           groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
           alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
+      'import/no-restricted-paths': [
+        'error',
+        {
+          zones: crossModuleZones,
         },
       ],
 

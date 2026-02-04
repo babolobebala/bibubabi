@@ -1,4 +1,5 @@
 {
-    "Umum": true,
-    "Know": true
+    "Umum": false,
+    "Know": true,
+    "Core": true
 }
