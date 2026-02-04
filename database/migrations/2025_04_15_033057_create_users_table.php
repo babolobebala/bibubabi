@@ -16,10 +16,9 @@ return new class extends Migration
             $table->string('nip')->unique()->nullable();
             $table->string('nip_baru')->unique()->nullable();
             $table->string('username')->unique()->nullable();
-            $table->string('slug')->unique()->nullable();
             $table->string('nama')->nullable();
-            $table->string('email')->unique();
-            $table->string('email_onedrive')->unique()->nullable();
+            $table->string('email_bps')->unique();
+            $table->string('email_gmail')->unique()->nullable();
             $table->string('golongan')->nullable();
             $table->string('jabatan')->nullable();
             $table->string('url_foto')->nullable();
