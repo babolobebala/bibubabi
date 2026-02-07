@@ -2,7 +2,12 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
+import { registerSW } from 'virtual:pwa-register';
 import '../css/app.css';
+
+if (import.meta.env.PROD) {
+    registerSW({ immediate: true });
+}
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

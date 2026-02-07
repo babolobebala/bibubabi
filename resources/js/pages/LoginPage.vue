@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 import { Head, usePage } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 
