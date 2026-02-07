@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
     plugins: [
@@ -22,6 +23,29 @@ export default defineConfig({
         }),
         wayfinder({
             formVariants: true,
+        }),
+        VitePWA({
+            registerType: 'autoUpdate',
+            includeAssets: ['favicon.ico', 'robots.txt'],
+            manifest: {
+                name: 'Satker App',
+                short_name: 'Satker',
+                start_url: '/',
+                scope: '/',
+                display: 'standalone',
+                background_color: '#ffffff',
+                theme_color: '#111827',
+                icons: [
+                    { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+                    { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+                    { src: '/icons/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+                ],
+            },
+            workbox: {
+                // cache asset hasil build (JS/CSS/images)
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+                navigateFallback: '/', // untuk SPA navigation
+            },
         }),
     ],
 });
