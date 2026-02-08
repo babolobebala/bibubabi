@@ -6,7 +6,7 @@ import UmumComponent from '../components/UmumComponent.vue';
 
 <template>
     <Button class="w-full transform rounded-md" as-child>
-        <a href="/"> Ini page umum</a>
+        <a href="/"> Ini page umum. rubah</a>
     </Button>
 
     <img :src="media + 'img/logo.png'" />
