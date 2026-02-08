@@ -4,14 +4,6 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import '../css/app.css';
 
-if (import.meta.env.PROD) {
-    if ('serviceWorker' in navigator) {
-        const pwaBase = (import.meta.env.VITE_CPANELPATH || '/').replace(/\/?$/, '/');
-        const swUrl = `${pwaBase}sw.js`;
-        navigator.serviceWorker.register(swUrl, { scope: pwaBase });
-    }
-}
-
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
