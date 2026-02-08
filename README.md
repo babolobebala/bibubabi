@@ -10,4 +10,4 @@ Laravel 12 + Inertia v2 + Vue 3 + Vite project.
 
 pnpm install
 compose run dev
- 
+  
