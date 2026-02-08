@@ -30,21 +30,21 @@ export default defineConfig({
             manifest: {
                 name: 'Satker App',
                 short_name: 'Satker',
-                start_url: '/',
-                scope: '/',
+                start_url: '/public/',
+                scope: '/public/',
                 display: 'standalone',
                 background_color: '#ffffff',
                 theme_color: '#111827',
                 icons: [
-                    { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-                    { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-                    { src: '/icons/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+                    { src: '/public/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+                    { src: '/public/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+                    { src: '/public/icons/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
                 ],
             },
             workbox: {
                 // cache asset hasil build (JS/CSS/images)
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
-                navigateFallback: '/', // untuk SPA navigation
+                navigateFallback: '/public/', // untuk SPA navigation
             },
             devOptions: {
                 enabled: true,

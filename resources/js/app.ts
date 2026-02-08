@@ -6,7 +6,9 @@ import '../css/app.css';
 
 if (import.meta.env.PROD) {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/build/sw.js', { scope: '/' });
+        const pwaBase = (import.meta.env.VITE_CPANELPATH || '/').replace(/\/?$/, '/');
+        const swUrl = `${pwaBase}build/sw.js`;
+        navigator.serviceWorker.register(swUrl, { scope: pwaBase });
     }
 }
 
