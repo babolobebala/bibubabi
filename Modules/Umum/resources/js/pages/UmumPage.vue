@@ -9,6 +9,6 @@ import UmumComponent from '../components/UmumComponent.vue';
         <a href="/"> Ini page umum. rubah</a>
     </Button>
 
-    <img :src="media + 'img/logo.png'" />
+    <img :src="media + 'img/logo/logo.png'" />
     <UmumComponent />
 </template>
