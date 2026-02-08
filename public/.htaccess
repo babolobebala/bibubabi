@@ -1,4 +1,9 @@
 <IfModule mod_rewrite.c>
+    <IfModule mod_headers.c>
+        SetEnvIf Request_URI "^/build/sw\\.js$" SW_ALLOWED=1
+        Header set Service-Worker-Allowed "/" env=SW_ALLOWED
+    </IfModule>
+
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
