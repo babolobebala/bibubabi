@@ -7,7 +7,7 @@ import '../css/app.css';
 if (import.meta.env.PROD) {
     if ('serviceWorker' in navigator) {
         const pwaBase = (import.meta.env.VITE_CPANELPATH || '/').replace(/\/?$/, '/');
-        const swUrl = `${pwaBase}build/sw.js`;
+        const swUrl = `${pwaBase}sw.js`;
         navigator.serviceWorker.register(swUrl, { scope: pwaBase });
     }
 }
