@@ -2,6 +2,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
+import { markInstalled, setDeferredInstallPrompt, type BeforeInstallPromptEvent } from '@/lib/pwa-install';
 import '../css/app.css';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -17,6 +18,15 @@ createInertiaApp({
     progress: {
         color: '#4B5563',
     },
+});
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    setDeferredInstallPrompt(event as BeforeInstallPromptEvent);
+});
+
+window.addEventListener('appinstalled', () => {
+    markInstalled();
 });
 
 function resolvePage(name: string) {
