@@ -6,29 +6,35 @@ const APP_SHELL_FILES = ['/', '/manifest.webmanifest', '/favicon.ico', '/apple-t
 
 self.addEventListener('install', function (event) {
     event.waitUntil(
-        caches.open(APP_SHELL_CACHE).then(function (cache) {
-            return cache.addAll(APP_SHELL_FILES);
-        }).then(function () {
-            return self.skipWaiting();
-        })
+        caches
+            .open(APP_SHELL_CACHE)
+            .then(function (cache) {
+                return cache.addAll(APP_SHELL_FILES);
+            })
+            .then(function () {
+                return self.skipWaiting();
+            }),
     );
 });
 
 self.addEventListener('activate', function (event) {
     event.waitUntil(
-        caches.keys().then(function (keys) {
-            return Promise.all(
-                keys
-                    .filter(function (key) {
-                        return key !== APP_SHELL_CACHE && key !== RUNTIME_CACHE;
-                    })
-                    .map(function (key) {
-                        return caches.delete(key);
-                    })
-            );
-        }).then(function () {
-            return self.clients.claim();
-        })
+        caches
+            .keys()
+            .then(function (keys) {
+                return Promise.all(
+                    keys
+                        .filter(function (key) {
+                            return key !== APP_SHELL_CACHE && key !== RUNTIME_CACHE;
+                        })
+                        .map(function (key) {
+                            return caches.delete(key);
+                        }),
+                );
+            })
+            .then(function () {
+                return self.clients.claim();
+            }),
     );
 });
 
@@ -54,7 +60,7 @@ self.addEventListener('fetch', function (event) {
                     return caches.match(request).then(function (cached) {
                         return cached || caches.match('/');
                     });
-                })
+                }),
         );
         return;
     }
@@ -75,7 +81,16 @@ self.addEventListener('fetch', function (event) {
                     });
 
                 return cached || networkFetch;
-            })
+            }),
         );
     }
+});
+
+self.addEventListener('push', function (event) {
+    if (!(self.Notification && self.Notification.permission === 'granted')) {
+        return;
+    }
+
+    const payload = event.data ? event.data.json() : {};
+    event.waitUntil(self.registration.showNotification(payload.title, payload));
 });

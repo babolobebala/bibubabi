@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use NotificationChannels\WebPush\HasPushSubscriptions;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasPushSubscriptions, HasRoles, Notifiable;
 
     protected $fillable = [
         'nip',
@@ -20,11 +21,11 @@ class User extends Authenticatable
         'email_gmail',
         'golongan',
         'jabatan',
-        'url_foto'
+        'url_foto',
     ];
 
     protected $hidden = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 }

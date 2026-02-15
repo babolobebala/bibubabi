@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\MainFeatureController;
+use App\Http\Controllers\NotificationManagerController;
 use App\Http\Controllers\SSOBPSController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
@@ -38,3 +38,8 @@ Route::middleware('auth')->group(function () {
             ->name('test.2');
     });
 });
+
+// Notification
+Route::post('/notifications/subscribe', [NotificationManagerController::class, 'subscribe']);
+Route::post('/notifications/unsubscribe', [NotificationManagerController::class, 'unsubscribe']);
+Route::get('/notifications/send', [NotificationManagerController::class, 'send']);
