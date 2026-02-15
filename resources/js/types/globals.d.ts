@@ -1,5 +1,3 @@
-/// <reference types="vite-plugin-pwa/client" />
-
 import type { AppPageProps } from './index';
 
 // Extend ImportMeta interface for Vite...
