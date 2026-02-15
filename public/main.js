@@ -117,21 +117,20 @@
             permission: Notification.permission,
         });
 
-        var permissionPromise = Promise.resolve(Notification.permission);
-        if (Notification.permission === 'default') {
-            appendPushDebug('Requesting notification permission...');
-            permissionPromise = Notification.requestPermission();
-        }
+        appendPushDebug('Requesting notification permission...');
 
-        permissionPromise
+        Notification.requestPermission()
             .then(function (permission) {
                 appendPushDebug('Notification permission result.', {
                     permission: permission,
                 });
 
                 if (permission !== 'granted') {
-                    appendPushDebug('Enable aborted: permission not granted.');
-                    return null;
+                    var permissionError = 'Notification permission denied. Click Allow to continue subscribe process.';
+                    appendPushDebug('Enable aborted: permission not granted.', {
+                        error: permissionError,
+                    });
+                    throw new Error(permissionError);
                 }
 
                 appendPushDebug('Waiting for service worker to be ready...');
@@ -181,6 +180,8 @@
                 appendPushDebug('Enable failed.', {
                     error: String(error),
                 });
+                var errorMessage = error && error.message ? error.message : String(error);
+                alert(errorMessage);
             });
     }
 
