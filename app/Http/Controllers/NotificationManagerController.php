@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Notifications\NewUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Throwable;
 
 class NotificationManagerController extends Controller
@@ -95,22 +96,55 @@ class NotificationManagerController extends Controller
 
     public function send(Request $req)
     {
-        $user = $req->user();
+        $authUser = $req->user();
 
-        if (! $user instanceof User) {
+        if (! $authUser instanceof User) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        try {
-            $user->notify(new NewUserActivity);
+        $target = $req->query('target', 'self');
+        $role = $req->query('role', 'super_admin');
 
-            Log::info('Push send triggered.', [
-                'user_id' => $user->getKey(),
-                'host' => $req->getHost(),
-            ]);
+        try {
+            if ($target === 'all') {
+                $users = User::query()
+                    ->whereHas('pushSubscriptions')
+                    ->get();
+
+                Notification::send($users, new NewUserActivity);
+
+                Log::info('Push send triggered for all users.', [
+                    'triggered_by' => $authUser->getKey(),
+                    'users_count' => $users->count(),
+                    'host' => $req->getHost(),
+                ]);
+            } elseif ($target === 'role') {
+                $users = User::query()
+                    ->role($role)
+                    ->whereHas('pushSubscriptions')
+                    ->get();
+
+                Notification::send($users, new NewUserActivity);
+
+                Log::info('Push send triggered for role.', [
+                    'triggered_by' => $authUser->getKey(),
+                    'role' => $role,
+                    'users_count' => $users->count(),
+                    'host' => $req->getHost(),
+                ]);
+            } else {
+                $authUser->notify(new NewUserActivity);
+
+                Log::info('Push send triggered for self.', [
+                    'user_id' => $authUser->getKey(),
+                    'host' => $req->getHost(),
+                ]);
+            }
         } catch (Throwable $error) {
             Log::error('Push send failed.', [
-                'user_id' => $user->getKey(),
+                'user_id' => $authUser->getKey(),
+                'target' => $target,
+                'role' => $role,
                 'host' => $req->getHost(),
                 'error' => $error->getMessage(),
             ]);
