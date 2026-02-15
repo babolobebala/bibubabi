@@ -9,8 +9,14 @@ import { Button } from '@/components/ui/button';
 
     <Button id="enable-push">Enable push notifications</Button>
     <Button id="disable-push">Disable push notifications</Button>
+    <Button id="clear-push-debug" variant="outline">Clear push debug log</Button>
     <br />
     <a href="/notifications/send">Send a notification</a>
+
+    <div class="mt-4 rounded-md border p-3">
+        <p class="mb-2 text-sm font-semibold">Push Debug Log</p>
+        <pre id="push-debug-log" class="max-h-64 overflow-auto whitespace-pre-wrap text-xs"></pre>
+    </div>
 
     <Button class="w-full transform rounded-md" as-child>
         <a href="logout"> Logout </a>
