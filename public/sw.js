@@ -1,15 +1,21 @@
-const CACHE_VERSION = 'saku-ng-v1';
+const CACHE_VERSION = 'saku-ng-v2';
 const APP_SHELL_CACHE = CACHE_VERSION + '-app-shell';
 const RUNTIME_CACHE = CACHE_VERSION + '-runtime';
 
-const APP_SHELL_FILES = ['/', '/manifest.webmanifest', '/favicon.ico', '/apple-touch-icon.png'];
+const APP_SHELL_FILES = ['.', 'manifest.webmanifest', 'favicon.ico', 'apple-touch-icon.png'];
 
 self.addEventListener('install', function (event) {
     event.waitUntil(
         caches
             .open(APP_SHELL_CACHE)
             .then(function (cache) {
-                return cache.addAll(APP_SHELL_FILES);
+                return Promise.all(
+                    APP_SHELL_FILES.map(function (file) {
+                        return cache.add(file).catch(function () {
+                            return null;
+                        });
+                    }),
+                );
             })
             .then(function () {
                 return self.skipWaiting();
