@@ -4,7 +4,10 @@
     /*!******************************!*\
   !*** ./resources/js/main.js ***!
   \******************************/
-    var csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('Content');
+    var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    var vapidMeta = document.querySelector('meta[name="vapid-public-key"]');
+    var csrftoken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+    var vapidPublicKey = vapidMeta ? vapidMeta.getAttribute('content') : null;
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
@@ -39,7 +42,12 @@
                         return subscription;
                     }
 
-                    var serverKey = urlBase64ToUint8Array('BORHxOa1jW5JDb258N1_B_RFH7FZW-PXVsKcYx-8wA-x5PEGYPJ57NXqu6ok4jYJkVqN-X0CUrZrWDIs5NAjAfI');
+                    if (!vapidPublicKey) {
+                        alert('VAPID public key is not configured.');
+                        return null;
+                    }
+
+                    var serverKey = urlBase64ToUint8Array(vapidPublicKey);
                     return registration.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: serverKey,
@@ -100,6 +108,11 @@
             auth_token: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
             encoding: contentEncoding,
         };
+        if (!csrftoken) {
+            alert('CSRF token is missing.');
+            return;
+        }
+
         fetch('/notifications/subscribe', {
             method: 'POST',
             headers: {

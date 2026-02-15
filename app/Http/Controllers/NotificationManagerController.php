@@ -39,11 +39,16 @@ class NotificationManagerController extends Controller
         return response()->json(['message' => 'Unsubscribed!']);
     }
 
-    public function send()
+    public function send(Request $req)
     {
-        $user = User::query()->findOrFail(1);
-        $user->notify(new NewUserActivity());
+        $user = $req->user();
 
-        return redirect('/');
+        if (! $user instanceof User) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $user->notify(new NewUserActivity);
+
+        return redirect()->back();
     }
 }
