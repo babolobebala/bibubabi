@@ -1,5 +1,0 @@
-<script setup lang="ts"></script>
-
-<template>
-    <div>Ini dari Umum</div>
-</template>

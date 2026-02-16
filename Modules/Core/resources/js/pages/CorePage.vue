@@ -2,15 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { loadModuleComponent } from '../lib/module-components';
 
-const UmumComponent = loadModuleComponent(
-    'Umum',
-    () => import('../../../../Umum/resources/js/components/UmumComponent.vue'),
-);
-
-const KnowComponent = loadModuleComponent(
-    'Know',
-    () => import('../../../../Know/resources/js/components/KnowComponent.vue'),
-);
+const KnowComponent = loadModuleComponent('Know', () => import('../../../../Know/resources/js/components/KnowComponent.vue'));
 </script>
 
 <template>
@@ -18,6 +10,5 @@ const KnowComponent = loadModuleComponent(
         <a href="/"> Ini HARDCORE </a>
     </Button>
 
-    <UmumComponent />
     <KnowComponent />
 </template>
