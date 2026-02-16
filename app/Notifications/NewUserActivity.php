@@ -11,15 +11,24 @@ class NewUserActivity extends Notification
 {
     use Queueable;
 
-    public function via($notifiable)
+    public function via(object $notifiable): array
     {
-        return [WebPushChannel::class];
+        return [WebPushChannel::class, 'database'];
     }
 
-    public function toWebPush($notifiable)
+    public function toWebPush(object $notifiable): WebPushMessage
     {
         return (new WebPushMessage)
             ->title('Welcome to the application')
             ->body('This is notification body content. You are successfully subscribed!');
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'title' => 'Welcome to the application',
+            'body' => 'This is notification body content. You are successfully subscribed!',
+            'sent_at' => now()->toIso8601String(),
+        ];
     }
 }

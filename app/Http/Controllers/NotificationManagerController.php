@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MarkNotificationsReadRequest;
+use App\Http\Requests\NotificationHistoryRequest;
 use App\Models\User;
 use App\Notifications\NewUserActivity;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -11,7 +15,7 @@ use Throwable;
 
 class NotificationManagerController extends Controller
 {
-    public function subscribe(Request $req)
+    public function subscribe(Request $req): JsonResponse
     {
         $authUser = $req->user();
 
@@ -56,7 +60,7 @@ class NotificationManagerController extends Controller
         return response()->json(['message' => 'Subscribed!']);
     }
 
-    public function unsubscribe(Request $req)
+    public function unsubscribe(Request $req): JsonResponse
     {
         $authUser = $req->user();
 
@@ -94,7 +98,7 @@ class NotificationManagerController extends Controller
         return response()->json(['message' => 'Unsubscribed!']);
     }
 
-    public function send(Request $req)
+    public function send(Request $req): RedirectResponse|JsonResponse
     {
         $authUser = $req->user();
 
@@ -156,5 +160,63 @@ class NotificationManagerController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function history(NotificationHistoryRequest $request): JsonResponse
+    {
+        $authUser = $request->user();
+
+        if (! $authUser instanceof User) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $validated = $request->validated();
+        $limit = (int) ($validated['limit'] ?? 20);
+
+        $notifications = $authUser->notifications()
+            ->latest()
+            ->limit($limit)
+            ->get()
+            ->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'data' => $notification->data,
+                    'read_at' => $notification->read_at?->toIso8601String(),
+                    'created_at' => $notification->created_at?->toIso8601String(),
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'items' => $notifications,
+            'unread_count' => $authUser->unreadNotifications()->count(),
+        ]);
+    }
+
+    public function markAsRead(MarkNotificationsReadRequest $request): JsonResponse
+    {
+        $authUser = $request->user();
+
+        if (! $authUser instanceof User) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $validated = $request->validated();
+        $ids = $validated['ids'] ?? [];
+
+        $query = $authUser->unreadNotifications();
+
+        if (is_array($ids) && count($ids) > 0) {
+            $query->whereIn('id', $ids);
+        }
+
+        $updatedCount = $query->update(['read_at' => now()]);
+
+        return response()->json([
+            'message' => 'Notifications updated.',
+            'updated_count' => $updatedCount,
+            'unread_count' => $authUser->unreadNotifications()->count(),
+        ]);
     }
 }
