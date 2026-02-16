@@ -4,17 +4,16 @@ namespace Modules\Umum\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 
 class UmumController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function welcome_page()
     {
         return Inertia::render(
-            'umum::UmumPage'
+            'umum::WelcomePage'
         );
     }
 }

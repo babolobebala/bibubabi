@@ -21,12 +21,12 @@ Route::get('logout', [SSOBPSController::class, 'logout'])
     ->name('logout');
 
 // Login Route
-Route::middleware('guest')->group(function () {
-    Route::get('login', function () {
-        return Inertia::render('LoginPage');
-    })
-        ->name('login');
-});
+// Route::middleware('guest')->group(function () {
+//     Route::get('login', function () {
+//         return Inertia::render('LoginPage');
+//     })
+//         ->name('login');
+// });
 
 // Testing
 Route::middleware('auth')->group(function () {
