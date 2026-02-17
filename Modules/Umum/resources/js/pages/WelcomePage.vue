@@ -21,11 +21,11 @@ import SocialProof from '../components/landing-page/social-proof.vue';
         <FeatureSection />
     </section>
     <section id="social-proof">
-        <!-- <SocialProof /> -->
+        <SocialProof />
     </section>
-    <!-- <CTA /> -->
+    <CTA />
     <section id="faq">
-        <!-- <FAQ /> -->
+        <FAQ />
     </section>
-    <!-- <PricingSection /> -->
+    <PricingSection />
 </template>

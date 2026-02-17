@@ -1,25 +1,103 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/lib/theme';
+import { usePage } from '@inertiajs/vue3';
 import { MoonIcon, SunIcon } from 'lucide-vue-next';
-import { onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
-const { isDark, initializeTheme, toggleTheme } = useTheme();
+const { isDark, toggleTheme } = useTheme();
+
+interface NavbarPageProps {
+    [key: string]: unknown;
+    auth?: {
+        user?: unknown | null;
+    };
+}
+
+const page = usePage<NavbarPageProps>();
+const isAuthenticated = computed(() => Boolean(page.props.auth?.user));
+
+const navItems = [
+    { id: 'features', label: 'Features' },
+    { id: 'social-proof', label: 'Examples' },
+    { id: 'faq', label: 'Documentation' },
+];
+
+const activeSection = ref<string>('');
+let scrollTicking = false;
+
+function updateActiveSectionFromScroll(): void {
+    const offsetTop = 96;
+    const sectionMetrics = navItems
+        .map((item) => {
+            const element = document.getElementById(item.id);
+            if (!element) {
+                return null;
+            }
+
+            return {
+                id: item.id,
+                top: element.getBoundingClientRect().top,
+            };
+        })
+        .filter((value): value is { id: string; top: number } => value !== null);
+
+    if (sectionMetrics.length === 0) {
+        return;
+    }
+
+    const reachedSections = sectionMetrics.filter((section) => section.top <= offsetTop);
+    if (reachedSections.length > 0) {
+        activeSection.value = reachedSections[reachedSections.length - 1].id;
+        return;
+    }
+
+    activeSection.value = sectionMetrics[0].id;
+}
+
+function handleScroll(): void {
+    if (scrollTicking) {
+        return;
+    }
+
+    scrollTicking = true;
+    window.requestAnimationFrame(() => {
+        updateActiveSectionFromScroll();
+        scrollTicking = false;
+    });
+}
 
 onMounted(() => {
-    initializeTheme('light');
+    updateActiveSectionFromScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('resize', handleScroll);
 });
 </script>
 
 <template>
     <header class="sticky top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/75">
         <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="/salsa" class="text-lg font-semibold tracking-tight text-primary"> ConvertFast UI </a>
+            <a href="/salsa" class="text-lg font-semibold tracking-tight text-primary"> SAKU - BPS KSB </a>
 
             <nav class="hidden items-center gap-8 md:flex">
-                <a href="#features" class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"> Features </a>
-                <a href="#social-proof" class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"> Examples </a>
-                <a href="#faq" class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"> Documentation </a>
+                <a
+                    v-for="item in navItems"
+                    :key="item.id"
+                    :href="`#${item.id}`"
+                    :class="[
+                        'text-sm font-medium transition-colors',
+                        activeSection === item.id
+                            ? 'text-red-500  underline decoration-2 underline-offset-8'
+                            : 'text-muted-foreground hover:text-foreground',
+                    ]"
+                >
+                    {{ item.label }}
+                </a>
             </nav>
 
             <div class="flex items-center gap-2 sm:gap-3">
@@ -28,18 +106,18 @@ onMounted(() => {
                     <MoonIcon v-else class="size-4" />
                 </Button>
                 <a
-                    href="https://github.com"
-                    target="_blank"
-                    rel="noreferrer"
+                    v-if="!isAuthenticated"
+                    href="/bypass/?nama=fatihwisesa"
                     class="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
-                    GitHub
+                    Login
                 </a>
                 <a
-                    href="#start"
+                    v-else
+                    href="/know"
                     class="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
                 >
-                    Build now
+                    Go to App
                 </a>
             </div>
         </div>
