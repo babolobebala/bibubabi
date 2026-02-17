@@ -25,6 +25,8 @@
     --color-input: var(--input);
     --color-border: var(--border);
     --color-destructive: var(--destructive);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
     --color-accent-foreground: var(--accent-foreground);
     --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
@@ -58,35 +60,37 @@
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
 
-    /* primary: corporate blue */
+    /* corporate blue primary */
     --primary: oklch(0.57 0.18 255);
     --primary-foreground: oklch(0.985 0 0);
 
-    /* secondary: neutral surface */
+    /* neutral surfaces */
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
 
     --muted: oklch(0.97 0 0);
     --muted-foreground: oklch(0.556 0 0);
 
-    /* accent: teal */
-    --accent: oklch(0.72 0.14 190);
-    --accent-foreground: oklch(0.145 0 0);
+    /* accent tetap blue family (lebih soft) */
+    --accent: oklch(0.9 0.04 255);
+    --accent-foreground: oklch(0.205 0 0);
 
+    /* status */
     --destructive: oklch(0.577 0.245 27.325);
+    --success: oklch(0.65 0.15 145);
+    --success-foreground: oklch(0.985 0 0);
 
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
 
-    /* ring: blue-ish for focus states */
     --ring: oklch(0.7 0.12 255);
 
-    /* charts: blue + teal friendly */
-    --chart-1: oklch(0.6 0.18 255); /* blue */
-    --chart-2: oklch(0.7 0.14 190); /* teal */
-    --chart-3: oklch(0.56 0.12 225); /* blue-cyan */
-    --chart-4: oklch(0.76 0.16 90); /* yellow-green */
-    --chart-5: oklch(0.7 0.14 35); /* orange */
+    /* charts (masih satu keluarga blue) */
+    --chart-1: oklch(0.6 0.18 255);
+    --chart-2: oklch(0.66 0.14 240);
+    --chart-3: oklch(0.52 0.12 265);
+    --chart-4: oklch(0.75 0.1 220);
+    --chart-5: oklch(0.7 0.08 280);
 
     /* sidebar */
     --sidebar: oklch(0.985 0 0);
@@ -95,7 +99,7 @@
     --sidebar-primary: oklch(0.57 0.18 255);
     --sidebar-primary-foreground: oklch(0.985 0 0);
 
-    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent: oklch(0.94 0.02 255);
     --sidebar-accent-foreground: oklch(0.205 0 0);
 
     --sidebar-border: oklch(0.922 0 0);
@@ -103,7 +107,6 @@
 }
 
 .dark {
-    /* base */
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
 
@@ -113,43 +116,42 @@
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
 
-    /* primary: corporate blue (brighter in dark) */
+    /* primary lebih terang supaya pop di dark */
     --primary: oklch(0.72 0.16 255);
     --primary-foreground: oklch(0.205 0 0);
 
-    /* secondary: neutral surface */
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
 
     --muted: oklch(0.269 0 0);
     --muted-foreground: oklch(0.708 0 0);
 
-    /* accent: teal (brighter in dark) */
-    --accent: oklch(0.78 0.12 190);
-    --accent-foreground: oklch(0.205 0 0);
+    --accent: oklch(0.35 0.06 255);
+    --accent-foreground: oklch(0.985 0 0);
 
     --destructive: oklch(0.704 0.191 22.216);
+
+    --success: oklch(0.72 0.14 145);
+    --success-foreground: oklch(0.205 0 0);
 
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
 
     --ring: oklch(0.72 0.12 255);
 
-    /* charts */
-    --chart-1: oklch(0.72 0.16 255); /* blue */
-    --chart-2: oklch(0.78 0.12 190); /* teal */
-    --chart-3: oklch(0.7 0.1 225); /* blue-cyan */
-    --chart-4: oklch(0.8 0.14 90); /* yellow-green */
-    --chart-5: oklch(0.76 0.14 35); /* orange */
+    --chart-1: oklch(0.72 0.16 255);
+    --chart-2: oklch(0.65 0.14 240);
+    --chart-3: oklch(0.6 0.12 265);
+    --chart-4: oklch(0.75 0.1 220);
+    --chart-5: oklch(0.7 0.08 280);
 
-    /* sidebar */
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
 
     --sidebar-primary: oklch(0.72 0.16 255);
     --sidebar-primary-foreground: oklch(0.205 0 0);
 
-    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent: oklch(0.32 0.04 255);
     --sidebar-accent-foreground: oklch(0.985 0 0);
 
     --sidebar-border: oklch(1 0 0 / 10%);

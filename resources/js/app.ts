@@ -1,7 +1,8 @@
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
-import { createApp, h } from 'vue';
+import { createApp, Fragment, h } from 'vue';
+import ScrollToTopButton from '@/components/common/ScrollToTopButton.vue';
 import { autoSubscribePushForAuthenticatedUser } from '@/lib/push-auto-subscribe';
 import { markInstalled, setDeferredInstallPrompt, type BeforeInstallPromptEvent } from '@/lib/pwa-install';
 import { initializeTheme } from '@/lib/theme';
@@ -14,7 +15,9 @@ createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     resolve: (name) => resolvePage(name),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        createApp({
+            render: () => h(Fragment, [h(App, props), h(ScrollToTopButton)]),
+        })
             .use(plugin)
             .mount(el);
 

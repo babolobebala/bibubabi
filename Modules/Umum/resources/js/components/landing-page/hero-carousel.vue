@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
                     <ArrowRight class="size-4" />
                 </Button>
 
-                <Button as-child size="lg" variant="outline" class="w-full sm:w-auto cursor-pointer">
+                <Button as-child size="lg" variant="secondary" class="w-full sm:w-auto cursor-pointer">
                     <a href="#">Learn More</a>
                 </Button>
                 <Button as-child size="lg" variant="outline" class="w-full sm:w-auto cursor-pointer">
