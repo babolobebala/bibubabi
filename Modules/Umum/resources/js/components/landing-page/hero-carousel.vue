@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { media } from '@/lib/media';
-import { canInstallPwa, getDeferredInstallPrompt } from '@/lib/pwa-install';
+import { getDeferredInstallPrompt, isIosDevice } from '@/lib/pwa-install';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
@@ -55,26 +55,25 @@ const stopAutoplay = (): void => {
 };
 
 // PWA
-const showInstallButton = ref(false);
 async function installApp(): Promise<void> {
     const deferredPrompt = getDeferredInstallPrompt();
 
-    if (!deferredPrompt) {
+    if (deferredPrompt) {
+        await deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
         return;
     }
 
-    await deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    syncInstallUi();
-}
+    if (isIosDevice()) {
+        window.alert('Untuk iPhone/iPad: tekan Share lalu pilih Add to Home Screen.');
+        return;
+    }
 
-function syncInstallUi(): void {
-    showInstallButton.value = canInstallPwa();
+    window.alert('Install app bisa lewat menu browser: Install app / Add to Home Screen.');
 }
 
 onMounted(() => {
     startAutoplay();
-    syncInstallUi();
 });
 
 onBeforeUnmount(() => {
@@ -110,7 +109,7 @@ onBeforeUnmount(() => {
             </p>
 
             <div class="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
-                <Button as-child size="lg" v-if="showInstallButton" class="w-full sm:w-auto" @click="installApp"
+                <Button size="lg" class="w-full sm:w-auto" @click="installApp"
                     >Install SAKU Mobile
                     <ArrowRight class="size-4" />
                 </Button>

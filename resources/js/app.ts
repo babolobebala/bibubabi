@@ -1,7 +1,8 @@
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
+import { autoSubscribePushForAuthenticatedUser } from '@/lib/push-auto-subscribe';
 import { markInstalled, setDeferredInstallPrompt, type BeforeInstallPromptEvent } from '@/lib/pwa-install';
 import { initializeTheme } from '@/lib/theme';
 import '../css/app.css';
@@ -16,10 +17,16 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .mount(el);
+
+        void autoSubscribePushForAuthenticatedUser(props.initialPage.props);
     },
     progress: {
         color: '#4B5563',
     },
+});
+
+router.on('success', (event) => {
+    void autoSubscribePushForAuthenticatedUser(event.detail.page.props);
 });
 
 window.addEventListener('beforeinstallprompt', (event) => {

@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
         class="fixed inset-x-0 top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/75"
     >
         <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="/salsa" class="flex items-center gap-2 text-lg font-semibold tracking-tight text-primary">
+            <a href="/welcome" class="flex items-center gap-2 text-lg font-semibold tracking-tight text-primary">
                 <img :src="media + 'img/logo/logo.png'" alt="Logo SAKU" class="h-8 w-8 object-contain" />
                 <span>SAKU - BPS KSB</span>
             </a>
