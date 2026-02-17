@@ -3,28 +3,25 @@
 import CTA from '../components/landing-page/cta.vue';
 import FAQ from '../components/landing-page/faq.vue';
 import FeatureSection from '../components/landing-page/feature-section.vue';
-import HeroSection from '../components/landing-page/hero-section.vue';
-import LogoCloud from '../components/landing-page/logo-cloud.vue';
-import SalsaNavbar from '../components/landing-page/navbar.vue';
+import HeroCarousel from '../components/landing-page/hero-carousel.vue';
+import WelcomeNavbar from '../components/landing-page/navbar.vue';
 import PricingSection from '../components/landing-page/pricing.vue';
 import SocialProof from '../components/landing-page/social-proof.vue';
-// import { media } from '@/lib/media';
 </script>
 
 <template>
-    <SalsaNavbar />
+    <WelcomeNavbar />
     <section id="start">
-        <HeroSection />
+        <HeroCarousel />
     </section>
-    <LogoCloud />
-    <section id="features">
+    <section id="layanan">
         <FeatureSection />
     </section>
-    <section id="social-proof">
+    <section id="data">
         <SocialProof />
     </section>
     <CTA />
-    <section id="faq">
+    <section id="pengaduan">
         <FAQ />
     </section>
     <PricingSection />

@@ -1,5 +1,7 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { media } from '@/lib/media';
 import { useTheme } from '@/lib/theme';
 import { usePage } from '@inertiajs/vue3';
 import { MoonIcon, SunIcon } from 'lucide-vue-next';
@@ -18,9 +20,9 @@ const page = usePage<NavbarPageProps>();
 const isAuthenticated = computed(() => Boolean(page.props.auth?.user));
 
 const navItems = [
-    { id: 'features', label: 'Features' },
-    { id: 'social-proof', label: 'Examples' },
-    { id: 'faq', label: 'Documentation' },
+    { id: 'layanan', label: 'Layanan BPS' },
+    { id: 'data', label: 'Data Strategis' },
+    { id: 'pengaduan', label: 'Pengaduan' },
 ];
 
 const activeSection = ref<string>('');
@@ -80,9 +82,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <header class="sticky top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/75">
+    <header
+        class="fixed inset-x-0 top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/75"
+    >
         <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="/salsa" class="text-lg font-semibold tracking-tight text-primary"> SAKU - BPS KSB </a>
+            <a href="/salsa" class="flex items-center gap-2 text-lg font-semibold tracking-tight text-primary">
+                <img :src="media + 'img/logo/logo.png'" alt="Logo SAKU" class="h-8 w-8 object-contain" />
+                <span>SAKU - BPS KSB</span>
+            </a>
 
             <nav class="hidden items-center gap-8 md:flex">
                 <a
@@ -92,7 +99,7 @@ onBeforeUnmount(() => {
                     :class="[
                         'text-sm font-medium transition-colors',
                         activeSection === item.id
-                            ? 'text-red-500  underline decoration-2 underline-offset-8'
+                            ? 'text-red-500 underline decoration-2 underline-offset-8'
                             : 'text-muted-foreground hover:text-foreground',
                     ]"
                 >
@@ -101,10 +108,10 @@ onBeforeUnmount(() => {
             </nav>
 
             <div class="flex items-center gap-2 sm:gap-3">
-                <Button variant="ghost" size="icon" :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'" @click="toggleTheme">
+                <!-- <Button variant="ghost" size="icon" :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'" @click="toggleTheme">
                     <SunIcon v-if="isDark" class="size-4" />
                     <MoonIcon v-else class="size-4" />
-                </Button>
+                </Button> -->
                 <a
                     v-if="!isAuthenticated"
                     href="/bypass/?nama=fatihwisesa"
