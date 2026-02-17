@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
                     :class="[
                         'text-sm font-medium transition-colors',
                         activeSection === item.id
-                            ? 'text-red-500 underline decoration-2 underline-offset-8'
+                            ? 'text-primary underline decoration-2 underline-offset-8'
                             : 'text-muted-foreground hover:text-foreground',
                     ]"
                 >
@@ -112,20 +112,13 @@ onBeforeUnmount(() => {
                     <SunIcon v-if="isDark" class="size-4" />
                     <MoonIcon v-else class="size-4" />
                 </Button> -->
-                <a
-                    v-if="!isAuthenticated"
-                    href="/bypass/?nama=fatihwisesa"
-                    class="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                    Login
-                </a>
-                <a
-                    v-else
-                    href="/know"
-                    class="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                    Go to App
-                </a>
+
+                <Button v-if="!isAuthenticated" as-child class="w-full transform cursor-pointer rounded-md" variant="default">
+                    <a href="/bypass/?nama=fatihwisesa"> Login SSO BPS</a>
+                </Button>
+                <Button v-else as-child class="w-full transform cursor-pointer rounded-md" variant="default">
+                    <a href="/test"> Core </a>
+                </Button>
             </div>
         </div>
     </header>

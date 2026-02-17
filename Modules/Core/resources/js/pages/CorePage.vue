@@ -7,7 +7,7 @@ const KnowComponent = loadModuleComponent('Know', () => import('../../../../Know
 
 <template>
     <Button class="w-full transform rounded-md" as-child>
-        <a href="/"> Ini HARDCORE </a>
+        <a href="/"> Ini c </a>
     </Button>
 
     <KnowComponent />

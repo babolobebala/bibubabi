@@ -109,13 +109,16 @@ onBeforeUnmount(() => {
             </p>
 
             <div class="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
-                <Button size="lg" class="w-full sm:w-auto" @click="installApp"
+                <Button size="lg" class="w-full sm:w-auto cursor-pointer" @click="installApp"
                     >Install SAKU Mobile
                     <ArrowRight class="size-4" />
                 </Button>
 
-                <Button as-child size="lg" variant="outline" class="w-full border-white/40 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
-                    <a href="#features">Learn More</a>
+                <Button as-child size="lg" variant="outline" class="w-full sm:w-auto cursor-pointer">
+                    <a href="#">Learn More</a>
+                </Button>
+                <Button as-child size="lg" variant="outline" class="w-full sm:w-auto cursor-pointer">
+                    <a href="#">Learn More</a>
                 </Button>
             </div>
         </div>

@@ -58,31 +58,33 @@
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
 
-    /* corporate blue */
+    /* primary: corporate blue */
     --primary: oklch(0.57 0.18 255);
     --primary-foreground: oklch(0.985 0 0);
 
+    /* secondary: neutral surface */
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
 
     --muted: oklch(0.97 0 0);
     --muted-foreground: oklch(0.556 0 0);
 
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    /* accent: teal */
+    --accent: oklch(0.72 0.14 190);
+    --accent-foreground: oklch(0.145 0 0);
 
     --destructive: oklch(0.577 0.245 27.325);
 
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
 
-    /* focus ring (lebih “blue-ish”) */
+    /* ring: blue-ish for focus states */
     --ring: oklch(0.7 0.12 255);
 
-    /* charts (ngikutin vibe biru corporate + variasi) */
+    /* charts: blue + teal friendly */
     --chart-1: oklch(0.6 0.18 255); /* blue */
-    --chart-2: oklch(0.66 0.14 210); /* cyan-blue */
-    --chart-3: oklch(0.52 0.1 285); /* indigo */
+    --chart-2: oklch(0.7 0.14 190); /* teal */
+    --chart-3: oklch(0.56 0.12 225); /* blue-cyan */
     --chart-4: oklch(0.76 0.16 90); /* yellow-green */
     --chart-5: oklch(0.7 0.14 35); /* orange */
 
@@ -111,18 +113,20 @@
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
 
-    /* corporate blue (lebih terang biar “pop” di dark) */
+    /* primary: corporate blue (brighter in dark) */
     --primary: oklch(0.72 0.16 255);
     --primary-foreground: oklch(0.205 0 0);
 
+    /* secondary: neutral surface */
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
 
     --muted: oklch(0.269 0 0);
     --muted-foreground: oklch(0.708 0 0);
 
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    /* accent: teal (brighter in dark) */
+    --accent: oklch(0.78 0.12 190);
+    --accent-foreground: oklch(0.205 0 0);
 
     --destructive: oklch(0.704 0.191 22.216);
 
@@ -132,11 +136,11 @@
     --ring: oklch(0.72 0.12 255);
 
     /* charts */
-    --chart-1: oklch(0.72 0.16 255);
-    --chart-2: oklch(0.78 0.12 210);
-    --chart-3: oklch(0.7 0.1 285);
-    --chart-4: oklch(0.8 0.14 90);
-    --chart-5: oklch(0.76 0.14 35);
+    --chart-1: oklch(0.72 0.16 255); /* blue */
+    --chart-2: oklch(0.78 0.12 190); /* teal */
+    --chart-3: oklch(0.7 0.1 225); /* blue-cyan */
+    --chart-4: oklch(0.8 0.14 90); /* yellow-green */
+    --chart-5: oklch(0.76 0.14 35); /* orange */
 
     /* sidebar */
     --sidebar: oklch(0.205 0 0);
