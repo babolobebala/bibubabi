@@ -875,22 +875,22 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
+    <div class="mx-auto max-w-7xl space-y-4 px-3 py-4 sm:space-y-5 sm:px-4 sm:py-6">
         <Toaster rich-colors position="bottom-right" />
         <Card>
             <CardHeader>
-                <CardTitle class="text-2xl text-blue-600">Unggah Gambar</CardTitle>
+                <CardTitle class="text-lg sm:text-xl">Unggah Gambar</CardTitle>
             </CardHeader>
             <CardContent>
                 <label
-                    class="block cursor-pointer rounded-xl border-2 border-dashed p-10 text-center transition"
+                    class="block cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition sm:p-8"
                     :class="isDragging ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white'"
                     @dragover="onDragOver"
                     @dragleave="onDragLeave"
                     @drop="onDrop"
                 >
                     <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="onSelectImage" />
-                    <p class="text-lg text-slate-600">Drag & drop gambar di sini atau klik area ini</p>
+                    <p class="text-md text-muted-foreground">Drag & drop gambar di sini atau klik area ini</p>
                     <Button type="button" class="mt-3 cursor-pointer" @click.prevent="openFilePicker">Pilih Gambar</Button>
                 </label>
             </CardContent>
@@ -898,20 +898,20 @@ onMounted(() => {
 
         <Card v-if="imagePreviewUrl">
             <CardHeader>
-                <CardTitle class="text-2xl text-blue-600">Pilih Lokasi</CardTitle>
+                <CardTitle class="text-lg sm:text-xl">Pilih Lokasi</CardTitle>
             </CardHeader>
-            <CardContent>
-                <div class="mb-4">
+            <CardContent class="space-y-3">
+                <div>
                     <Button type="button" class="cursor-pointer" @click="applyPresetLocation"> Kantor BPS </Button>
                 </div>
-                <div class="grid gap-4 lg:grid-cols-2">
-                    <div class="overflow-hidden rounded-lg border border-slate-300">
+                <div class="grid items-start gap-3 lg:grid-cols-[1.1fr_1fr]">
+                    <div class="h-62.5 overflow-hidden rounded-lg border border-slate-300 sm:h-75 lg:h-85">
                         <LMap
                             v-if="isMapReady"
                             :zoom="mapZoom"
                             :center="mapCenter"
                             :use-global-leaflet="false"
-                            style="height: 330px"
+                            style="height: 100%; width: 100%"
                             @click="onMapClick"
                         >
                             <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
@@ -924,68 +924,79 @@ onMounted(() => {
                                 :fill-opacity="0.8"
                             />
                         </LMap>
-                        <div v-else class="flex h-82.5 items-center justify-center bg-slate-200 text-sm text-slate-600">Menyiapkan peta...</div>
+                        <div v-else class="flex h-full items-center justify-center bg-slate-200 text-sm text-slate-600">
+                            Menyiapkan peta...
+                        </div>
                     </div>
 
-                    <div class="space-y-3">
-                        <div>
-                            <label class="mb-1 block text-sm font-semibold text-slate-700">Alamat Singkat</label>
-                            <input v-model="shortAddress" type="text" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2" />
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <div class="sm:col-span-2">
+                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Singkat</label>
+                            <input v-model="shortAddress" type="text" class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Lengkap</label>
+                            <input v-model="fullAddress" type="text" class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm" />
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-semibold text-slate-700">Alamat Lengkap</label>
-                            <input v-model="fullAddress" type="text" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2" />
+                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Latitude</label>
+                            <input v-model="latitudeInput" type="text" class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm" />
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-semibold text-slate-700">Latitude</label>
-                            <input v-model="latitudeInput" type="text" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2" />
+                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Longitude</label>
+                            <input
+                                v-model="longitudeInput"
+                                type="text"
+                                class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                            />
                         </div>
-                        <div>
-                            <label class="mb-1 block text-sm font-semibold text-slate-700">Longitude</label>
-                            <input v-model="longitudeInput" type="text" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2" />
+                        <div class="sm:col-span-2">
+                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Tanggal & Waktu</label>
+                            <input
+                                v-model="dateTimeValue"
+                                type="datetime-local"
+                                class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                            />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <Button
+                                class="h-10 w-full cursor-pointer px-5 sm:w-auto"
+                                type="button"
+                                :disabled="isGenerating"
+                                @click="generateOverlayImage"
+                            >
+                                {{ isGenerating ? 'Memproses...' : 'Tambahkan Lokasi ke Gambar' }}
+                            </Button>
                         </div>
                     </div>
                 </div>
                 <p v-if="(latitudeInput || longitudeInput) && !hasValidCoordinates" class="mt-2 text-sm font-medium text-amber-700">
                     Koordinat tidak valid. Latitude harus -90 s/d 90, longitude harus -180 s/d 180.
                 </p>
-
-                <div class="mt-5">
-                    <label class="mb-1 block text-lg font-medium text-slate-700">Tanggal & Waktu</label>
-                    <input v-model="dateTimeValue" type="datetime-local" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2" />
-                </div>
-
-                <div class="mt-6 flex flex-wrap items-center gap-3">
-                    <Button class="cursor-pointer" type="button" :disabled="isGenerating" @click="generateOverlayImage">
-                        {{ isGenerating ? 'Memproses...' : 'Tambahkan Lokasi ke Gambar' }}
-                    </Button>
-                    <Button v-if="processedImageUrl" class="cursor-pointer" type="button" variant="secondary" @click="downloadResult"
-                        >Unduh Hasil</Button
-                    >
-                </div>
             </CardContent>
         </Card>
 
-        <section v-if="imagePreviewUrl" class="grid gap-4 md:grid-cols-2">
+        <section v-if="imagePreviewUrl">
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-lg text-slate-700">Asli</CardTitle>
+                    <div class="flex items-center gap-2">
+                        <CardTitle class="text-lg sm:text-xl">Preview Hasil</CardTitle>
+                        <Button v-if="processedImageUrl" class="cursor-pointer" type="button" variant="default" @click="downloadResult">
+                            Unduh Hasil
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <img :src="imagePreviewUrl" alt="Original upload" class="w-full rounded-lg object-contain" />
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle class="text-lg text-slate-700">Hasil</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <img v-if="processedImageUrl" :src="processedImageUrl" alt="Overlay result" class="w-full rounded-lg object-contain" />
                     <div
-                        v-else
-                        class="flex h-full min-h-56 items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500"
+                        class="flex h-70 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-90 lg:h-105"
                     >
-                        Hasil overlay akan tampil di sini
+                        <img v-if="processedImageUrl" :src="processedImageUrl" alt="Overlay result" class="h-full w-full object-contain" />
+                        <div
+                            v-else
+                            class="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500"
+                        >
+                            Hasil overlay akan tampil di sini
+                        </div>
                     </div>
                 </CardContent>
             </Card>
