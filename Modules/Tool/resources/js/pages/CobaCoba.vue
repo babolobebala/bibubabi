@@ -1,45 +1,63 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
+import { Toaster } from '@/components/ui/sonner';
 import { LCircleMarker, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 import 'leaflet/dist/leaflet.css';
 
-interface GeocodeItem {
-    display_name: string;
-    lat: string;
-    lon: string;
+interface OverlayTextSection {
+    text: string;
+    fontSize: number;
+    fontWeight: number;
+}
+
+interface PreparedOverlaySection extends OverlayTextSection {
+    lines: string[];
+    lineHeight: number;
+}
+
+interface FakeExifPayload {
+    make: string;
+    model: string;
+    software: string;
+    dateTime: string;
+    latitude: number | null;
+    longitude: number | null;
+    gpsDateStamp: string;
+    gpsTimeStamp: [number, number, number];
 }
 
 const imageFile = ref<File | null>(null);
 const imagePreviewUrl = ref<string | null>(null);
 const processedImageUrl = ref<string | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
+const originalExifIdentity = ref<{ make: string; model: string; software: string }>({
+    make: 'Unknown',
+    model: 'Unknown',
+    software: 'Unknown',
+});
 const isDragging = ref(false);
 const isGenerating = ref(false);
-const errorMessage = ref('');
 
-const searchQuery = ref('');
 const shortAddress = ref('');
 const fullAddress = ref('');
 const latitude = ref<number | null>(null);
 const longitude = ref<number | null>(null);
 const latitudeInput = ref('');
 const longitudeInput = ref('');
-const textScale = ref(0.6);
-const textScaleSlider = computed<number[]>({
-    get: () => [textScale.value],
-    set: (value) => {
-        textScale.value = value[0] ?? 1;
-    },
-});
+const textScale = ref(1);
 const dateTimeValue = ref(formatForDateTimeInput(new Date()));
 const isMapReady = ref(false);
 
 const mapZoom = ref(13);
-const defaultCenter: [number, number] = [-8.654, 116.324];
+const PRESET_LATITUDE = -8.774062814832998;
+const PRESET_LONGITUDE = 116.82512379247896;
+const PRESET_RANDOM_DELTA = 0.000058;
+const defaultCenter: [number, number] = [-8.7404, 116.8388];
 const hasValidCoordinates = computed<boolean>(() => {
     if (latitude.value === null || longitude.value === null) {
         return false;
@@ -90,11 +108,22 @@ const onSelectImage = (event: Event): void => {
     target.value = '';
 };
 
-const processUploadedFile = async (file: File): Promise<void> => {
-    errorMessage.value = '';
+const openFilePicker = (): void => {
+    fileInputRef.value?.click();
+};
 
+const applyPresetLocation = async (): Promise<void> => {
+    const randomizedLatitude = clampValue(PRESET_LATITUDE + randomOffset(PRESET_RANDOM_DELTA), -90, 90);
+    const randomizedLongitude = clampValue(PRESET_LONGITUDE + randomOffset(PRESET_RANDOM_DELTA), -180, 180);
+
+    setCoordinates(randomizedLatitude, randomizedLongitude);
+    mapZoom.value = 16;
+    await reverseGeocode(randomizedLatitude, randomizedLongitude);
+};
+
+const processUploadedFile = async (file: File): Promise<void> => {
     if (!file.type.startsWith('image/')) {
-        errorMessage.value = 'File harus berupa gambar.';
+        showError('File harus berupa gambar.');
         return;
     }
 
@@ -122,56 +151,19 @@ const readExifData = async (file: File): Promise<void> => {
             await reverseGeocode(metadata.latitude, metadata.longitude);
         }
 
+        originalExifIdentity.value = {
+            make: pickExifString(metadata, ['Make', 'make'], 'Unknown'),
+            model: pickExifString(metadata, ['Model', 'model'], 'Unknown'),
+            software: pickExifString(metadata, ['Software', 'software'], 'Unknown'),
+        };
+
         const exifDate = metadata.DateTimeOriginal ?? metadata.CreateDate ?? metadata.ModifyDate ?? metadata.DateTimeDigitized ?? null;
 
         if (exifDate instanceof Date) {
             dateTimeValue.value = formatForDateTimeInput(exifDate);
         }
     } catch {
-        errorMessage.value = 'Metadata EXIF tidak terbaca. Kamu tetap bisa isi lokasi dan waktu manual.';
-    }
-};
-
-const searchLocation = async (): Promise<void> => {
-    if (!searchQuery.value.trim()) {
-        return;
-    }
-
-    errorMessage.value = '';
-
-    try {
-        const endpoint = new URL('https://nominatim.openstreetmap.org/search');
-        endpoint.searchParams.set('q', searchQuery.value);
-        endpoint.searchParams.set('format', 'json');
-        endpoint.searchParams.set('limit', '1');
-
-        const response = await fetch(endpoint.toString(), {
-            headers: {
-                Accept: 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('search_failed');
-        }
-
-        const data = (await response.json()) as GeocodeItem[];
-        const firstResult = data[0];
-
-        if (!firstResult) {
-            errorMessage.value = 'Lokasi tidak ditemukan.';
-            return;
-        }
-
-        const foundLatitude = Number.parseFloat(firstResult.lat);
-        const foundLongitude = Number.parseFloat(firstResult.lon);
-
-        setCoordinates(foundLatitude, foundLongitude);
-        fullAddress.value = firstResult.display_name;
-        shortAddress.value = firstResult.display_name.split(',').slice(0, 2).join(', ').trim();
-        mapZoom.value = 16;
-    } catch {
-        errorMessage.value = 'Gagal mencari lokasi. Coba lagi beberapa saat.';
+        showError('Metadata EXIF tidak terbaca. Kamu tetap bisa isi lokasi dan waktu manual.');
     }
 };
 
@@ -200,7 +192,7 @@ const reverseGeocode = async (lat: number, lon: number): Promise<void> => {
             shortAddress.value = addressText.split(',').slice(0, 2).join(', ').trim();
         }
     } catch {
-        errorMessage.value = 'Koordinat berhasil dipilih, tapi alamat otomatis gagal dimuat.';
+        showError('Koordinat berhasil dipilih, tapi alamat otomatis gagal dimuat.');
     }
 };
 
@@ -241,12 +233,11 @@ watch(
 
 const generateOverlayImage = async (): Promise<void> => {
     if (!imageFile.value || !imagePreviewUrl.value) {
-        errorMessage.value = 'Upload gambar dulu sebelum memproses.';
+        showError('Upload gambar dulu sebelum memproses.');
         return;
     }
 
     isGenerating.value = true;
-    errorMessage.value = '';
 
     try {
         const bitmap = await createImageBitmap(imageFile.value);
@@ -261,9 +252,12 @@ const generateOverlayImage = async (): Promise<void> => {
 
         ctx.drawImage(bitmap, 0, 0);
 
-        const baseFont = Math.max(20, Math.round(canvas.width * 0.028 * textScale.value));
-        const lineHeight = Math.round(baseFont * 1.35);
-        const padding = Math.round(baseFont * 0.8);
+        const minDimension = Math.min(canvas.width, canvas.height);
+        const baseFont = Math.round(clampValue(minDimension * 0.035 * textScale.value, 14, 46));
+        const detailFont = Math.max(12, Math.round(baseFont * 0.7));
+        const metaFont = Math.max(12, Math.round(baseFont * 0.68));
+        const panelPadding = Math.round(clampValue(baseFont * 0.72, 10, 34));
+        const horizontalMargin = Math.round(clampValue(minDimension * 0.028, 12, 44));
 
         const dateText = formatDateForOverlayUtc8(dateTimeValue.value);
         const latLonText =
@@ -272,40 +266,93 @@ const generateOverlayImage = async (): Promise<void> => {
                 : 'Lat : -° Lon : -°';
         const shortAddressText = shortAddress.value || '-';
         const fullAddressText = fullAddress.value || '-';
-        const lines = [shortAddressText, fullAddressText, latLonText, `Waktu: ${dateText}`];
 
-        ctx.font = `600 ${baseFont}px "Segoe UI", sans-serif`;
-        const maxTextWidth = Math.max(...lines.map((line) => ctx.measureText(line).width));
-        const mapThumbWidth = Math.round(baseFont * 4.8);
-        const mapThumbHeight = lineHeight * lines.length;
-        const gap = Math.round(baseFont * 0.8);
-        const boxWidth = Math.min(canvas.width - padding * 2, Math.round(maxTextWidth + padding * 2 + mapThumbWidth + gap));
-        const boxHeight = lineHeight * lines.length + padding * 2;
-        const x = padding;
-        const y = canvas.height - boxHeight - padding;
+        const panelMaxWidth = canvas.width - horizontalMargin * 2;
+        const panelMinWidth = Math.min(300, panelMaxWidth);
+        const panelWidth = Math.round(clampValue(canvas.width * 0.86, panelMinWidth, panelMaxWidth));
+        let mapThumbWidth = Math.round(clampValue(panelWidth * 0.24, 68, 220));
+        const mapGap = Math.round(clampValue(baseFont * 0.65, 10, 24));
+
+        const minimumTextWidth = 150;
+        let textAreaWidth = panelWidth - panelPadding * 2 - mapThumbWidth - mapGap;
+        if (textAreaWidth < minimumTextWidth) {
+            mapThumbWidth = Math.max(56, panelWidth - panelPadding * 2 - mapGap - minimumTextWidth);
+            textAreaWidth = panelWidth - panelPadding * 2 - mapThumbWidth - mapGap;
+        }
+
+        const sections: OverlayTextSection[] = [
+            { text: shortAddressText, fontSize: Math.round(baseFont * 1.05), fontWeight: 700 },
+            { text: fullAddressText, fontSize: detailFont, fontWeight: 500 },
+            { text: latLonText, fontSize: metaFont, fontWeight: 600 },
+            { text: `Waktu: ${dateText}`, fontSize: metaFont, fontWeight: 600 },
+        ];
+
+        const preparedSections: PreparedOverlaySection[] = sections.map((section) => {
+            ctx.font = `${section.fontWeight} ${section.fontSize}px "Segoe UI", sans-serif`;
+
+            return {
+                ...section,
+                lines: wrapTextByWidth(ctx, section.text, textAreaWidth),
+                lineHeight: Math.round(section.fontSize * 1.28),
+            };
+        });
+
+        const sectionSpacing = Math.round(clampValue(baseFont * 0.38, 4, 12));
+        const textContentHeight = preparedSections.reduce((total, section, index) => {
+            const sectionHeight = section.lines.length * section.lineHeight;
+            const spacing = index < preparedSections.length - 1 ? sectionSpacing : 0;
+
+            return total + sectionHeight + spacing;
+        }, 0);
+
+        const contentHeight = Math.max(textContentHeight, Math.round(mapThumbWidth * 1.15));
+        const mapThumbHeight = contentHeight;
+        const boxHeight = contentHeight + panelPadding * 2;
+        const x = horizontalMargin;
+        const y = canvas.height - horizontalMargin - boxHeight;
 
         ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-        ctx.fillRect(x, y, boxWidth, boxHeight);
+        ctx.fillRect(x, y, panelWidth, boxHeight);
 
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
         ctx.lineWidth = Math.max(2, Math.round(baseFont * 0.08));
-        ctx.strokeRect(x, y, boxWidth, boxHeight);
+        ctx.strokeRect(x, y, panelWidth, boxHeight);
 
-        ctx.fillStyle = '#ffffff';
-        const mapX = x + padding;
-        const mapY = y + padding;
+        const mapX = x + panelPadding;
+        const mapY = y + panelPadding;
         await drawMiniMapPanel(ctx, mapX, mapY, mapThumbWidth, mapThumbHeight, latitude.value, longitude.value);
 
-        const textStartX = mapX + mapThumbWidth + gap;
-        lines.forEach((line, index) => {
-            const textY = y + padding + lineHeight * (index + 0.82);
-            ctx.fillText(line, textStartX, textY, boxWidth - (textStartX - x) - padding);
+        const textStartX = mapX + mapThumbWidth + mapGap;
+        let cursorY = mapY;
+        ctx.textBaseline = 'top';
+        preparedSections.forEach((section, sectionIndex) => {
+            ctx.font = `${section.fontWeight} ${section.fontSize}px "Segoe UI", sans-serif`;
+            ctx.fillStyle = '#ffffff';
+            section.lines.forEach((line) => {
+                ctx.fillText(line, textStartX, cursorY, textAreaWidth);
+                cursorY += section.lineHeight;
+            });
+
+            if (sectionIndex < preparedSections.length - 1) {
+                cursorY += sectionSpacing;
+            }
         });
 
+        const jpegBlob = await canvasToJpegBlob(canvas, 0.95);
+        const fakeExifPayload = buildFakeExifPayload(
+            dateTimeValue.value,
+            latitude.value,
+            longitude.value,
+            originalExifIdentity.value.make,
+            originalExifIdentity.value.model,
+            originalExifIdentity.value.software,
+        );
+        const jpegWithFakeExifBlob = await injectFakeExifMetadata(jpegBlob, fakeExifPayload);
+
         revokeUrl(processedImageUrl.value);
-        processedImageUrl.value = canvas.toDataURL('image/jpeg', 0.95);
+        processedImageUrl.value = URL.createObjectURL(jpegWithFakeExifBlob);
     } catch {
-        errorMessage.value = 'Gagal memproses gambar. Coba file lain.';
+        showError('Gagal memproses gambar. Coba file lain.');
     } finally {
         isGenerating.value = false;
     }
@@ -384,22 +431,50 @@ async function drawMiniMapPanel(
     if (lat !== null && lon !== null && isValidLatitude(lat) && isValidLongitude(lon)) {
         const zoom = 15;
         const tile = latLonToTile(lat, lon, zoom);
-        const tileUrl = `https://tile.openstreetmap.org/${zoom}/${tile.x}/${tile.y}.png`;
 
         try {
-            const tileImage = await loadImage(tileUrl);
-            ctx.drawImage(tileImage, x, y, width, height);
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.clip();
 
-            const pinX = x + tile.fractionX * width;
-            const pinY = y + tile.fractionY * height;
+            const tileSize = 256;
+            const centerX = x + width / 2;
+            const centerY = y + height / 2;
+            const n = 2 ** zoom;
+            const tileOffsets = [-1, 0, 1];
+            const drawJobs: Promise<void>[] = [];
+
+            tileOffsets.forEach((dx) => {
+                tileOffsets.forEach((dy) => {
+                    const tileX = normalizeTileX(tile.x + dx, n);
+                    const tileY = tile.y + dy;
+                    if (tileY < 0 || tileY >= n) {
+                        return;
+                    }
+
+                    const tileUrl = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+                    const drawX = centerX + (dx - tile.fractionX) * tileSize;
+                    const drawY = centerY + (dy - tile.fractionY) * tileSize;
+                    const job = loadImage(tileUrl).then((image) => {
+                        ctx.drawImage(image, drawX, drawY, tileSize, tileSize);
+                    });
+                    drawJobs.push(job);
+                });
+            });
+
+            await Promise.all(drawJobs);
+
+            const pinX = centerX;
+            const pinY = centerY;
+            const outerRadius = clampValue(width * 0.055, 4, 9);
             ctx.fillStyle = '#0284c7';
             ctx.beginPath();
-            ctx.arc(pinX, pinY, 8, 0, Math.PI * 2);
+            ctx.arc(pinX, pinY, outerRadius, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(pinX, pinY, 3, 0, Math.PI * 2);
+            ctx.arc(pinX, pinY, Math.max(2, outerRadius * 0.38), 0, Math.PI * 2);
             ctx.fill();
         } catch {
             ctx.fillStyle = '#f1f5f9';
@@ -444,6 +519,351 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     });
 }
 
+function normalizeTileX(value: number, modulo: number): number {
+    return ((value % modulo) + modulo) % modulo;
+}
+
+function clampValue(value: number, min: number, max: number): number {
+    return Math.min(Math.max(value, min), max);
+}
+
+function wrapTextByWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    if (!text.trim()) {
+        return ['-'];
+    }
+
+    if (ctx.measureText(text).width <= maxWidth) {
+        return [text];
+    }
+
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = '';
+
+    words.forEach((word) => {
+        const candidate = currentLine ? `${currentLine} ${word}` : word;
+        if (ctx.measureText(candidate).width <= maxWidth) {
+            currentLine = candidate;
+            return;
+        }
+
+        if (currentLine) {
+            lines.push(currentLine);
+            currentLine = '';
+        }
+
+        if (ctx.measureText(word).width <= maxWidth) {
+            currentLine = word;
+            return;
+        }
+
+        const brokenWordParts = breakLongWordByWidth(ctx, word, maxWidth);
+        lines.push(...brokenWordParts.slice(0, -1));
+        currentLine = brokenWordParts[brokenWordParts.length - 1] ?? '';
+    });
+
+    if (currentLine) {
+        lines.push(currentLine);
+    }
+
+    return lines.length ? lines : ['-'];
+}
+
+function breakLongWordByWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const parts: string[] = [];
+    let current = '';
+
+    for (const char of text) {
+        const candidate = current + char;
+        if (ctx.measureText(candidate).width <= maxWidth) {
+            current = candidate;
+            continue;
+        }
+
+        if (current) {
+            parts.push(current);
+        }
+        current = char;
+    }
+
+    if (current) {
+        parts.push(current);
+    }
+
+    return parts.length ? parts : [text];
+}
+
+function canvasToJpegBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(
+            (blob) => {
+                if (!blob) {
+                    reject(new Error('canvas_blob_failed'));
+                    return;
+                }
+
+                resolve(blob);
+            },
+            'image/jpeg',
+            quality,
+        );
+    });
+}
+
+async function injectFakeExifMetadata(blob: Blob, payload: FakeExifPayload): Promise<Blob> {
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    const isJpeg = bytes.length > 3 && bytes[0] === 0xff && bytes[1] === 0xd8;
+    if (!isJpeg) {
+        return blob;
+    }
+
+    const exifSegment = buildExifApp1Segment(payload);
+    const output = new Uint8Array(bytes.length + exifSegment.length);
+
+    output.set(bytes.subarray(0, 2), 0);
+    output.set(exifSegment, 2);
+    output.set(bytes.subarray(2), 2 + exifSegment.length);
+
+    return new Blob([output], { type: 'image/jpeg' });
+}
+
+function buildFakeExifPayload(
+    dateTimeInput: string,
+    latitude: number | null,
+    longitude: number | null,
+    make: string,
+    model: string,
+    software: string,
+): FakeExifPayload {
+    const sourceDate = parseDateInput(dateTimeInput);
+    const utc8 = toTimeZoneDateParts(sourceDate, 'Asia/Makassar');
+    const dateTime = `${utc8.year}:${pad2(utc8.month)}:${pad2(utc8.day)} ${pad2(utc8.hour)}:${pad2(utc8.minute)}:${pad2(utc8.second)}`;
+    const gpsDateStamp = `${utc8.year}:${pad2(utc8.month)}:${pad2(utc8.day)}`;
+    const gpsTimeStamp: [number, number, number] = [utc8.hour, utc8.minute, utc8.second];
+
+    return {
+        make,
+        model,
+        software,
+        dateTime,
+        latitude,
+        longitude,
+        gpsDateStamp,
+        gpsTimeStamp,
+    };
+}
+
+function pickExifString(metadata: Record<string, unknown>, keys: string[], fallback: string): string {
+    for (const key of keys) {
+        const value = metadata[key];
+        if (typeof value === 'string' && value.trim()) {
+            return value.trim();
+        }
+    }
+
+    return fallback;
+}
+
+function buildExifApp1Segment(payload: FakeExifPayload): Uint8Array {
+    const tiff = buildTiffBytes(payload);
+    const exifBody = [0x45, 0x78, 0x69, 0x66, 0x00, 0x00, ...tiff];
+    const segmentLength = exifBody.length + 2;
+    const app1 = new Uint8Array(exifBody.length + 4);
+    app1[0] = 0xff;
+    app1[1] = 0xe1;
+    app1[2] = (segmentLength >> 8) & 0xff;
+    app1[3] = segmentLength & 0xff;
+    app1.set(exifBody, 4);
+
+    return app1;
+}
+
+function buildTiffBytes(payload: FakeExifPayload): number[] {
+    const bytes: number[] = [];
+    const tiffBaseOffset = 6;
+
+    const writeByte = (value: number): void => {
+        bytes.push(value & 0xff);
+    };
+    const writeUint16LE = (value: number): void => {
+        writeByte(value & 0xff);
+        writeByte((value >> 8) & 0xff);
+    };
+    const writeUint32LE = (value: number): void => {
+        writeByte(value & 0xff);
+        writeByte((value >> 8) & 0xff);
+        writeByte((value >> 16) & 0xff);
+        writeByte((value >> 24) & 0xff);
+    };
+    const setUint32LE = (index: number, value: number): void => {
+        bytes[index] = value & 0xff;
+        bytes[index + 1] = (value >> 8) & 0xff;
+        bytes[index + 2] = (value >> 16) & 0xff;
+        bytes[index + 3] = (value >> 24) & 0xff;
+    };
+    const appendAscii = (value: string): number => {
+        const offset = bytes.length - tiffBaseOffset;
+        for (const char of value) {
+            writeByte(char.charCodeAt(0));
+        }
+        writeByte(0x00);
+
+        return offset;
+    };
+    const appendRationals = (values: Array<[number, number]>): number => {
+        const offset = bytes.length - tiffBaseOffset;
+        values.forEach(([num, den]) => {
+            writeUint32LE(num >>> 0);
+            writeUint32LE(den >>> 0);
+        });
+
+        return offset;
+    };
+
+    const writeEntry = (tag: number, type: number, count: number): number => {
+        writeUint16LE(tag);
+        writeUint16LE(type);
+        writeUint32LE(count);
+        const valuePos = bytes.length;
+        writeUint32LE(0);
+
+        return valuePos;
+    };
+
+    writeByte(0x49);
+    writeByte(0x49);
+    writeUint16LE(42);
+    writeUint32LE(8);
+
+    writeUint16LE(6);
+    const makePos = writeEntry(0x010f, 2, payload.make.length + 1);
+    const modelPos = writeEntry(0x0110, 2, payload.model.length + 1);
+    const softwarePos = writeEntry(0x0131, 2, payload.software.length + 1);
+    const dateTimePos = writeEntry(0x0132, 2, payload.dateTime.length + 1);
+    const exifIfdPointerPos = writeEntry(0x8769, 4, 1);
+    const gpsIfdPointerPos = writeEntry(0x8825, 4, 1);
+    writeUint32LE(0);
+
+    setUint32LE(makePos, appendAscii(payload.make));
+    setUint32LE(modelPos, appendAscii(payload.model));
+    setUint32LE(softwarePos, appendAscii(payload.software));
+    setUint32LE(dateTimePos, appendAscii(payload.dateTime));
+
+    const exifIfdOffset = bytes.length - tiffBaseOffset;
+    setUint32LE(exifIfdPointerPos, exifIfdOffset);
+
+    writeUint16LE(2);
+    const dateTimeOriginalPos = writeEntry(0x9003, 2, payload.dateTime.length + 1);
+    const dateTimeDigitizedPos = writeEntry(0x9004, 2, payload.dateTime.length + 1);
+    writeUint32LE(0);
+
+    setUint32LE(dateTimeOriginalPos, appendAscii(payload.dateTime));
+    setUint32LE(dateTimeDigitizedPos, appendAscii(payload.dateTime));
+
+    const gpsIfdOffset = bytes.length - tiffBaseOffset;
+    setUint32LE(gpsIfdPointerPos, gpsIfdOffset);
+
+    const safeLat = payload.latitude ?? 0;
+    const safeLon = payload.longitude ?? 0;
+    const latRef = safeLat >= 0 ? 'N' : 'S';
+    const lonRef = safeLon >= 0 ? 'E' : 'W';
+    const latDms = decimalToDms(Math.abs(safeLat));
+    const lonDms = decimalToDms(Math.abs(safeLon));
+
+    writeUint16LE(6);
+    const latRefPos = writeEntry(0x0001, 2, 2);
+    const latPos = writeEntry(0x0002, 5, 3);
+    const lonRefPos = writeEntry(0x0003, 2, 2);
+    const lonPos = writeEntry(0x0004, 5, 3);
+    const gpsDatePos = writeEntry(0x001d, 2, payload.gpsDateStamp.length + 1);
+    const gpsTimePos = writeEntry(0x0007, 5, 3);
+    writeUint32LE(0);
+
+    setUint32LE(latRefPos, latRef.charCodeAt(0));
+    setUint32LE(lonRefPos, lonRef.charCodeAt(0));
+    setUint32LE(latPos, appendRationals(latDms));
+    setUint32LE(lonPos, appendRationals(lonDms));
+    setUint32LE(gpsDatePos, appendAscii(payload.gpsDateStamp));
+    setUint32LE(
+        gpsTimePos,
+        appendRationals([
+            [payload.gpsTimeStamp[0], 1],
+            [payload.gpsTimeStamp[1], 1],
+            [payload.gpsTimeStamp[2], 1],
+        ]),
+    );
+
+    return bytes;
+}
+
+function decimalToDms(value: number): Array<[number, number]> {
+    const degrees = Math.floor(value);
+    const minutesFloat = (value - degrees) * 60;
+    const minutes = Math.floor(minutesFloat);
+    const secondsFloat = (minutesFloat - minutes) * 60;
+    const secondsNumerator = Math.round(secondsFloat * 10000);
+
+    return [
+        [degrees, 1],
+        [minutes, 1],
+        [secondsNumerator, 10000],
+    ];
+}
+
+function parseDateInput(value: string): Date {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return new Date();
+    }
+
+    return date;
+}
+
+function toTimeZoneDateParts(
+    value: Date,
+    timeZone: string,
+): { year: number; month: number; day: number; hour: number; minute: number; second: number } {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    });
+
+    const parts = formatter.formatToParts(value);
+    const get = (type: Intl.DateTimeFormatPartTypes): number => {
+        const part = parts.find((item) => item.type === type)?.value ?? '0';
+        return Number.parseInt(part, 10);
+    };
+
+    return {
+        year: get('year'),
+        month: get('month'),
+        day: get('day'),
+        hour: get('hour'),
+        minute: get('minute'),
+        second: get('second'),
+    };
+}
+
+function pad2(value: number): string {
+    return String(value).padStart(2, '0');
+}
+
+function randomOffset(maxAbs: number): number {
+    return (Math.random() * 2 - 1) * maxAbs;
+}
+
+function showError(message: string): void {
+    toast.error('Terjadi kesalahan', {
+        description: message,
+    });
+}
+
 onBeforeUnmount(() => {
     revokeUrl(imagePreviewUrl.value);
     revokeUrl(processedImageUrl.value);
@@ -456,6 +876,7 @@ onMounted(() => {
 
 <template>
     <div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
+        <Toaster rich-colors position="bottom-right" />
         <Card>
             <CardHeader>
                 <CardTitle class="text-2xl text-blue-600">Unggah Gambar</CardTitle>
@@ -468,9 +889,9 @@ onMounted(() => {
                     @dragleave="onDragLeave"
                     @drop="onDrop"
                 >
-                    <input type="file" accept="image/*" class="hidden" @change="onSelectImage" />
+                    <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="onSelectImage" />
                     <p class="text-lg text-slate-600">Drag & drop gambar di sini atau klik area ini</p>
-                    <Button type="button" class="mt-3 cursor-pointer">Pilih Gambar</Button>
+                    <Button type="button" class="mt-3 cursor-pointer" @click.prevent="openFilePicker">Pilih Gambar</Button>
                 </label>
             </CardContent>
         </Card>
@@ -481,15 +902,8 @@ onMounted(() => {
             </CardHeader>
             <CardContent>
                 <div class="mb-4">
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        class="w-full rounded-md border border-slate-300 bg-white px-3 py-2"
-                        placeholder="Cari lokasi lalu tekan Enter..."
-                        @keyup.enter="searchLocation"
-                    />
+                    <Button type="button" class="cursor-pointer" @click="applyPresetLocation"> Kantor BPS </Button>
                 </div>
-
                 <div class="grid gap-4 lg:grid-cols-2">
                     <div class="overflow-hidden rounded-lg border border-slate-300">
                         <LMap
@@ -541,10 +955,6 @@ onMounted(() => {
                     <input v-model="dateTimeValue" type="datetime-local" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2" />
                 </div>
 
-                <div class="mt-5">
-                    <Slider v-model="textScaleSlider" :min="0.6" :max="2" :step="0.1" class="w-full" />
-                </div>
-
                 <div class="mt-6 flex flex-wrap items-center gap-3">
                     <Button class="cursor-pointer" type="button" :disabled="isGenerating" @click="generateOverlayImage">
                         {{ isGenerating ? 'Memproses...' : 'Tambahkan Lokasi ke Gambar' }}
@@ -553,10 +963,6 @@ onMounted(() => {
                         >Unduh Hasil</Button
                     >
                 </div>
-
-                <p v-if="errorMessage" class="mt-3 text-sm font-medium text-red-600">
-                    {{ errorMessage }}
-                </p>
             </CardContent>
         </Card>
 
