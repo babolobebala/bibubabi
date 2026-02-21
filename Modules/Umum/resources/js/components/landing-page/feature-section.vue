@@ -28,12 +28,6 @@ const defaultItems: FeatureItem[] = [
         imageUrl: 'https://ui.convertfa.st/images/convertfast-ui-light-demo.png',
         isImageLeft: true,
     },
-    {
-        title: 'Responsive Design',
-        description: 'Create mobile-friendly landing pages that look great on all devices, ensuring a consistent user experience.',
-        imageUrl: 'https://ui.convertfa.st/images/convertfast-demo.png',
-        isImageLeft: false,
-    },
 ];
 
 interface Props {
@@ -44,10 +38,10 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    brand: 'ConvertFast',
-    title: 'Everything you need to build landing pages',
+    brand: 'SAKU',
+    title: 'Satu Aplikasi untuk Kinerja Unggul',
     description:
-        'ConvertFast is a powerful landing page builder for developers, offering code templates and components inspired by shadcn. Create beautiful, functional landing pages quickly and efficiently.',
+        'Platform digital BPS Kabupaten Sumbawa Barat untuk layanan statistik, akses data strategis, dan penyampaian pengaduan masyarakat secara efisien dan transparan.',
 });
 
 const featureItems = computed<FeatureItem[]>(() => props.items ?? defaultItems);
