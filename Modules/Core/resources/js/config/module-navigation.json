@@ -1,0 +1,14 @@
+{
+    "module": {
+        "key": "core",
+        "name": "Core"
+    },
+    "hubs": {
+        "index": {
+            "sectionTitle": "Beranda",
+            "breadcrumbs": [
+                { "label": "Home", "href": "/app" }
+            ]
+        }
+    }
+}

@@ -15,7 +15,6 @@ File:
 - `Modules/Tool/app/Http/Controllers/ToolController.php`
 
 ## Inertia Pages
-- `tool::ToolHubPage` -> `Modules/Tool/resources/js/pages/ToolHubPage.vue`
 - `tool::GeoTagging` -> `Modules/Tool/resources/js/pages/GeoTagging.vue`
 
 ## Pola UX yang Dipakai

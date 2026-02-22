@@ -1,0 +1,39 @@
+{
+    "module": {
+        "key": "tool",
+        "name": "Tool",
+        "coreMenu": {
+            "key": "tools",
+            "title": "Tools",
+            "href": "/app#tools",
+            "description": "Kumpulan utilitas seperti geotagging gambar dan tools operasional lain."
+        }
+    },
+    "hubs": {
+        "index": {
+            "sectionTitle": "Tools",
+            "breadcrumbs": [
+                { "label": "Home", "href": "/app" },
+                { "label": "Tools" }
+            ],
+            "items": [
+                {
+                    "key": "geotagging-gambar",
+                    "title": "Geotagging Gambar",
+                    "href": "/app/tools/geotagging-gambar",
+                    "componentKey": "tool.geotagging-gambar",
+                    "description": "Tambah lokasi, waktu, dan overlay informasi pada foto."
+                }
+            ]
+        }
+    },
+    "pages": {
+        "geotagging-gambar": {
+            "breadcrumbs": [
+                { "label": "Home", "href": "/app" },
+                { "label": "Tools", "href": "/app#tools" },
+                { "label": "Geotagging Gambar" }
+            ]
+        }
+    }
+}

@@ -12,6 +12,7 @@ import { Link } from '@inertiajs/vue3';
 interface ModuleShellBreadcrumbItem {
     label: string;
     href?: string;
+    onClick?: () => void;
 }
 
 withDefaults(
@@ -42,6 +43,14 @@ withDefaults(
                             <BreadcrumbLink v-if="crumb.href" as-child>
                                 <Link :href="crumb.href">{{ crumb.label }}</Link>
                             </BreadcrumbLink>
+                            <button
+                                v-else-if="crumb.onClick"
+                                type="button"
+                                class="cursor-pointer text-sm text-muted-foreground transition hover:text-foreground"
+                                @click="crumb.onClick"
+                            >
+                                {{ crumb.label }}
+                            </button>
                             <BreadcrumbPage v-else>{{ crumb.label }}</BreadcrumbPage>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator v-if="index < breadcrumbs.length - 1" />

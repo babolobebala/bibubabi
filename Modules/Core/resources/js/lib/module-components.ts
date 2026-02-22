@@ -20,3 +20,17 @@ export function loadModuleComponent(
 
     return defineAsyncComponent(loader);
 }
+
+export function loadModuleValue<T>(
+    moduleName: string,
+    resolver: () => T,
+    fallback: T,
+): T {
+    const statuses = (usePage().props.modules?.statuses ?? {}) as ModuleStatuses;
+
+    if (!statuses[moduleName]) {
+        return fallback;
+    }
+
+    return resolver();
+}

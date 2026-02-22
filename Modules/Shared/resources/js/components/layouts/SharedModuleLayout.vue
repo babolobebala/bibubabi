@@ -36,7 +36,7 @@ const fixedProfile = {
 
 const fixedNavItems: SharedNavItem[] = [
     { key: 'beranda', label: 'Beranda', icon: House, href: '/app', match: ['/app'], exact: true },
-    { key: 'menu-cepat', label: 'Menu Cepat', icon: LayoutGrid, href: '/app/tools', match: ['/app/tools'] },
+    { key: 'menu-cepat', label: 'Menu Cepat', icon: LayoutGrid, href: '/app#tools', match: ['/app'], exact: true },
     { key: 'notifikasi', label: 'Notifkasi', icon: Bell, href: '/app', match: ['/app/notifications'] },
     { key: 'landing-page', label: 'Saku Eksternal', icon: CircleUserRound, href: '/', match: ['/'] },
 ];
