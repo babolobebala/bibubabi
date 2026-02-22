@@ -2,7 +2,7 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, CircleUserRound, House, LayoutGrid, Search } from 'lucide-vue-next';
+import { Bell, CircleUserRound, House, LayoutGrid, LogOut } from 'lucide-vue-next';
 import type { Component } from 'vue';
 import { computed } from 'vue';
 
@@ -73,20 +73,12 @@ const mobileNavItems = computed(() => fixedNavItems.slice(0, 4));
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button
-                        type="button"
-                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground"
-                    >
-                        <Search class="h-5 w-5" />
-                    </button>
-                    <button
-                        type="button"
-                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary bg-background text-primary shadow-sm transition hover:bg-accent"
-                    >
-                        <Bell class="h-5 w-5" />
-                    </button>
-                </div>
+                <Button as-child variant="outline" class="cursor-pointer rounded-xl border-border bg-card px-3 hover:bg-accent">
+                    <a href="/logout" class="inline-flex items-center gap-2">
+                        <LogOut class="h-4 w-4" />
+                        <span class="text-sm">Logout</span>
+                    </a>
+                </Button>
             </div>
         </header>
 

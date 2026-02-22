@@ -7,6 +7,7 @@ import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import SharedModuleLayout from '../../../../Shared/resources/js/components/layouts/SharedModuleLayout.vue';
 import 'leaflet/dist/leaflet.css';
 
 interface OverlayTextSection {
@@ -875,9 +876,23 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="mx-auto max-w-7xl space-y-4 px-3 py-4 sm:space-y-5 sm:px-4 sm:py-6">
+    <SharedModuleLayout>
         <Toaster rich-colors position="bottom-right" />
-        <Card>
+
+        <div class="border-b border-border px-4 py-4 sm:px-6">
+            <div class="flex flex-wrap items-center gap-2 text-sm">
+                <span class="font-semibold text-foreground">Navigasi</span>
+                <span class="mx-1 text-border">|</span>
+                <a href="/home" class="cursor-pointer text-muted-foreground transition hover:text-primary">Home</a>
+                <span class="text-border">›</span>
+                <a href="/tools" class="cursor-pointer text-muted-foreground transition hover:text-primary">Tools</a>
+                <span class="text-border">›</span>
+                <span class="font-semibold text-foreground">Geotagging Gambar</span>
+            </div>
+        </div>
+
+        <div class="mx-auto max-w-7xl space-y-4 px-3 py-4 sm:space-y-5 sm:px-4 sm:py-6">
+            <Card>
             <CardHeader>
                 <CardTitle class="text-lg sm:text-xl">Unggah Gambar</CardTitle>
             </CardHeader>
@@ -894,112 +909,125 @@ onMounted(() => {
                     <Button type="button" class="mt-3 cursor-pointer" @click.prevent="openFilePicker">Pilih Gambar</Button>
                 </label>
             </CardContent>
-        </Card>
+            </Card>
 
-        <Card v-if="imagePreviewUrl">
-            <CardHeader>
-                <CardTitle class="text-lg sm:text-xl">Pilih Lokasi</CardTitle>
-            </CardHeader>
-            <CardContent class="space-y-3">
-                <div>
-                    <Button type="button" class="cursor-pointer" @click="applyPresetLocation"> Kantor BPS </Button>
-                </div>
-                <div class="grid items-start gap-3 lg:grid-cols-[1.1fr_1fr]">
-                    <div class="h-62.5 overflow-hidden rounded-lg border border-slate-300 sm:h-75 lg:h-85">
-                        <LMap
-                            v-if="isMapReady"
-                            :zoom="mapZoom"
-                            :center="mapCenter"
-                            :use-global-leaflet="false"
-                            style="height: 100%; width: 100%"
-                            @click="onMapClick"
-                        >
-                            <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
-                            <LCircleMarker
-                                v-if="hasValidCoordinates && latitude !== null && longitude !== null"
-                                :lat-lng="[latitude, longitude]"
-                                :radius="8"
-                                color="#2563eb"
-                                fill-color="#2563eb"
-                                :fill-opacity="0.8"
-                            />
-                        </LMap>
-                        <div v-else class="flex h-full items-center justify-center bg-slate-200 text-sm text-slate-600">
-                            Menyiapkan peta...
-                        </div>
-                    </div>
-
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <div class="sm:col-span-2">
-                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Singkat</label>
-                            <input v-model="shortAddress" type="text" class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm" />
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Lengkap</label>
-                            <input v-model="fullAddress" type="text" class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm" />
-                        </div>
-                        <div>
-                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Latitude</label>
-                            <input v-model="latitudeInput" type="text" class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm" />
-                        </div>
-                        <div>
-                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Longitude</label>
-                            <input
-                                v-model="longitudeInput"
-                                type="text"
-                                class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
-                            />
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="mb-1.5 block text-sm font-medium text-slate-700">Tanggal & Waktu</label>
-                            <input
-                                v-model="dateTimeValue"
-                                type="datetime-local"
-                                class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
-                            />
-                        </div>
-                        <div class="sm:col-span-2">
-                            <Button
-                                class="h-10 w-full cursor-pointer px-5 sm:w-auto"
-                                type="button"
-                                :disabled="isGenerating"
-                                @click="generateOverlayImage"
-                            >
-                                {{ isGenerating ? 'Memproses...' : 'Tambahkan Lokasi ke Gambar' }}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-                <p v-if="(latitudeInput || longitudeInput) && !hasValidCoordinates" class="mt-2 text-sm font-medium text-amber-700">
-                    Koordinat tidak valid. Latitude harus -90 s/d 90, longitude harus -180 s/d 180.
-                </p>
-            </CardContent>
-        </Card>
-
-        <section v-if="imagePreviewUrl">
-            <Card>
+            <Card v-if="imagePreviewUrl">
                 <CardHeader>
-                    <div class="flex items-center gap-2">
-                        <CardTitle class="text-lg sm:text-xl">Preview Hasil</CardTitle>
-                        <Button v-if="processedImageUrl" class="cursor-pointer" type="button" variant="default" @click="downloadResult">
-                            Unduh Hasil
-                        </Button>
-                    </div>
+                    <CardTitle class="text-lg sm:text-xl">Pilih Lokasi</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div
-                        class="flex h-70 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-90 lg:h-105"
-                    >
-                        <img v-if="processedImageUrl" :src="processedImageUrl" alt="Overlay result" class="h-full w-full object-contain" />
-                        <div
-                            v-else
-                            class="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500"
-                        >
-                            Hasil overlay akan tampil di sini
+                <CardContent class="space-y-3">
+                    <div>
+                        <Button type="button" class="cursor-pointer" @click="applyPresetLocation"> Kantor BPS </Button>
+                    </div>
+                    <div class="grid items-start gap-3 lg:grid-cols-[1.1fr_1fr]">
+                        <div class="h-62.5 overflow-hidden rounded-lg border border-slate-300 sm:h-75 lg:h-85">
+                            <LMap
+                                v-if="isMapReady"
+                                :zoom="mapZoom"
+                                :center="mapCenter"
+                                :use-global-leaflet="false"
+                                style="height: 100%; width: 100%"
+                                @click="onMapClick"
+                            >
+                                <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
+                                <LCircleMarker
+                                    v-if="hasValidCoordinates && latitude !== null && longitude !== null"
+                                    :lat-lng="[latitude, longitude]"
+                                    :radius="8"
+                                    color="#2563eb"
+                                    fill-color="#2563eb"
+                                    :fill-opacity="0.8"
+                                />
+                            </LMap>
+                            <div v-else class="flex h-full items-center justify-center bg-slate-200 text-sm text-slate-600">
+                                Menyiapkan peta...
+                            </div>
+                        </div>
+
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Singkat</label>
+                                <input
+                                    v-model="shortAddress"
+                                    type="text"
+                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Lengkap</label>
+                                <input
+                                    v-model="fullAddress"
+                                    type="text"
+                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Latitude</label>
+                                <input
+                                    v-model="latitudeInput"
+                                    type="text"
+                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Longitude</label>
+                                <input
+                                    v-model="longitudeInput"
+                                    type="text"
+                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Tanggal & Waktu</label>
+                                <input
+                                    v-model="dateTimeValue"
+                                    type="datetime-local"
+                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <Button
+                                    class="h-10 w-full cursor-pointer px-5 sm:w-auto"
+                                    type="button"
+                                    :disabled="isGenerating"
+                                    @click="generateOverlayImage"
+                                >
+                                    {{ isGenerating ? 'Memproses...' : 'Tambahkan Lokasi ke Gambar' }}
+                                </Button>
+                            </div>
                         </div>
                     </div>
+                    <p v-if="(latitudeInput || longitudeInput) && !hasValidCoordinates" class="mt-2 text-sm font-medium text-amber-700">
+                        Koordinat tidak valid. Latitude harus -90 s/d 90, longitude harus -180 s/d 180.
+                    </p>
                 </CardContent>
             </Card>
-        </section>
-    </div>
+
+            <section v-if="imagePreviewUrl">
+                <Card>
+                    <CardHeader>
+                        <div class="flex items-center gap-2">
+                            <CardTitle class="text-lg sm:text-xl">Preview Hasil</CardTitle>
+                            <Button v-if="processedImageUrl" class="cursor-pointer" type="button" variant="default" @click="downloadResult">
+                                Unduh Hasil
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div
+                            class="flex h-70 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-90 lg:h-105"
+                        >
+                            <img v-if="processedImageUrl" :src="processedImageUrl" alt="Overlay result" class="h-full w-full object-contain" />
+                            <div
+                                v-else
+                                class="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500"
+                            >
+                                Hasil overlay akan tampil di sini
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </section>
+        </div>
+    </SharedModuleLayout>
 </template>

@@ -8,11 +8,22 @@ use Inertia\Inertia;
 
 class ToolController extends Controller
 {
+    public function index()
+    {
+        return Inertia::render(
+            'tool::ToolHubPage'
+        );
+    }
 
-    public function cobacoba()
+    public function geotagging()
     {
         return Inertia::render(
             'tool::CobaCoba'
         );
+    }
+
+    public function cobacoba()
+    {
+        return $this->geotagging();
     }
 }
