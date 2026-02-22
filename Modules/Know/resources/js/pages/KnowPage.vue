@@ -3,11 +3,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen } from 'lucide-vue-next';
-import SharedModuleLayout from '../../../../Shared/resources/js/components/layouts/SharedModuleLayout.vue';
 </script>
 
 <template>
-    <SharedModuleLayout>
+    <div>
         <div class="border-b border-border px-4 py-4 sm:px-6">
             <div class="flex flex-wrap items-center gap-2 text-sm">
                 <span class="font-semibold text-foreground">Layanan Lainnya</span>
@@ -54,5 +53,5 @@ import SharedModuleLayout from '../../../../Shared/resources/js/components/layou
                 </Card>
             </div>
         </div>
-    </SharedModuleLayout>
+    </div>
 </template>

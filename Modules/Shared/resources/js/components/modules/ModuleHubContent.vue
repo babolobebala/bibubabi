@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Grid3X3, List, Search, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
@@ -25,7 +26,7 @@ const props = withDefaults(
     }>(),
     {
         sectionTitle: 'Menu Module',
-        breadcrumbs: () => [{ label: 'Home' }],
+        breadcrumbs: () => [{ label: 'Home', href: '/app' }],
         searchPlaceholder: 'Cari menu ...',
     },
 );
@@ -49,13 +50,13 @@ const filteredItems = computed(() => {
             <span class="font-semibold text-foreground">Navigasi</span>
             <span class="mx-1 text-border">|</span>
             <template v-for="(crumb, index) in breadcrumbs" :key="`${crumb.label}-${index}`">
-                <a
+                <Link
                     v-if="crumb.href"
                     :href="crumb.href"
                     class="cursor-pointer text-muted-foreground transition hover:text-primary"
                 >
                     {{ crumb.label }}
-                </a>
+                </Link>
                 <span v-else class="font-semibold text-foreground">{{ crumb.label }}</span>
                 <span v-if="index < breadcrumbs.length - 1" class="text-border">›</span>
             </template>
@@ -91,7 +92,7 @@ const filteredItems = computed(() => {
         </div>
 
         <div v-if="viewMode === 'grid'" class="hidden gap-2.5 md:grid md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
-            <a v-for="item in filteredItems" :key="`grid-${item.key}`" :href="item.href" class="block cursor-pointer">
+            <Link v-for="item in filteredItems" :key="`grid-${item.key}`" :href="item.href" class="block cursor-pointer">
                 <Card class="rounded-lg border-border py-0 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                     <CardContent class="flex flex-col items-center gap-2.5 p-3.5 text-center">
                         <div class="grid h-12 w-12 place-items-center rounded-full border border-primary/15 bg-accent">
@@ -100,11 +101,11 @@ const filteredItems = computed(() => {
                         <p class="line-clamp-2 min-h-9 text-[13px] leading-4 font-medium text-foreground">{{ item.title }}</p>
                     </CardContent>
                 </Card>
-            </a>
+            </Link>
         </div>
 
         <div v-else class="hidden space-y-2 md:block">
-            <a v-for="item in filteredItems" :key="`desktop-list-${item.key}`" :href="item.href" class="block cursor-pointer">
+            <Link v-for="item in filteredItems" :key="`desktop-list-${item.key}`" :href="item.href" class="block cursor-pointer">
                 <Card class="rounded-xl border-border py-0 shadow-sm transition hover:shadow-md">
                     <CardContent class="flex items-center gap-3 p-3">
                         <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-primary/15 bg-accent">
@@ -117,11 +118,11 @@ const filteredItems = computed(() => {
                         <ChevronRight class="h-4 w-4 text-muted-foreground" />
                     </CardContent>
                 </Card>
-            </a>
+            </Link>
         </div>
 
         <div class="space-y-2 md:hidden">
-            <a v-for="item in filteredItems" :key="`mobile-list-${item.key}`" :href="item.href" class="block cursor-pointer">
+            <Link v-for="item in filteredItems" :key="`mobile-list-${item.key}`" :href="item.href" class="block cursor-pointer">
                 <Card class="rounded-xl border-border py-0 shadow-sm transition hover:shadow-md">
                     <CardContent class="flex items-center gap-3 p-3">
                         <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-primary/15 bg-accent">
@@ -133,7 +134,7 @@ const filteredItems = computed(() => {
                         <ChevronRight class="h-4 w-4 text-muted-foreground" />
                     </CardContent>
                 </Card>
-            </a>
+            </Link>
         </div>
 
         <Card v-if="filteredItems.length === 0" class="rounded-xl border-border py-0">

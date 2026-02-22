@@ -2,12 +2,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Toaster } from '@/components/ui/sonner';
+import { Link } from '@inertiajs/vue3';
 import { LCircleMarker, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import SharedModuleLayout from '../../../../Shared/resources/js/components/layouts/SharedModuleLayout.vue';
 import 'leaflet/dist/leaflet.css';
 
 interface OverlayTextSection {
@@ -876,16 +876,16 @@ onMounted(() => {
 </script>
 
 <template>
-    <SharedModuleLayout>
+    <div>
         <Toaster rich-colors position="bottom-right" />
 
         <div class="border-b border-border px-4 py-4 sm:px-6">
             <div class="flex flex-wrap items-center gap-2 text-sm">
                 <span class="font-semibold text-foreground">Navigasi</span>
                 <span class="mx-1 text-border">|</span>
-                <a href="/home" class="cursor-pointer text-muted-foreground transition hover:text-primary">Home</a>
+                <Link href="/app" class="cursor-pointer text-muted-foreground transition hover:text-primary">Home</Link>
                 <span class="text-border">›</span>
-                <a href="/tools" class="cursor-pointer text-muted-foreground transition hover:text-primary">Tools</a>
+                <Link href="/app/tools" class="cursor-pointer text-muted-foreground transition hover:text-primary">Tools</Link>
                 <span class="text-border">›</span>
                 <span class="font-semibold text-foreground">Geotagging Gambar</span>
             </div>
@@ -1029,5 +1029,5 @@ onMounted(() => {
                 </Card>
             </section>
         </div>
-    </SharedModuleLayout>
+    </div>
 </template>

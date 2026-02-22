@@ -18,12 +18,7 @@ class ToolController extends Controller
     public function geotagging()
     {
         return Inertia::render(
-            'tool::CobaCoba'
+            'tool::GeoTagging'
         );
-    }
-
-    public function cobacoba()
-    {
-        return $this->geotagging();
     }
 }

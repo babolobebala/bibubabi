@@ -1,11 +1,12 @@
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import type { DefineComponent } from 'vue';
+import type { Component, DefineComponent } from 'vue';
 import { createApp, Fragment, h } from 'vue';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton.vue';
 import { autoSubscribePushForAuthenticatedUser } from '@/lib/push-auto-subscribe';
 import { markInstalled, setDeferredInstallPrompt, type BeforeInstallPromptEvent } from '@/lib/pwa-install';
 import { initializeTheme } from '@/lib/theme';
+import SharedModuleLayout from '../../Modules/Shared/resources/js/components/layouts/SharedModuleLayout.vue';
 import '../css/app.css';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -13,6 +14,8 @@ initializeTheme('light');
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     resolve: (name) => resolvePage(name),
     setup({ el, App, props, plugin }) {
         createApp({
@@ -74,5 +77,33 @@ function resolveModulePage(name: string, modulePages: Record<string, () => Promi
         throw new Error(`Module page not found: ${name}`);
     }
 
-    return resolvePageComponent<DefineComponent>(match, modulePages);
+    return resolvePageComponent(match, modulePages).then((page) => applyDefaultModuleLayout(name, page));
+}
+
+function applyDefaultModuleLayout(name: string, page: unknown): unknown {
+    const [moduleAlias] = name.split('::');
+    if (!moduleAlias || moduleAlias.toLowerCase() === 'umum') {
+        return page;
+    }
+
+    const pageModule = page as { default?: Component;[key: string]: unknown };
+    const component = (pageModule.default ?? page) as DefineComponent & { layout?: unknown };
+
+    if (component.layout) {
+        return page;
+    }
+
+    if (Object.isExtensible(component)) {
+        component.layout = SharedModuleLayout;
+        return page;
+    }
+
+    const wrappedComponent = Object.create(component) as DefineComponent & { layout?: unknown };
+    wrappedComponent.layout = SharedModuleLayout;
+    if (pageModule.default) {
+        pageModule.default = wrappedComponent;
+        return pageModule;
+    }
+
+    return wrappedComponent;
 }
