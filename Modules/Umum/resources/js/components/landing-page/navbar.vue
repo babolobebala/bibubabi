@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
                     <a href="/bypass/?nama=fatihwisesa"> Login SSO BPS</a>
                 </Button>
                 <Button v-else as-child class="w-full transform cursor-pointer rounded-md" variant="default">
-                    <a href="/test"> Masuk ke SAKU </a>
+                    <a href="/home"> Masuk ke SAKU </a>
                 </Button>
             </div>
         </div>

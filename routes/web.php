@@ -31,7 +31,7 @@ Route::get('logout', [SSOBPSController::class, 'logout'])
 // Testing
 Route::middleware('auth')->group(function () {
     Route::get('test', [TestController::class, 'TestPage'])
-        ->name('main.home');
+        ->name('test');
 
     Route::middleware(['role:super_admin'])->group(function () {
         Route::get('test_auth', [TestController::class, 'TestAuthPage'])

@@ -2,41 +2,12 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, FileText, Home, LayoutGrid, PenSquare } from 'lucide-vue-next';
+import { BookOpen } from 'lucide-vue-next';
 import SharedModuleLayout from '../../../../Shared/resources/js/components/layouts/SharedModuleLayout.vue';
-
-const navItems = [
-    { key: 'dashboard', label: 'Dashboard', icon: Home },
-    { key: 'layanan', label: 'Layanan', icon: LayoutGrid, active: true },
-    { key: 'catatan', label: 'Catatan', icon: PenSquare },
-    { key: 'profil', label: 'Profil', icon: FileText },
-];
-
-const reminders = [
-    {
-        key: 'r1',
-        title: 'Review Konten',
-        description: 'Ada 3 draft knowledge yang belum dipublish minggu ini.',
-    },
-    {
-        key: 'r2',
-        title: 'Sinkronisasi Data',
-        description: 'Jadwalkan sinkronisasi dokumen sebelum Jumat pukul 16:00.',
-    },
-];
 </script>
 
 <template>
-    <SharedModuleLayout
-        title="Knowledge Center"
-        subtitle="Contoh shell layout reusable dari module Shared"
-        profile-name="Fatih Mahawisesa"
-        profile-id="200206252024121002"
-        profile-unit="BPS Kabupaten Sumbawa Barat"
-        profile-organization="Badan Pusat Statistik Wilayah Kanreg Denpasar"
-        :nav-items="navItems"
-        :reminder-items="reminders"
-    >
+    <SharedModuleLayout>
         <div class="border-b border-border px-4 py-4 sm:px-6">
             <div class="flex flex-wrap items-center gap-2 text-sm">
                 <span class="font-semibold text-foreground">Layanan Lainnya</span>

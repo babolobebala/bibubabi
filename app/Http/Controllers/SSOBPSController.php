@@ -28,7 +28,7 @@ class SSOBPSController extends Controller
     {
         if (Auth::check()) {
             // Jika dia sudah login, kembali ke HALAMAN DEPAN
-            return redirect()->route('main.home');
+            return redirect()->route('home');
         } else {
             if (! $request->has('code')) {
                 // Jika tidak ada parameter SSO, kembali ke HALAMAN LOGIN BIASA
