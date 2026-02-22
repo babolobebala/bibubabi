@@ -15,7 +15,6 @@ const toolMenus = [
     <div>
         <ModuleHubContent
             section-title="Tools"
-            search-placeholder="Cari menu Tools ..."
             :breadcrumbs="[
                 { label: 'Home', href: '/app' },
                 { label: 'Tools' },

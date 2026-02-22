@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 import { Toaster } from '@/components/ui/sonner';
-import { Link } from '@inertiajs/vue3';
+import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
 import { LCircleMarker, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
@@ -50,7 +51,8 @@ const latitude = ref<number | null>(null);
 const longitude = ref<number | null>(null);
 const latitudeInput = ref('');
 const longitudeInput = ref('');
-const textScale = ref(1);
+const textScaleSlider = ref([100]);
+const textScale = computed(() => (textScaleSlider.value[0] ?? 100) / 100);
 const dateTimeValue = ref(formatForDateTimeInput(new Date()));
 const isMapReady = ref(false);
 
@@ -59,6 +61,11 @@ const PRESET_LATITUDE = -8.774062814832998;
 const PRESET_LONGITUDE = 116.82512379247896;
 const PRESET_RANDOM_DELTA = 0.000058;
 const defaultCenter: [number, number] = [-8.7404, 116.8388];
+const pageBreadcrumbs = [
+    { label: 'Home', href: '/app' },
+    { label: 'Tools', href: '/app/tools' },
+    { label: 'Geotagging Gambar' },
+];
 const hasValidCoordinates = computed<boolean>(() => {
     if (latitude.value === null || longitude.value === null) {
         return false;
@@ -879,19 +886,10 @@ onMounted(() => {
     <div>
         <Toaster rich-colors position="bottom-right" />
 
-        <div class="border-b border-border px-4 py-4 sm:px-6">
-            <div class="flex flex-wrap items-center gap-2 text-sm">
-                <span class="font-semibold text-foreground">Navigasi</span>
-                <span class="mx-1 text-border">|</span>
-                <Link href="/app" class="cursor-pointer text-muted-foreground transition hover:text-primary">Home</Link>
-                <span class="text-border">›</span>
-                <Link href="/app/tools" class="cursor-pointer text-muted-foreground transition hover:text-primary">Tools</Link>
-                <span class="text-border">›</span>
-                <span class="font-semibold text-foreground">Geotagging Gambar</span>
-            </div>
-        </div>
-
-        <div class="mx-auto max-w-7xl space-y-4 px-3 py-4 sm:space-y-5 sm:px-4 sm:py-6">
+        <ModuleContentShell
+            :breadcrumbs="pageBreadcrumbs"
+            body-class="mx-auto max-w-7xl space-y-4 px-3 py-4 sm:space-y-5 sm:px-4 sm:py-6"
+        >
             <Card>
             <CardHeader>
                 <CardTitle class="text-lg sm:text-xl">Unggah Gambar</CardTitle>
@@ -986,6 +984,13 @@ onMounted(() => {
                                 />
                             </div>
                             <div class="sm:col-span-2">
+                                <div class="mb-1.5 flex items-center justify-between gap-3">
+                                    <label class="block text-sm font-medium text-slate-700">Skala Teks Overlay</label>
+                                    <span class="text-xs font-medium text-slate-500">{{ Math.round((textScaleSlider[0] ?? 100)) }}%</span>
+                                </div>
+                                <Slider v-model="textScaleSlider" :min="70" :max="160" :step="5" />
+                            </div>
+                            <div class="sm:col-span-2">
                                 <Button
                                     class="h-10 w-full cursor-pointer px-5 sm:w-auto"
                                     type="button"
@@ -1028,6 +1033,6 @@ onMounted(() => {
                     </CardContent>
                 </Card>
             </section>
-        </div>
+        </ModuleContentShell>
     </div>
 </template>

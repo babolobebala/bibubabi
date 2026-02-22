@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import ModuleContentShell from './ModuleContentShell.vue';
 import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Grid3X3, List, Search, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -12,7 +13,7 @@ interface ModuleHubItem {
     description?: string;
 }
 
-interface BreadcrumbItem {
+interface ModuleBreadcrumbItem {
     label: string;
     href?: string;
 }
@@ -20,14 +21,12 @@ interface BreadcrumbItem {
 const props = withDefaults(
     defineProps<{
         sectionTitle?: string;
-        breadcrumbs?: BreadcrumbItem[];
-        searchPlaceholder?: string;
+        breadcrumbs?: ModuleBreadcrumbItem[];
         items: ModuleHubItem[];
     }>(),
     {
         sectionTitle: 'Menu Module',
         breadcrumbs: () => [{ label: 'Home', href: '/app' }],
-        searchPlaceholder: 'Cari menu ...',
     },
 );
 
@@ -45,32 +44,14 @@ const filteredItems = computed(() => {
 </script>
 
 <template>
-    <div class="border-b border-border px-4 py-4 sm:px-6">
-        <div class="flex flex-wrap items-center gap-2 text-sm">
-            <span class="font-semibold text-foreground">Navigasi</span>
-            <span class="mx-1 text-border">|</span>
-            <template v-for="(crumb, index) in breadcrumbs" :key="`${crumb.label}-${index}`">
-                <Link
-                    v-if="crumb.href"
-                    :href="crumb.href"
-                    class="cursor-pointer text-muted-foreground transition hover:text-primary"
-                >
-                    {{ crumb.label }}
-                </Link>
-                <span v-else class="font-semibold text-foreground">{{ crumb.label }}</span>
-                <span v-if="index < breadcrumbs.length - 1" class="text-border">›</span>
-            </template>
-        </div>
-    </div>
-
-    <div class="space-y-4 px-4 py-4 sm:px-6 sm:py-5">
+    <ModuleContentShell :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 shadow-sm">
                 <Search class="h-4 w-4 text-muted-foreground" />
                 <input
                     v-model="search"
                     type="text"
-                    :placeholder="searchPlaceholder"
+                    placeholder="Cari menu ..."
                     class="w-full border-0 bg-transparent p-0 text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
             </div>
@@ -79,13 +60,13 @@ const filteredItems = computed(() => {
                 <Button
                     size="icon"
                     :variant="viewMode === 'list' ? 'default' : 'ghost'"
-                    class="h-9 w-9"
+                    class="h-9 w-9 cursor-pointer"
                     :class="viewMode === 'list' ? '' : 'text-muted-foreground'"
                     @click="viewMode = 'list'"
                 >
                     <List class="h-4 w-4" />
                 </Button>
-                <Button size="icon" :variant="viewMode === 'grid' ? 'default' : 'ghost'" class="h-9 w-9" @click="viewMode = 'grid'">
+                <Button size="icon" :variant="viewMode === 'grid' ? 'default' : 'ghost'" class="h-9 w-9 cursor-pointer" @click="viewMode = 'grid'">
                     <Grid3X3 class="h-4 w-4" />
                 </Button>
             </div>
@@ -140,5 +121,5 @@ const filteredItems = computed(() => {
         <Card v-if="filteredItems.length === 0" class="rounded-xl border-border py-0">
             <CardContent class="p-5 text-sm text-muted-foreground">Tidak ada menu yang cocok dengan pencarian.</CardContent>
         </Card>
-    </div>
+    </ModuleContentShell>
 </template>

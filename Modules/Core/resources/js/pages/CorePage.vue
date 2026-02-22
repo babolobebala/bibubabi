@@ -15,7 +15,6 @@ const moduleMenus = [
     <div>
         <ModuleHubContent
             section-title="Beranda"
-            search-placeholder="Cari module ..."
             :breadcrumbs="[{ label: 'Home', href: '/app' }]"
             :items="moduleMenus"
         />
