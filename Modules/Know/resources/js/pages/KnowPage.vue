@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
-import { getKnowPageBreadcrumbs } from '../lib/navigation';
+import {
+    getModulePageBreadcrumbs,
+    type ModuleNavigationConfig,
+} from '../../../../Shared/resources/js/lib/module-navigation';
+import moduleNavigation from '../config/module-navigation.json';
 
-const breadcrumbs = getKnowPageBreadcrumbs('index');
+const breadcrumbs = getModulePageBreadcrumbs(moduleNavigation as ModuleNavigationConfig, 'index');
 </script>
 
 <template>
