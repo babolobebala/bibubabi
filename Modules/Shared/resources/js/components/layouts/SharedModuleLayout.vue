@@ -23,8 +23,8 @@ interface SharedReminderItem {
 }
 
 const fixedHeader = {
-    title: 'Knowledge Center',
-    subtitle: 'Contoh shell layout reusable dari module Shared',
+    title: 'SAKU BPS KSB',
+    subtitle: 'Satu Aplikasi untuk Kinerja Unggul',
 };
 
 const fixedProfile = {
@@ -84,29 +84,28 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
 
 <template>
     <div class="min-h-screen">
-        <div class="h-2 bg-linear-to-r from-primary via-primary/80 to-accent" />
+        <div class="sticky top-0 z-30">
+            <div class="h-2 bg-linear-to-r from-primary via-primary/80 to-accent" />
 
-        <header class="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
-            <div class="mx-auto flex h-16 max-w-400 items-center justify-between px-4 sm:px-6">
+            <header class="border-b border-border bg-background/90 backdrop-blur">
+                <div class="mx-auto flex h-13 max-w-400 items-center justify-between px-4 sm:h-14 sm:px-6">
                 <div class="flex items-center gap-3">
-                    <div class="inline-flex items-center rounded-xl border border-border bg-card px-3 py-1.5 shadow-sm">
-                        <span class="text-lg font-black tracking-wide text-primary sm:text-xl">MY</span>
-                        <span class="text-lg font-black tracking-wide text-foreground sm:text-xl">ASN</span>
-                    </div>
-                    <div class="hidden md:block">
+                    <img src="/img/logo/saku.png" alt="SAKU" class="h-12 w-auto sm:h-14" />
+                    <div class="">
                         <p class="text-sm font-semibold text-foreground">{{ fixedHeader.title }}</p>
                         <p class="text-xs text-muted-foreground">{{ fixedHeader.subtitle }}</p>
                     </div>
                 </div>
 
-                <Button as-child variant="outline" class="cursor-pointer rounded-xl border-border bg-card px-3 hover:bg-accent">
+                <Button as-child variant="default" class="cursor-pointer rounded-xl border-border px-3">
                     <Link href="/logout" class="inline-flex items-center gap-2">
                         <LogOut class="h-4 w-4" />
                         <span class="text-sm">Logout</span>
                     </Link>
                 </Button>
-            </div>
-        </header>
+                </div>
+            </header>
+        </div>
 
         <main class="mx-auto grid max-w-400 gap-4 px-3 py-4 sm:gap-5 sm:px-4 sm:py-5 lg:grid-cols-[176px_minmax(0,1fr)]">
             <aside class="hidden lg:flex lg:flex-col lg:gap-4">

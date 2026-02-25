@@ -1,13 +1,8 @@
-<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { media } from '@/lib/media';
-import { useTheme } from '@/lib/theme';
-import { usePage } from '@inertiajs/vue3';
-import { MoonIcon, SunIcon } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-
-const { isDark, toggleTheme } = useTheme();
 
 interface NavbarPageProps {
     [key: string]: unknown;
@@ -29,7 +24,7 @@ const activeSection = ref<string>('');
 let scrollTicking = false;
 
 function updateActiveSectionFromScroll(): void {
-    const offsetTop = 96;
+    const offsetTop = 64;
     const sectionMetrics = navItems
         .map((item) => {
             const element = document.getElementById(item.id);
@@ -82,42 +77,36 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <header
-        class="fixed inset-x-0 top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/75"
-    >
-        <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="/welcome" class="flex items-center gap-2 text-lg font-semibold tracking-tight text-primary">
-                <img :src="media + 'img/logo/logo.png'" alt="Logo SAKU" class="h-8 w-8 object-contain" />
-                <span>SAKU - BPS KSB</span>
-            </a>
+    <header class="fixed inset-x-0 top-0 z-50 w-full border-b border-white/50 bg-white/55 backdrop-blur">
+        <div class="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-3.5 sm:h-11 sm:px-4 lg:px-6">
+            <Link href="/welcome" class="flex items-center gap-3 sm:gap-2.5">
+                <img :src="media + 'img/logo/saku.png'" alt="Logo SAKU" class="h-11 w-auto object-contain sm:h-8" />
+                <div class="leading-tight">
+                    <p class="text-sm font-bold tracking-tight text-foreground sm:text-xs">SAKU BPS KSB</p>
+                    <p class="hidden text-[9px] text-muted-foreground lg:block">Satu Aplikasi untuk Kinerja Unggul</p>
+                </div>
+            </Link>
 
-            <nav class="hidden items-center gap-8 md:flex">
+            <nav class="hidden items-center gap-1 rounded-full border border-slate-200/60 bg-white/60 p-0.5 md:flex">
                 <a
                     v-for="item in navItems"
                     :key="item.id"
                     :href="`#${item.id}`"
                     :class="[
-                        'text-sm font-medium transition-colors',
-                        activeSection === item.id
-                            ? 'text-primary underline decoration-2 underline-offset-8'
-                            : 'text-muted-foreground hover:text-foreground',
+                        'rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors',
+                        activeSection === item.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-100 hover:text-foreground',
                     ]"
                 >
                     {{ item.label }}
                 </a>
             </nav>
 
-            <div class="flex items-center gap-2 sm:gap-3">
-                <!-- <Button variant="ghost" size="icon" :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'" @click="toggleTheme">
-                    <SunIcon v-if="isDark" class="size-4" />
-                    <MoonIcon v-else class="size-4" />
-                </Button> -->
-
-                <Button v-if="!isAuthenticated" as-child class="w-full transform cursor-pointer rounded-md" variant="default">
+            <div class="flex items-center gap-2.5 sm:gap-2">
+                <Button v-if="!isAuthenticated" as-child class="h-10 cursor-pointer rounded-full px-3.5 text-sm sm:h-8 sm:px-2.5 sm:text-xs" variant="default">
                     <a href="/bypass/?nama=fatihwisesa"> Login SSO BPS</a>
                 </Button>
-                <Button v-else as-child class="w-full transform cursor-pointer rounded-md" variant="default">
-                    <a href="/app"> Masuk ke SAKU </a>
+                <Button v-else as-child class="h-10 cursor-pointer rounded-full px-3.5 text-sm sm:h-8 sm:px-2.5 sm:text-xs" variant="default">
+                    <Link href="/app"> Masuk ke SAKU </Link>
                 </Button>
             </div>
         </div>

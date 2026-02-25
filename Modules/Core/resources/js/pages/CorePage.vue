@@ -19,6 +19,7 @@ const { activeModuleKey, clearHash, setHash } = useCoreMenuHashSection(moduleEnt
 type CoreMenuUiItem = Omit<ModuleNavigationMenuItem, 'href'> & {
     href?: string;
     onClick?: () => void;
+    searchText?: string;
 };
 
 const activeModule = computed(() => moduleEntries.value.find((item) => item.menu.key === activeModuleKey.value) ?? null);
@@ -31,6 +32,10 @@ const homeMenuItems = computed<CoreMenuUiItem[]>(() =>
         ...entry.menu,
         href: undefined,
         onClick: () => openModule(entry.menu.key),
+        searchText: [entry.menu.title, entry.menu.description, ...entry.features.flatMap((feature) => [feature.title, feature.description])]
+            .filter((value): value is string => Boolean(value?.trim()))
+            .join(' ')
+            .toLowerCase(),
     })),
 );
 
@@ -43,6 +48,7 @@ const moduleMenuItems = computed<CoreMenuUiItem[]>(() => {
 });
 
 const currentMenuItems = computed<CoreMenuUiItem[]>(() => (activeModule.value ? moduleMenuItems.value : homeMenuItems.value));
+
 const filteredItems = computed<CoreMenuUiItem[]>(() => {
     const keyword = search.value.trim().toLowerCase();
 
@@ -50,7 +56,15 @@ const filteredItems = computed<CoreMenuUiItem[]>(() => {
         return currentMenuItems.value;
     }
 
-    return currentMenuItems.value.filter((item) => item.title.toLowerCase().includes(keyword));
+    return currentMenuItems.value.filter((item) => {
+        const directMatch = item.title.toLowerCase().includes(keyword);
+
+        if (directMatch) {
+            return true;
+        }
+
+        return item.searchText?.includes(keyword) ?? false;
+    });
 });
 
 const menuBreadcrumbs = computed<Array<ModuleNavigationBreadcrumbItem & { onClick?: () => void }>>(() => {
@@ -124,7 +138,7 @@ function markBrokenIcon(itemKey: string): void {
                 </div>
             </div>
 
-            <div v-if="viewMode === 'grid'" class="hidden gap-2.5 md:grid md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
+            <div v-if="viewMode === 'grid'" class="hidden gap-2.5 md:grid md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6">
                 <component
                     v-for="item in filteredItems"
                     :key="`grid-${item.key}`"

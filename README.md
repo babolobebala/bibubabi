@@ -57,7 +57,7 @@ Contoh:
 ## File Penting
 - `resources/js/app.ts` -> resolver Inertia + auto persistent layout module
 - `Modules/Shared/resources/js/components/layouts/SharedModuleLayout.vue` -> shell layout internal
-- `Modules/Shared/resources/js/components/modules/ModuleHubContent.vue` -> template reusable halaman hub module (grid/list + search)
+- `Modules/Shared/resources/js/components/modules/ModuleContentShell.vue` -> wrapper konten module (breadcrumbs + shell body)
 
 ## Dokumentasi Module
 Lihat `README.md` di masing-masing folder module:
