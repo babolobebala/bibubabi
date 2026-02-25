@@ -2,6 +2,6 @@
     "Umum": true,
     "Know": true,
     "Core": true,
-    "Tool": false,
+    "Tool": true,
     "Shared": true
 }

@@ -35,10 +35,10 @@ const fixedProfile = {
 };
 
 const fixedNavItems: SharedNavItem[] = [
-    { key: 'beranda', label: 'Beranda', icon: House, href: '/app', match: ['/app'], exact: true },
-    { key: 'menu-cepat', label: 'Menu Cepat', icon: LayoutGrid, href: '/app#tools', match: ['/app'], exact: true },
-    { key: 'notifikasi', label: 'Notifkasi', icon: Bell, href: '/app', match: ['/app/notifications'] },
-    { key: 'landing-page', label: 'Saku Eksternal', icon: CircleUserRound, href: '/', match: ['/'] },
+    { key: 'beranda', label: 'Beranda', icon: House, href: '/app', match: ['/app'] },
+    { key: 'menu-cepat', label: 'Menu Cepat', icon: LayoutGrid, href: '/menu-cepat', match: ['/menu-cepat'], exact: true },
+    { key: 'notifikasi', label: 'Notifkasi', icon: Bell, href: '/notification', match: ['/notification'], exact: true },
+    { key: 'landing-page', label: 'Saku Eksternal', icon: CircleUserRound, href: '/welcome', match: ['/'] },
 ];
 
 const fixedReminderItems: SharedReminderItem[] = [
@@ -108,9 +108,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
             </div>
         </header>
 
-        <main
-            class="mx-auto grid max-w-400 gap-4 px-3 py-4 sm:gap-5 sm:px-4 sm:py-5 lg:grid-cols-[176px_minmax(0,1fr)]"
-        >
+        <main class="mx-auto grid max-w-400 gap-4 px-3 py-4 sm:gap-5 sm:px-4 sm:py-5 lg:grid-cols-[176px_minmax(0,1fr)]">
             <aside class="hidden lg:flex lg:flex-col lg:gap-4">
                 <Card class="gap-0 rounded-2xl border-border p-1.5">
                     <CardContent class="pt-0">
@@ -120,11 +118,11 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                     <CircleUserRound class="h-10 w-10" />
                                 </AvatarFallback>
                             </Avatar>
-                            <h2 class="mt-3 text-sm font-bold leading-4 tracking-tight text-foreground">{{ fixedProfile.name }}</h2>
+                            <h2 class="mt-3 text-sm leading-4 font-bold tracking-tight text-foreground">{{ fixedProfile.name }}</h2>
                             <p class="mt-2 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-primary">
                                 {{ fixedProfile.id }}
                             </p>
-                            <p class="mt-3 text-xs font-semibold leading-4 text-foreground">{{ fixedProfile.unit }}</p>
+                            <p class="mt-3 text-xs leading-4 font-semibold text-foreground">{{ fixedProfile.unit }}</p>
                             <p class="mt-1 text-[11px] leading-4 text-muted-foreground">{{ fixedProfile.organization }}</p>
                         </div>
                     </CardContent>
@@ -150,9 +148,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                 <Card class="gap-0 rounded-xl border-border py-0">
                     <CardHeader class="space-y-1 px-3 py-3 pb-2">
                         <CardTitle class="text-xs font-bold text-primary">Pengingat</CardTitle>
-                        <p class="text-[11px] leading-4 text-muted-foreground">
-                            Ringkasan notifikasi dan reminder singkat.
-                        </p>
+                        <p class="text-[11px] leading-4 text-muted-foreground">Ringkasan notifikasi dan reminder singkat.</p>
                     </CardHeader>
                     <CardContent class="space-y-2 px-3 pt-0 pb-3">
                         <Card
@@ -160,7 +156,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                             :key="reminder.key"
                             class="gap-1 rounded-lg border-border bg-muted p-2 py-2 shadow-none"
                         >
-                            <p class="text-[11px] font-semibold leading-4 text-foreground">{{ reminder.title }}</p>
+                            <p class="text-[11px] leading-4 font-semibold text-foreground">{{ reminder.title }}</p>
                             <p class="text-[10px] leading-4 text-muted-foreground">{{ reminder.description }}</p>
                         </Card>
                     </CardContent>
@@ -170,7 +166,6 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
             <section class="min-w-0 rounded-2xl border border-border bg-card shadow-sm">
                 <slot />
             </section>
-
         </main>
 
         <nav

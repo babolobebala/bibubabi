@@ -150,7 +150,6 @@ function markBrokenIcon(itemKey: string): void {
                     </Card>
                 </component>
             </div>
-
             <div v-else class="hidden space-y-2 md:block">
                 <component
                     v-for="item in filteredItems"

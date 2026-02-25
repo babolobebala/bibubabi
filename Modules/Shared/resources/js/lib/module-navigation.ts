@@ -71,6 +71,7 @@ export function getModuleCoreMenu(config: ModuleNavigationConfig): ModuleNavigat
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getModuleHubConfig(config: ModuleNavigationConfig, _hubKey = 'index'): ModuleNavigationHubConfig {
     return {
         sectionTitle: getModuleTitle(config),
@@ -79,10 +80,12 @@ export function getModuleHubConfig(config: ModuleNavigationConfig, _hubKey = 'in
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getModuleHubItems(config: ModuleNavigationConfig, _hubKey = 'index'): ModuleNavigationMenuItem[] {
     return getModulePagesByLevel(config, 2);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getModuleHubBreadcrumbs(config: ModuleNavigationConfig, _hubKey = 'index'): ModuleNavigationBreadcrumbItem[] {
     if (!getModuleAnchor(config)) {
         return [{ label: 'Home' }];
