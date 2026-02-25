@@ -2,13 +2,41 @@
 import { Button } from '@/components/ui/button';
 import { media } from '@/lib/media';
 import { getDeferredInstallPrompt, isIosDevice } from '@/lib/pwa-install';
-import { Link } from '@inertiajs/vue3';
 import { ArrowDown, Bike, MapPinned, ParkingCircle, ScanSearch, Sparkles } from 'lucide-vue-next';
+import type { Component } from 'vue';
 
 const mapPins = [
     { key: 'a', count: 4, className: 'left-8 top-8' },
     { key: 'b', count: 9, className: 'right-10 top-16' },
     { key: 'c', count: 37, className: 'left-14 bottom-10' },
+];
+
+interface HeroQuickLink {
+    key: string;
+    icon: Component;
+    href: string;
+    label: string;
+}
+
+const quickLinks: HeroQuickLink[] = [
+    {
+        key: 'scan',
+        icon: ScanSearch,
+        href: 'https://www.bps.go.id',
+        label: 'Website BPS',
+    },
+    {
+        key: 'map',
+        icon: MapPinned,
+        href: 'https://pst.bps.go.id',
+        label: 'PST BPS',
+    },
+    {
+        key: 'parking',
+        icon: ParkingCircle,
+        href: 'https://webapi.bps.go.id',
+        label: 'Web API BPS',
+    },
 ];
 
 async function installApp(): Promise<void> {
@@ -73,16 +101,16 @@ async function installApp(): Promise<void> {
                     </Button>
 
                     <Button as-child size="lg" variant="outline" class="rounded-full border-slate-300 bg-white/80 px-6 text-slate-800">
-                        <Link href="/app">Buka Hub Internal</Link>
+                        <a href="http://wa.me/+6282172886060">Hubungi Kami (WhatsApp)</a>
                     </Button>
                 </div>
             </div>
 
             <div class="relative mx-auto w-full max-w-xl pb-14 lg:max-w-lg lg:pb-0 xl:max-w-xl">
                 <div class="grid grid-cols-[1fr_1.2fr] grid-rows-[auto_auto] gap-4">
-                    <div class="rounded-4xlrder relative overflow-hidden border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
+                    <div class="relative overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
                         <div class="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]" />
-                        <div class="relative aspect-[4/3.9] p-3">
+                        <div class="relative aspect-square p-3">
                             <div
                                 class="h-full w-full rounded-2xl border border-slate-200/80 bg-[linear-gradient(180deg,#fafafa_0%,#eef4fb_100%)] p-2.5"
                             >
@@ -104,7 +132,7 @@ async function installApp(): Promise<void> {
                     </div>
 
                     <div class="row-span-2 overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
-                        <div class="min-h-56ilg:min-h-52in-h-[14rem] relative h-full">
+                        <div class="relative h-full min-h-56 lg:min-h-52in-h-[14rem]">
                             <img :src="media + 'img/landing-1.jpg'" alt="Layanan SAKU" class="h-full w-full object-cover" />
                             <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent p-4">
                                 <p class="text-xs font-semibold tracking-wide text-white/85 uppercase">SAKU BPS KSB</p>
@@ -114,7 +142,7 @@ async function installApp(): Promise<void> {
                     </div>
 
                     <div class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
-                        <div class="relative aspect-[4/2.4]">
+                        <div class="relative aspect-5/3">
                             <img :src="media + 'img/landing-2.jpeg'" alt="Hub Internal" class="h-full w-full object-cover" />
                             <div class="absolute inset-0 bg-linear-to-t from-black/35 via-transparent to-transparent" />
                         </div>
@@ -122,15 +150,17 @@ async function installApp(): Promise<void> {
                 </div>
 
                 <div class="mt-3 flex items-center justify-end gap-2.5 sm:gap-3">
-                    <div class="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-sm">
-                        <ScanSearch class="h-5 w-5" />
-                    </div>
-                    <div class="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-sm">
-                        <MapPinned class="h-5 w-5" />
-                    </div>
-                    <div class="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-sm">
-                        <ParkingCircle class="h-5 w-5" />
-                    </div>
+                    <a
+                        v-for="item in quickLinks"
+                        :key="item.key"
+                        :href="item.href"
+                        :title="item.label"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/5"
+                    >
+                        <component :is="item.icon" class="h-5 w-5" />
+                    </a>
                 </div>
             </div>
         </div>
