@@ -43,9 +43,9 @@ Gunakan aturan ini sebagai ringkasan operasional untuk project ini.
 - Vue component wajib single root element.
 - Internal navigation gunakan `Link` dari `@inertiajs/vue3` (bukan `<a>`) untuk route internal.
 - Pattern app internal:
-  - `/home` = hub global
-  - `/{module}` = hub module
-  - `/{module}/{feature}` = feature page
+  - `/app` = hub global menu internal (`Core`)
+  - `/app#{module-anchor}` = section/menu level-2 dalam `Core` (hash navigation)
+  - page fitur tetap punya URL sendiri (contoh: `/app/tools/geotagging-gambar`, `/knows`, `/knows/create`)
 - `SharedModuleLayout` adalah shell internal reusable.
 - `Umum` dikecualikan dari internal persistent layout (landing/public).
 
@@ -71,9 +71,18 @@ Gunakan aturan ini sebagai ringkasan operasional untuk project ini.
 - Saat frontend butuh route TS, gunakan Wayfinder sesuai pola project.
 
 ## Praktik Modular (Project Ini)
-- `Core`: hub menu module (`/home`)
-- `Tool`: hub module + feature pages (`/tools`, `/tools/geotagging-gambar`)
-- `Shared`: shared layout/components
+- `Core`: hub menu internal tunggal (`/app`) + hash section (`/app#tools`, `/app#know`)
+- `Tool`: feature pages (contoh: `/app/tools/geotagging-gambar`) + config menu untuk `Core`
+- `Know`: feature pages (`/knows`, `/knows/create`) + config menu untuk `Core`
+- `Shared`: shared layout/components + helper navigation config (`module-navigation`)
 - `Umum`: public/landing page
+
+## Module Navigation Config (Project Ini)
+- Setiap module frontend dapat punya `resources/js/config/module-navigation.json`
+- Skema aktif:
+  - `module`: metadata module (title, anchor, description, `iconImage`)
+  - `pages`: daftar page/menu module dengan `level`
+- `level: 2` dipakai sebagai submenu yang ditampilkan di `Core`
+- Breadcrumb page fitur digenerate dari helper (`Home -> Module (/app#anchor) -> Page`) agar tidak duplikasi deklarasi
 
 </laravel-boost-guidelines>

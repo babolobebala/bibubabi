@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import { CircleChevronUp } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { Button } from '@/components/ui/button';
 
 const showScrollTopButton = ref(false);
 

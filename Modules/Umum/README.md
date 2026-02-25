@@ -18,3 +18,4 @@ File:
 ## Catatan
 - Karena sifatnya halaman publik/landing, layout dan navigasi visualnya berdiri sendiri.
 - Jika ingin memakai shell internal, lakukan secara eksplisit (jangan mengandalkan auto-layout default).
+- Module ini umumnya tidak perlu ikut `module-navigation.json` untuk menu internal `Core`.

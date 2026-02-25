@@ -4,7 +4,6 @@ namespace Modules\Know\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 
 class KnowController extends Controller
 {
@@ -15,6 +14,13 @@ class KnowController extends Controller
     {
         return Inertia::render(
             'know::KnowPage'
+        );
+    }
+
+    public function create()
+    {
+        return Inertia::render(
+            'know::KnowCreatePage'
         );
     }
 }

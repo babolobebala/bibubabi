@@ -1,14 +1,13 @@
 # Module Tool
 
 ## Fungsi
-Module `Tool` berisi halaman hub Tools dan fitur-fitur utilitas internal.
+Module `Tool` berisi fitur-fitur utilitas internal dan konfigurasi menu untuk ditampilkan di `Core`.
 
 Contoh fitur aktif saat ini:
 - `Geotagging Gambar`
 
 ## Route Web
-- `GET /tools` -> halaman hub Tools
-- `GET /tools/geotagging-gambar` -> halaman fitur geotagging
+- `GET /app/tools/geotagging-gambar` -> halaman fitur geotagging
 
 File:
 - `Modules/Tool/routes/web.php`
@@ -18,10 +17,12 @@ File:
 - `tool::GeoTagging` -> `Modules/Tool/resources/js/pages/GeoTagging.vue`
 
 ## Pola UX yang Dipakai
-- `/tools` = daftar menu fitur dalam module Tools (hub)
-- klik item menu -> masuk ke subpage fitur (`/tools/{feature}`)
-- layout kiri/kanan/topbar tetap, konten tengah yang berubah
+- Daftar menu `Tool` (level-2) tidak lagi dirender di route hub terpisah.
+- Menu `Tool` ditampilkan di `Core` melalui `/app#tools` berdasarkan `module-navigation.json`.
+- Klik item menu di `Core` -> masuk ke page fitur (`/app/tools/geotagging-gambar`).
 
 ## Catatan
 - Navigasi internal dihubungkan memakai `Link` dari Inertia agar transisi lebih seamless.
-- `CobaCoba.vue` lama sudah digantikan oleh `GeoTagging.vue` sebagai page feature aktif.
+- `GeoTagging.vue` sekarang wrapper page tipis; konten utama berada di `Modules/Tool/resources/js/components/GeoTaggingContent.vue`.
+- Konfigurasi menu + breadcrumb didefinisikan di `Modules/Tool/resources/js/config/module-navigation.json`.
+- Helper lokal akses config ada di `Modules/Tool/resources/js/lib/navigation.ts`.

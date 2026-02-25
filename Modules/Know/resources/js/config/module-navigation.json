@@ -1,0 +1,28 @@
+{
+    "module": {
+        "key": "know",
+        "name": "Know",
+        "title": "Know",
+        "anchor": "know",
+        "description": "Kelola knowledge dan dokumentasi internal.",
+        "iconImage": "/img/logo/logo.png"
+    },
+    "pages": [
+        {
+            "key": "index",
+            "title": "Lihat Knowledge",
+            "level": 2,
+            "href": "/knows",
+            "description": "Lihat daftar knowledge yang tersedia.",
+            "iconImage": "/images/icons/know-list.png"
+        },
+        {
+            "key": "create",
+            "title": "Buat Knowledge",
+            "level": 2,
+            "href": "/knows/create",
+            "description": "Buat knowledge baru untuk dibagikan.",
+            "iconImage": "/images/icons/know-create.png"
+        }
+    ]
+}

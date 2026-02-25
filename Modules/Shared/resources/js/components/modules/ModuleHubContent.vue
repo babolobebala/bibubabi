@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import ModuleContentShell from './ModuleContentShell.vue';
 import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Grid3X3, List, Search, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import ModuleContentShell from './ModuleContentShell.vue';
 
 interface ModuleHubItem {
     key: string;
@@ -50,7 +50,7 @@ const handleSelect = (item: ModuleHubItem): void => {
 </script>
 
 <template>
-    <ModuleContentShell :breadcrumbs="breadcrumbs">
+    <ModuleContentShell :breadcrumbs="breadcrumbs" body-variant="hub">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 shadow-sm">
                 <Search class="h-4 w-4 text-muted-foreground" />

@@ -8,6 +8,7 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 interface ModuleShellBreadcrumbItem {
     label: string;
@@ -15,18 +16,32 @@ interface ModuleShellBreadcrumbItem {
     onClick?: () => void;
 }
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         rootLabel?: string;
         breadcrumbs?: ModuleShellBreadcrumbItem[];
+        bodyVariant?: 'hub' | 'page';
         bodyClass?: string;
     }>(),
     {
         rootLabel: 'App',
         breadcrumbs: () => [{ label: 'Home', href: '/app' }],
-        bodyClass: 'space-y-4 px-4 py-4 sm:px-6 sm:py-5',
+        bodyVariant: 'page',
+        bodyClass: undefined,
     },
 );
+
+const resolvedBodyClass = computed(() => {
+    if (props.bodyClass) {
+        return props.bodyClass;
+    }
+
+    if (props.bodyVariant === 'hub') {
+        return 'space-y-4 px-4 py-4 sm:px-6 sm:py-5';
+    }
+
+    return 'mx-auto max-w-7xl space-y-4 px-3 py-4 sm:space-y-5 sm:px-4 sm:py-6';
+});
 </script>
 
 <template>
@@ -59,7 +74,7 @@ withDefaults(
             </Breadcrumb>
         </div>
 
-        <div :class="bodyClass">
+        <div :class="resolvedBodyClass">
             <slot />
         </div>
     </div>
