@@ -24,7 +24,7 @@ composer install
 pnpm install
 php artisan key:generate
 php artisan serve
-pnpm run dev
+pnpm run dev 
 ```
 
 Catatan:
