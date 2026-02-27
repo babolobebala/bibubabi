@@ -2,19 +2,16 @@
 import { Button } from '@/components/ui/button';
 import { media } from '@/lib/media';
 import { getDeferredInstallPrompt, isIosDevice } from '@/lib/pwa-install';
-import { ArrowDown, Bike, MapPinned, ParkingCircle, ScanSearch, Sparkles } from 'lucide-vue-next';
-import type { Component } from 'vue';
+import { ArrowDown, MapPinned, ParkingCircle, ScanSearch, Sparkles } from 'lucide-vue-next';
+import { type Component } from 'vue';
+import { Vue3Lottie } from 'vue3-lottie';
+import logoLottieData from '../../assets/lottie/logo-lottie.json';
 
-const storysetHeroAssets = {
-    main: media + 'img/illustrations/storyset-data-analysis.svg',
-    secondary: media + 'img/illustrations/storyset-data-trends.svg',
+const heroVisualAssets = {
+    orange: media + 'img/illustrations/storyset-orange-dominant.svg',
+    green: media + 'img/illustrations/storyset-green-dominant.svg',
+    blue: media + 'img/illustrations/storyset-blue-dominant.svg',
 };
-
-const mapPins = [
-    { key: 'a', count: 4, className: 'left-8 top-8' },
-    { key: 'b', count: 9, className: 'right-10 top-16' },
-    { key: 'c', count: 37, className: 'left-14 bottom-10' },
-];
 
 interface HeroQuickLink {
     key: string;
@@ -111,66 +108,43 @@ async function installApp(): Promise<void> {
                 </div>
             </div>
 
-            <div class="relative mx-auto w-full max-w-xl pb-14 lg:max-w-lg lg:pb-0 xl:max-w-xl">
-                <div class="grid grid-cols-[1fr_1.2fr] grid-rows-[auto_auto] gap-4">
-                    <div class="relative overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
-                        <div class="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]" />
-                        <div class="relative aspect-square p-3">
-                            <div
-                                class="h-full w-full rounded-2xl border border-slate-200/80 bg-[linear-gradient(180deg,#fafafa_0%,#eef4fb_100%)] p-2.5"
-                            >
-                                <div class="relative h-full w-full rounded-xl border border-dashed border-slate-300/70 bg-white/80">
-                                    <div v-for="pin in mapPins" :key="pin.key" class="absolute" :class="pin.className">
-                                        <div
-                                            class="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-1 text-[10px] font-semibold text-white shadow"
-                                        >
-                                            <Bike class="h-3 w-3" />
-                                            <span>{{ pin.count }}</span>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-[radial-gradient(#94a3b8_0.8px,transparent_0.8px)] bg-size-[14px_14px] opacity-40"
+            <div class="relative mx-auto w-full max-w-884 sm:max-w-[24rem] lg:mx-0 lg:ml-auto lg:max-w-104 lg:pb-0 xl:max-w-md">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div class="flex flex-col gap-3 sm:gap-4">
+                        <article class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
+                            <div class="relative grid aspect-square place-items-center bg-[linear-gradient(180deg,#ffffff_0%,#f4f8ff_100%)] p-3">
+                                <div class="h-[86%] w-[86%]">
+                                    <Vue3Lottie
+                                        :animation-data="logoLottieData"
+                                        height="100%"
+                                        width="100%"
+                                        :loop="false"
+                                        :speed="1"
+                                        class="h-full w-full"
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </article>
+
+                        <article class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
+                            <div class="relative aspect-5/3 bg-[linear-gradient(135deg,#fff8f1_0%,#ffedd5_45%,#fed7aa_100%)]">
+                                <img :src="heroVisualAssets.orange" alt="Ilustrasi dominan oranye" class="h-full w-full object-contain p-3" />
+                            </div>
+                        </article>
                     </div>
 
-                    <div class="row-span-2 overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
-                        <div class="relative h-full min-h-56 bg-[linear-gradient(180deg,#f8fbff_0%,#eef5ff_55%,#ffffff_100%)] lg:min-h-[14rem]">
-                            <div class="absolute inset-x-0 top-0 h-20 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.18),transparent_65%)]" />
-                            <img
-                                :src="storysetHeroAssets.main"
-                                alt="Ilustrasi analisis data layanan SAKU"
-                                class="relative h-full w-full object-contain p-4 pt-5"
-                            />
-                            <div class="absolute right-4 bottom-20 rounded-2xl border border-primary/15 bg-white/90 px-3 py-2 text-right shadow-sm backdrop-blur">
-                                <p class="text-[10px] font-semibold tracking-wide text-primary uppercase">Data Strategis</p>
-                                <p class="text-xs font-semibold text-slate-700">Ringkas, visual, cepat diakses</p>
+                    <div class="flex flex-col gap-3 sm:gap-4">
+                        <article class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
+                            <div class="relative aspect-5/3 bg-[linear-gradient(135deg,#f0fdf4_0%,#dcfce7_45%,#bbf7d0_100%)]">
+                                <img :src="heroVisualAssets.green" alt="Ilustrasi dominan hijau" class="h-full w-full object-contain p-3" />
                             </div>
-                            <div class="absolute inset-x-0 bottom-0 border-t border-white/70 bg-white/70 p-4 backdrop-blur">
-                                <p class="text-xs font-semibold tracking-wide text-primary/90 uppercase">Storyset Illustration</p>
-                                <p class="mt-1 text-sm font-semibold text-slate-800">Layanan statistik & akses informasi dalam satu pintu</p>
-                            </div>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
-                        <div class="relative aspect-5/3">
-                            <div class="absolute inset-0 bg-[linear-gradient(135deg,#f8fbff_0%,#edf4ff_45%,#e8f2ff_100%)]" />
-                            <img
-                                :src="storysetHeroAssets.secondary"
-                                alt="Ilustrasi tren data dan monitoring layanan"
-                                class="relative h-full w-full object-contain p-3"
-                            />
-                            <div class="absolute top-3 left-3 rounded-full border border-primary/15 bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-primary shadow-sm">
-                                Monitoring Layanan
+                        <article class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
+                            <div class="relative aspect-square bg-[linear-gradient(135deg,#eff6ff_0%,#dbeafe_45%,#bfdbfe_100%)] p-3">
+                                <img :src="heroVisualAssets.blue" alt="Ilustrasi dominan biru" class="h-full w-full object-contain" />
                             </div>
-                            <div class="absolute right-3 bottom-3 rounded-xl border border-slate-200/80 bg-white/95 px-2.5 py-2 shadow-sm">
-                                <p class="text-[10px] font-semibold text-slate-500 uppercase">Respon</p>
-                                <p class="text-xs font-bold text-slate-800">&lt; 1 Hari Kerja</p>
-                            </div>
-                        </div>
+                        </article>
                     </div>
                 </div>
 
