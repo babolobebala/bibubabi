@@ -5,6 +5,11 @@ import { getDeferredInstallPrompt, isIosDevice } from '@/lib/pwa-install';
 import { ArrowDown, Bike, MapPinned, ParkingCircle, ScanSearch, Sparkles } from 'lucide-vue-next';
 import type { Component } from 'vue';
 
+const storysetHeroAssets = {
+    main: media + 'img/illustrations/storyset-data-analysis.svg',
+    secondary: media + 'img/illustrations/storyset-data-trends.svg',
+};
+
 const mapPins = [
     { key: 'a', count: 4, className: 'left-8 top-8' },
     { key: 'b', count: 9, className: 'right-10 top-16' },
@@ -132,19 +137,39 @@ async function installApp(): Promise<void> {
                     </div>
 
                     <div class="row-span-2 overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
-                        <div class="relative h-full min-h-56 lg:min-h-52in-h-[14rem]">
-                            <img :src="media + 'img/landing-1.jpg'" alt="Layanan SAKU" class="h-full w-full object-cover" />
-                            <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent p-4">
-                                <p class="text-xs font-semibold tracking-wide text-white/85 uppercase">SAKU BPS KSB</p>
-                                <p class="mt-1 text-sm font-semibold text-white">Layanan statistik & akses informasi dalam satu pintu</p>
+                        <div class="relative h-full min-h-56 bg-[linear-gradient(180deg,#f8fbff_0%,#eef5ff_55%,#ffffff_100%)] lg:min-h-[14rem]">
+                            <div class="absolute inset-x-0 top-0 h-20 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.18),transparent_65%)]" />
+                            <img
+                                :src="storysetHeroAssets.main"
+                                alt="Ilustrasi analisis data layanan SAKU"
+                                class="relative h-full w-full object-contain p-4 pt-5"
+                            />
+                            <div class="absolute right-4 bottom-20 rounded-2xl border border-primary/15 bg-white/90 px-3 py-2 text-right shadow-sm backdrop-blur">
+                                <p class="text-[10px] font-semibold tracking-wide text-primary uppercase">Data Strategis</p>
+                                <p class="text-xs font-semibold text-slate-700">Ringkas, visual, cepat diakses</p>
+                            </div>
+                            <div class="absolute inset-x-0 bottom-0 border-t border-white/70 bg-white/70 p-4 backdrop-blur">
+                                <p class="text-xs font-semibold tracking-wide text-primary/90 uppercase">Storyset Illustration</p>
+                                <p class="mt-1 text-sm font-semibold text-slate-800">Layanan statistik & akses informasi dalam satu pintu</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="overflow-hidden rounded-4xl border border-white/80 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]">
                         <div class="relative aspect-5/3">
-                            <img :src="media + 'img/landing-2.jpeg'" alt="Hub Internal" class="h-full w-full object-cover" />
-                            <div class="absolute inset-0 bg-linear-to-t from-black/35 via-transparent to-transparent" />
+                            <div class="absolute inset-0 bg-[linear-gradient(135deg,#f8fbff_0%,#edf4ff_45%,#e8f2ff_100%)]" />
+                            <img
+                                :src="storysetHeroAssets.secondary"
+                                alt="Ilustrasi tren data dan monitoring layanan"
+                                class="relative h-full w-full object-contain p-3"
+                            />
+                            <div class="absolute top-3 left-3 rounded-full border border-primary/15 bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-primary shadow-sm">
+                                Monitoring Layanan
+                            </div>
+                            <div class="absolute right-3 bottom-3 rounded-xl border border-slate-200/80 bg-white/95 px-2.5 py-2 shadow-sm">
+                                <p class="text-[10px] font-semibold text-slate-500 uppercase">Respon</p>
+                                <p class="text-xs font-bold text-slate-800">&lt; 1 Hari Kerja</p>
+                            </div>
                         </div>
                     </div>
                 </div>

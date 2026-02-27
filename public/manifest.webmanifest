@@ -1,9 +1,18 @@
 {
+    "id": "/",
     "name": "SAKU - Satu Aplikasi untuk Kinerja Unggul",
     "short_name": "SAKU Mobile",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",
+    "display_override": [
+        "standalone",
+        "browser"
+    ],
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
+    "handle_links": "preferred",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
     "icons": [
