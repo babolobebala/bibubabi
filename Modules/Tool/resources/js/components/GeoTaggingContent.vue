@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { Toaster } from '@/components/ui/sonner';
 import { LCircleMarker, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
@@ -878,8 +877,6 @@ onMounted(() => {
 
 <template>
     <div>
-        <Toaster rich-colors position="bottom-right" />
-
         <div class="space-y-4 sm:space-y-5">
             <Card>
             <CardHeader>

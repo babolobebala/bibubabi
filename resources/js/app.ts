@@ -3,6 +3,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { Component, DefineComponent } from 'vue';
 import { createApp, Fragment, h } from 'vue';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton.vue';
+import { Toaster } from '@/components/ui/sonner';
 import { autoSubscribePushForAuthenticatedUser } from '@/lib/push-auto-subscribe';
 import { markInstalled, setDeferredInstallPrompt, type BeforeInstallPromptEvent } from '@/lib/pwa-install';
 import { initializeTheme } from '@/lib/theme';
@@ -19,7 +20,17 @@ createInertiaApp({
     resolve: (name) => resolvePage(name),
     setup({ el, App, props, plugin }) {
         createApp({
-            render: () => h(Fragment, [h(App, props), h(ScrollToTopButton)]),
+            render: () =>
+                h(Fragment, [
+                    h(App, props),
+                    h(Toaster, {
+                        richColors: true,
+                        position: 'top-right',
+                        closeButton: false,
+                        duration: 2000,
+                    }),
+                    h(ScrollToTopButton),
+                ]),
         })
             .use(plugin)
             .mount(el);

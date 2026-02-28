@@ -16,16 +16,18 @@ import SocialProof from '../components/landing-page/social-proof.vue';
         <section id="start">
             <HeroPedal />
         </section>
-        <section id="layanan">
-            <Layanan />
-        </section>
-        <section id="data">
-            <SocialProof />
-        </section>
-        <CTA />
-        <section id="pengaduan">
-            <FAQ />
-        </section>
-        <PricingSection />
+        <div class="bg-[linear-gradient(180deg,#edf3fb_0%,#f7faff_18%,#f8fafc_100%)]">
+            <section id="layanan">
+                <Layanan />
+            </section>
+            <section id="data">
+                <SocialProof />
+            </section>
+            <CTA />
+            <section id="pengaduan">
+                <FAQ />
+            </section>
+            <PricingSection />
+        </div>
     </div>
 </template>

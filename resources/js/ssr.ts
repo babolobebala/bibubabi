@@ -5,6 +5,7 @@ import type { DefineComponent } from 'vue';
 import { createSSRApp, Fragment, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton.vue';
+import { Toaster } from '@/components/ui/sonner';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -17,7 +18,17 @@ createServer(
             resolve: resolvePage,
             setup: ({ App, props, plugin }) =>
                 createSSRApp({
-                    render: () => h(Fragment, [h(App, props), h(ScrollToTopButton)]),
+                    render: () =>
+                        h(Fragment, [
+                            h(App, props),
+                            h(Toaster, {
+                                richColors: true,
+                                position: 'top-right',
+                                closeButton: false,
+                                duration: 2000,
+                            }),
+                            h(ScrollToTopButton),
+                        ]),
                 }).use(plugin),
         }),
     { cluster: true },

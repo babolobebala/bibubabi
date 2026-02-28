@@ -2,7 +2,6 @@
 import { Head, usePage } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import { Button } from '@/components/ui/button';
-import { Toaster } from '@/components/ui/sonner';
 
 const page = usePage<any>();
 const pesan = page.props.flash as string;
@@ -20,7 +19,6 @@ if (pesan) {
 
 <template>
     <Head title="Login" />
-    <Toaster />
 
     <Button class="w-full transform rounded-md" as-child>
         <a href="login_sso"> SSO Pegawai BPS </a>

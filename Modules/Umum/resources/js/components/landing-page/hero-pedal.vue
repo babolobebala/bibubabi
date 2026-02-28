@@ -2,8 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { media } from '@/lib/media';
 import { getDeferredInstallPrompt, isIosDevice } from '@/lib/pwa-install';
-import { ArrowDown, MapPinned, ParkingCircle, ScanSearch, Sparkles } from 'lucide-vue-next';
+import { ArrowDown, Download, Globe, MapPinned, Sparkles } from 'lucide-vue-next';
 import { type Component } from 'vue';
+import { toast } from 'vue-sonner';
 import { Vue3Lottie } from 'vue3-lottie';
 import logoLottieData from '../../assets/lottie/logo-lottie.json';
 
@@ -16,28 +17,27 @@ const heroVisualAssets = {
 interface HeroQuickLink {
     key: string;
     icon: Component;
-    href: string;
     label: string;
+    href?: string;
 }
 
 const quickLinks: HeroQuickLink[] = [
     {
-        key: 'scan',
-        icon: ScanSearch,
-        href: 'https://www.bps.go.id',
+        key: 'web',
+        icon: Globe,
+        href: 'https://sumbawabaratkab.bps.go.id/',
         label: 'Website BPS',
     },
     {
         key: 'map',
         icon: MapPinned,
         href: 'https://pst.bps.go.id',
-        label: 'PST BPS',
+        label: 'Lokasi',
     },
     {
-        key: 'parking',
-        icon: ParkingCircle,
-        href: 'https://webapi.bps.go.id',
-        label: 'Web API BPS',
+        key: 'download',
+        icon: Download,
+        label: 'Install SAKU Mobile',
     },
 ];
 
@@ -51,11 +51,15 @@ async function installApp(): Promise<void> {
     }
 
     if (isIosDevice()) {
-        window.alert('Untuk iPhone/iPad: tekan Share lalu pilih Add to Home Screen.');
+        toast.error('Install manual di iPhone/iPad', {
+            description: 'Tekan Share lalu pilih Add to Home Screen.',
+        });
         return;
     }
 
-    window.alert('Install app bisa lewat menu browser: Install app / Add to Home Screen.');
+    toast.error('Install SAKU Mobile', {
+        description: 'Install app bisa lewat menu browser: Install app / Add to Home Screen.',
+    });
 }
 </script>
 
@@ -97,13 +101,18 @@ async function installApp(): Promise<void> {
                 </p>
 
                 <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                    <Button size="lg" class="cursor-pointer rounded-full px-6" @click="installApp">
-                        Install SAKU Mobile
-                        <ArrowDown class="h-4 w-4" />
+                    <Button as-child size="lg" class="rounded-full px-6">
+                        <a href="#data">
+                            Lihat Data Strategis
+                            <ArrowDown class="h-4 w-4" />
+                        </a>
                     </Button>
 
-                    <Button as-child size="lg" variant="outline" class="rounded-full border-slate-300 bg-white/80 px-6 text-slate-800">
-                        <a href="http://wa.me/+6282172886060">Hubungi Kami (WhatsApp)</a>
+                    <Button as-child size="lg" class="rounded-full bg-success text-success-foreground hover:bg-success/90">
+                        <a target="_blank" href="http://wa.me/+6282144406055">
+                            <img :src="media + 'img/logo/wa.svg'" alt="WhatsApp" class="h-4 w-4 object-contain brightness-0 invert" />
+                            Hubungi Kami (WhatsApp)
+                        </a>
                     </Button>
                 </div>
             </div>
@@ -152,13 +161,18 @@ async function installApp(): Promise<void> {
                     <a
                         v-for="item in quickLinks"
                         :key="item.key"
-                        :href="item.href"
-                        :title="item.label"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/5"
+                        :href="item.href ?? '#'"
+                        :target="item.href ? '_blank' : undefined"
+                        :rel="item.href ? 'noopener noreferrer' : undefined"
+                        class="group relative grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-white text-primary shadow-sm hover:-translate-y-0.5 hover:bg-primary/5"
+                        @click="item.key === 'download' ? ($event.preventDefault(), installApp()) : undefined"
                     >
                         <component :is="item.icon" class="h-5 w-5" />
+                        <span
+                            class="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden -translate-x-1/2 rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium whitespace-nowrap text-white group-hover:block group-focus-visible:block"
+                        >
+                            {{ item.label }}
+                        </span>
                     </a>
                 </div>
             </div>
