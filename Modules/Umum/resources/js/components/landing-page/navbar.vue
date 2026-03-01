@@ -77,7 +77,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <header class="fixed inset-x-0 top-0 z-50 w-full border-b border-white/50 bg-white/55 backdrop-blur">
+    <header class="fixed inset-x-0 top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur">
         <div class="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-3.5 sm:h-11 sm:px-4 lg:px-6">
             <Link href="/welcome" class="flex items-center gap-3 sm:gap-2.5">
                 <img :src="media + 'img/logo/saku.png'" alt="Logo SAKU" class="h-11 w-auto object-contain sm:h-8" />
@@ -87,14 +87,14 @@ onBeforeUnmount(() => {
                 </div>
             </Link>
 
-            <nav class="hidden items-center gap-1 rounded-full border border-slate-200/60 bg-white/60 p-0.5 md:flex">
+            <nav class="hidden items-center gap-1 rounded-full border border-border/80 bg-background/80 p-0.5 md:flex">
                 <a
                     v-for="item in navItems"
                     :key="item.id"
                     :href="`#${item.id}`"
                     :class="[
                         'rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors',
-                        activeSection === item.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-100 hover:text-foreground',
+                        activeSection === item.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
                     ]"
                 >
                     {{ item.label }}

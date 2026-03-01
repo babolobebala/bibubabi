@@ -14,7 +14,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <section class="relative bg-linear-to-t from-zinc-50 to-white dark:from-zinc-950">
+    <section class="relative bg-linear-to-t from-secondary to-background">
         <div
             class="absolute inset-0 top-0 right-0 bottom-0 left-0 bg-[url('/_convertfast/gradient-bg-0.svg')] bg-auto bg-center bg-no-repeat grayscale"
         ></div>

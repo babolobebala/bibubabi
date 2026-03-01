@@ -98,12 +98,12 @@ onBeforeUnmount(() => {
             />
         </div>
 
-        <div class="absolute inset-0 -z-10 bg-black/55" />
+        <div class="absolute inset-0 -z-10 bg-primary/60" />
 
         <div class="mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-16 text-center sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold tracking-tight text-balance text-white sm:text-3xl lg:text-5xl">SAKU - BPS Kabupaten Sumbawa Barat</h1>
+            <h1 class="text-2xl font-bold tracking-tight text-balance text-primary-foreground sm:text-3xl lg:text-5xl">SAKU - BPS Kabupaten Sumbawa Barat</h1>
 
-            <p class="sm:text-md mt-5 max-w-3xl text-base leading-relaxed text-pretty text-white/90 lg:text-lg">
+            <p class="sm:text-md mt-5 max-w-3xl text-base leading-relaxed text-pretty text-primary-foreground/90 lg:text-lg">
                 Platform digital BPS Kabupaten Sumbawa Barat untuk layanan statistik, akses data strategis, dan penyampaian pengaduan masyarakat
                 secara efisien dan transparan.
             </p>
@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
         <Button
             variant="secondary"
             size="icon"
-            class="absolute top-1/2 left-3 z-20 -translate-y-1/2 rounded-full bg-black/30 text-white hover:bg-black/50 sm:left-6"
+            class="absolute top-1/2 left-3 z-20 -translate-y-1/2 rounded-full bg-primary/35 text-primary-foreground hover:bg-primary/55 sm:left-6"
             @click="prevSlide"
         >
             <ChevronLeft class="size-5" />
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
         <Button
             variant="secondary"
             size="icon"
-            class="absolute top-1/2 right-3 z-20 -translate-y-1/2 rounded-full bg-black/30 text-white hover:bg-black/50 sm:right-6"
+            class="absolute top-1/2 right-3 z-20 -translate-y-1/2 rounded-full bg-primary/35 text-primary-foreground hover:bg-primary/55 sm:right-6"
             @click="nextSlide"
         >
             <ChevronRight class="size-5" />
@@ -147,7 +147,7 @@ onBeforeUnmount(() => {
                 :key="`dot-${slide.src}`"
                 type="button"
                 class="h-2.5 w-2.5 rounded-full transition-all duration-300"
-                :class="index === activeSlide ? 'w-6 bg-white' : 'bg-white/50 hover:bg-white/80'"
+                :class="index === activeSlide ? 'w-6 bg-primary-foreground' : 'bg-primary-foreground/50 hover:bg-primary-foreground/80'"
                 @click="goToSlide(index)"
             />
         </div>

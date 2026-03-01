@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
 import { LCircleMarker, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
@@ -53,6 +52,16 @@ const textScaleSlider = ref([100]);
 const textScale = computed(() => (textScaleSlider.value[0] ?? 100) / 100);
 const dateTimeValue = ref(formatForDateTimeInput(new Date()));
 const isMapReady = ref(false);
+const overlayColors = computed(() => ({
+    panel: resolveThemeColorWithAlpha('foreground', 0.72, 'var(--foreground)'),
+    stroke: resolveThemeColorWithAlpha('background', 0.35, 'var(--background)'),
+    text: resolveThemeColor('background', 'var(--background)'),
+    mapPin: resolveThemeColor('primary', 'var(--primary)'),
+    mapPinCore: resolveThemeColor('background', 'var(--background)'),
+    mapSurface: resolveThemeColor('secondary', 'var(--secondary)'),
+    mapBorder: resolveThemeColor('border', 'var(--border)'),
+    marker: resolveThemeColor('primary', 'var(--primary)'),
+}));
 
 const mapZoom = ref(13);
 const PRESET_LATITUDE = -8.774062814832998;
@@ -312,10 +321,10 @@ const generateOverlayImage = async (): Promise<void> => {
         const x = horizontalMargin;
         const y = canvas.height - horizontalMargin - boxHeight;
 
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+        ctx.fillStyle = overlayColors.value.panel;
         ctx.fillRect(x, y, panelWidth, boxHeight);
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.strokeStyle = overlayColors.value.stroke;
         ctx.lineWidth = Math.max(2, Math.round(baseFont * 0.08));
         ctx.strokeRect(x, y, panelWidth, boxHeight);
 
@@ -328,7 +337,7 @@ const generateOverlayImage = async (): Promise<void> => {
         ctx.textBaseline = 'top';
         preparedSections.forEach((section, sectionIndex) => {
             ctx.font = `${section.fontWeight} ${section.fontSize}px "Segoe UI", sans-serif`;
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = overlayColors.value.text;
             section.lines.forEach((line) => {
                 ctx.fillText(line, textStartX, cursorY, textAreaWidth);
                 cursorY += section.lineHeight;
@@ -428,6 +437,7 @@ async function drawMiniMapPanel(
     lon: number | null,
 ): Promise<void> {
     ctx.save();
+    const colors = overlayColors.value;
 
     if (lat !== null && lon !== null && isValidLatitude(lat) && isValidLongitude(lon)) {
         const zoom = 15;
@@ -468,25 +478,25 @@ async function drawMiniMapPanel(
             const pinX = centerX;
             const pinY = centerY;
             const outerRadius = clampValue(width * 0.055, 4, 9);
-            ctx.fillStyle = '#0284c7';
+            ctx.fillStyle = colors.mapPin;
             ctx.beginPath();
             ctx.arc(pinX, pinY, outerRadius, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = colors.mapPinCore;
             ctx.beginPath();
             ctx.arc(pinX, pinY, Math.max(2, outerRadius * 0.38), 0, Math.PI * 2);
             ctx.fill();
         } catch {
-            ctx.fillStyle = '#f1f5f9';
+            ctx.fillStyle = colors.mapSurface;
             ctx.fillRect(x, y, width, height);
         }
     } else {
-        ctx.fillStyle = '#f1f5f9';
+        ctx.fillStyle = colors.mapSurface;
         ctx.fillRect(x, y, width, height);
     }
 
-    ctx.strokeStyle = '#cbd5e1';
+    ctx.strokeStyle = colors.mapBorder;
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, width, height);
 
@@ -865,6 +875,26 @@ function showError(message: string): void {
     });
 }
 
+function resolveThemeColor(token: string, fallback: string): string {
+    if (typeof window === 'undefined') {
+        return fallback;
+    }
+
+    const value = window.getComputedStyle(document.documentElement).getPropertyValue(`--${token}`).trim();
+
+    return value || fallback;
+}
+
+function resolveThemeColorWithAlpha(token: string, alpha: number, fallback: string): string {
+    const color = resolveThemeColor(token, fallback);
+
+    if (color.startsWith('oklch(') && color.endsWith(')') && !color.includes('/')) {
+        return `${color.slice(0, -1)} / ${alpha})`;
+    }
+
+    return fallback;
+}
+
 onBeforeUnmount(() => {
     revokeUrl(imagePreviewUrl.value);
     revokeUrl(processedImageUrl.value);
@@ -879,22 +909,22 @@ onMounted(() => {
     <div>
         <div class="space-y-4 sm:space-y-5">
             <Card>
-            <CardHeader>
-                <CardTitle class="text-lg sm:text-xl">Unggah Gambar</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <label
-                    class="block cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition sm:p-8"
-                    :class="isDragging ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white'"
-                    @dragover="onDragOver"
-                    @dragleave="onDragLeave"
-                    @drop="onDrop"
-                >
-                    <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="onSelectImage" />
-                    <p class="text-md text-muted-foreground">Drag & drop gambar di sini atau klik area ini</p>
-                    <Button type="button" class="mt-3 cursor-pointer" @click.prevent="openFilePicker">Pilih Gambar</Button>
-                </label>
-            </CardContent>
+                <CardHeader>
+                    <CardTitle class="text-lg sm:text-xl">Unggah Gambar</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <label
+                        class="block cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition sm:p-8"
+                        :class="isDragging ? 'border-primary bg-accent/35' : 'border-border bg-background'"
+                        @dragover="onDragOver"
+                        @dragleave="onDragLeave"
+                        @drop="onDrop"
+                    >
+                        <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="onSelectImage" />
+                        <p class="text-md text-muted-foreground">Drag & drop gambar di sini atau klik area ini</p>
+                        <Button type="button" class="mt-3 cursor-pointer" @click.prevent="openFilePicker">Pilih Gambar</Button>
+                    </label>
+                </CardContent>
             </Card>
 
             <Card v-if="imagePreviewUrl">
@@ -906,7 +936,7 @@ onMounted(() => {
                         <Button type="button" class="cursor-pointer" @click="applyPresetLocation"> Kantor BPS </Button>
                     </div>
                     <div class="grid items-start gap-3 lg:grid-cols-[1.1fr_1fr]">
-                        <div class="h-62.5 overflow-hidden rounded-lg border border-slate-300 sm:h-75 lg:h-85">
+                        <div class="h-62.5 overflow-hidden rounded-lg border border-border sm:h-75 lg:h-85">
                             <LMap
                                 v-if="isMapReady"
                                 :zoom="mapZoom"
@@ -920,64 +950,58 @@ onMounted(() => {
                                     v-if="hasValidCoordinates && latitude !== null && longitude !== null"
                                     :lat-lng="[latitude, longitude]"
                                     :radius="8"
-                                    color="#2563eb"
-                                    fill-color="#2563eb"
+                                    :color="overlayColors.marker"
+                                    :fill-color="overlayColors.marker"
                                     :fill-opacity="0.8"
                                 />
                             </LMap>
-                            <div v-else class="flex h-full items-center justify-center bg-slate-200 text-sm text-slate-600">
+                            <div v-else class="flex h-full items-center justify-center bg-secondary text-sm text-muted-foreground">
                                 Menyiapkan peta...
                             </div>
                         </div>
 
                         <div class="grid gap-3 sm:grid-cols-2">
                             <div class="sm:col-span-2">
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Singkat</label>
+                                <label class="mb-1.5 block text-sm font-medium text-foreground">Alamat Singkat</label>
                                 <input
                                     v-model="shortAddress"
                                     type="text"
-                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
                                 />
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Alamat Lengkap</label>
+                                <label class="mb-1.5 block text-sm font-medium text-foreground">Alamat Lengkap</label>
                                 <input
                                     v-model="fullAddress"
                                     type="text"
-                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
                                 />
                             </div>
                             <div>
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Latitude</label>
+                                <label class="mb-1.5 block text-sm font-medium text-foreground">Latitude</label>
                                 <input
                                     v-model="latitudeInput"
                                     type="text"
-                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
                                 />
                             </div>
                             <div>
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Longitude</label>
+                                <label class="mb-1.5 block text-sm font-medium text-foreground">Longitude</label>
                                 <input
                                     v-model="longitudeInput"
                                     type="text"
-                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
                                 />
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="mb-1.5 block text-sm font-medium text-slate-700">Tanggal & Waktu</label>
+                                <label class="mb-1.5 block text-sm font-medium text-foreground">Tanggal & Waktu</label>
                                 <input
                                     v-model="dateTimeValue"
                                     type="datetime-local"
-                                    class="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
                                 />
                             </div>
-                            <div class="sm:col-span-2">
-                                <div class="mb-1.5 flex items-center justify-between gap-3">
-                                    <label class="block text-sm font-medium text-slate-700">Skala Teks Overlay</label>
-                                    <span class="text-xs font-medium text-slate-500">{{ Math.round((textScaleSlider[0] ?? 100)) }}%</span>
-                                </div>
-                                <Slider v-model="textScaleSlider" :min="70" :max="160" :step="5" />
-                            </div>
+
                             <div class="sm:col-span-2">
                                 <Button
                                     class="h-10 w-full cursor-pointer px-5 sm:w-auto"
@@ -990,7 +1014,7 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
-                    <p v-if="(latitudeInput || longitudeInput) && !hasValidCoordinates" class="mt-2 text-sm font-medium text-amber-700">
+                    <p v-if="(latitudeInput || longitudeInput) && !hasValidCoordinates" class="mt-2 text-sm font-medium text-destructive">
                         Koordinat tidak valid. Latitude harus -90 s/d 90, longitude harus -180 s/d 180.
                     </p>
                 </CardContent>
@@ -1008,12 +1032,12 @@ onMounted(() => {
                     </CardHeader>
                     <CardContent>
                         <div
-                            class="flex h-70 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-90 lg:h-105"
+                            class="flex h-70 items-center justify-center overflow-hidden rounded-lg border border-border bg-secondary/60 sm:h-90 lg:h-105"
                         >
                             <img v-if="processedImageUrl" :src="processedImageUrl" alt="Overlay result" class="h-full w-full object-contain" />
                             <div
                                 v-else
-                                class="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500"
+                                class="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-border text-muted-foreground"
                             >
                                 Hasil overlay akan tampil di sini
                             </div>

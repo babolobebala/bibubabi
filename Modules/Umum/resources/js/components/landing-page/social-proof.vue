@@ -83,7 +83,7 @@ const testimonials: Testimonial[] = [
                             </Avatar>
                             <div>
                                 <div class="font-semibold">{{ testimonial.author.name }}</div>
-                                <div class="text-zinc-600">@{{ testimonial.author.handle }}</div>
+                                <div class="text-muted-foreground">@{{ testimonial.author.handle }}</div>
                             </div>
                         </div>
                     </CardContent>

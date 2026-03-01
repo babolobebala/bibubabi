@@ -168,7 +168,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
         </main>
 
         <nav
-            class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden"
+            class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] shadow-lg backdrop-blur lg:hidden"
         >
             <div class="grid grid-cols-4 gap-1">
                 <Button

@@ -1,7 +1,7 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
+import ComplaintChannels from '../components/landing-page/complaint-channels.vue';
 import CTA from '../components/landing-page/cta.vue';
-import FAQ from '../components/landing-page/faq.vue';
 import HeroCarousel from '../components/landing-page/hero-carousel.vue';
 import HeroPedal from '../components/landing-page/hero-pedal.vue';
 import Layanan from '../components/landing-page/layanan.vue';
@@ -16,7 +16,7 @@ import SocialProof from '../components/landing-page/social-proof.vue';
         <section id="start">
             <HeroPedal />
         </section>
-        <div class="bg-[linear-gradient(180deg,#edf3fb_0%,#f7faff_18%,#f8fafc_100%)]">
+        <div class="bg-linear-to-b from-accent/20 via-background to-background">
             <section id="layanan">
                 <Layanan />
             </section>
@@ -25,7 +25,7 @@ import SocialProof from '../components/landing-page/social-proof.vue';
             </section>
             <CTA />
             <section id="pengaduan">
-                <FAQ />
+                <ComplaintChannels />
             </section>
             <PricingSection />
         </div>

@@ -54,6 +54,13 @@ Contoh:
 - Persistent layout dipasang otomatis dari `resources/js/app.ts` untuk semua module page **kecuali `Umum`**
 - Navigasi internal menggunakan `Link` dari Inertia (bukan `<a>`) agar transisi lebih seamless
 
+## Panduan Warna Frontend
+- Hindari hard-coded color literal di komponen seperti `#xxxxxx`, `rgb(...)`, `rgba(...)`, `bg-white`, `text-slate-700`, atau gradient dengan warna mentah jika masih bisa dipetakan ke token theme.
+- Utamakan token semantik Tailwind yang sudah tersedia di project: `background`, `foreground`, `card`, `popover`, `primary`, `secondary`, `accent`, `muted`, `border`, `input`, `ring`, `destructive`, dan `success`.
+- Untuk opacity, tetap gunakan token semantik: contoh `bg-background/80`, `text-primary/90`, `border-border/60`.
+- Untuk gradient, shadow, canvas, atau integrasi pihak ketiga yang tidak bisa memakai utility biasa, ambil warna dari CSS theme variables di `resources/css/app.css` daripada menulis hex atau RGB langsung.
+- Saat menambah komponen baru di `Modules/`, cek sibling component lebih dulu dan pertahankan pemetaan warna yang konsisten dengan token semantik yang sama.
+
 ## File Penting
 - `resources/js/app.ts` -> resolver Inertia + auto persistent layout module
 - `Modules/Shared/resources/js/components/layouts/SharedModuleLayout.vue` -> shell layout internal

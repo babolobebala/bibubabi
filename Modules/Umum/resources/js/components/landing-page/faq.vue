@@ -39,7 +39,7 @@ const faqItems = computed<FAQItem[]>(() => props.items ?? defaultItems);
 </script>
 
 <template>
-    <section class="bg-linear-to-t from-zinc-50 to-white dark:from-zinc-950">
+    <section class="bg-linear-to-t from-secondary to-background">
         <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
             <div class="mx-auto max-w-4xl">
                 <h2 class="mb-8 text-center text-3xl font-bold tracking-tight text-primary sm:text-4xl">Frequently Asked Questions</h2>
@@ -48,7 +48,7 @@ const faqItems = computed<FAQItem[]>(() => props.items ?? defaultItems);
                         <AccordionTrigger class="px-4 py-4">
                             <span class="text-left font-medium">{{ faq.question }}</span>
                         </AccordionTrigger>
-                        <AccordionContent class="px-4 pt-2 pb-4 text-gray-600">
+                        <AccordionContent class="px-4 pt-2 pb-4 text-muted-foreground">
                             {{ faq.answer }}
                         </AccordionContent>
                     </AccordionItem>
