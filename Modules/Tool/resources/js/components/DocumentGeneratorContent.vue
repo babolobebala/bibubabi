@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Docxtemplater from 'docxtemplater';
-import PizZip from 'pizzip';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 interface DocumentFormState {
@@ -16,10 +14,13 @@ interface DocumentFormState {
     pejabat_dikunjungi: string;
 }
 
-const isGenerating = ref(false);
-const isTemplateReady = ref(false);
-const isTemplateLoading = ref(true);
-const templateBuffer = ref<ArrayBuffer | null>(null);
+interface ImageState {
+    file: File | null;
+    previewUrl: string | null;
+}
+
+type ImageTarget = 'foto_satu' | 'foto_dua';
+
 const form = ref<DocumentFormState>({
     nama_petugas: '',
     anggaran_membiayai: '',
@@ -29,6 +30,10 @@ const form = ref<DocumentFormState>({
     ringkasan_hasil: '',
     pejabat_dikunjungi: '',
 });
+
+const fotoSatu = ref<ImageState>({ file: null, previewUrl: null });
+const fotoDua = ref<ImageState>({ file: null, previewUrl: null });
+const isGenerating = ref(false);
 
 const requiredFields: Array<keyof DocumentFormState> = [
     'nama_petugas',
@@ -40,161 +45,145 @@ const requiredFields: Array<keyof DocumentFormState> = [
     'pejabat_dikunjungi',
 ];
 
-const placeholderNames = [...requiredFields];
+const summaryPreviewParagraphs = computed<string[]>(() => toParagraphs(form.value.ringkasan_hasil));
+const officialsPreviewParagraphs = computed<string[]>(() => toParagraphs(form.value.pejabat_dikunjungi));
 
 const canGenerate = computed<boolean>(() => {
-    if (!isTemplateReady.value || isGenerating.value) {
+    if (isGenerating.value) {
         return false;
     }
 
     return requiredFields.every((field) => form.value[field].trim().length > 0);
 });
 
-const summaryPreviewParagraphs = computed<string[]>(() => toParagraphs(form.value.ringkasan_hasil));
-const officialsPreviewParagraphs = computed<string[]>(() => toParagraphs(form.value.pejabat_dikunjungi));
-const templateUrl = '/app/tools/generator-dokumen/template';
-
-onMounted(() => {
-    void loadTemplate();
+onBeforeUnmount(() => {
+    revokePreview(fotoSatu.value.previewUrl);
+    revokePreview(fotoDua.value.previewUrl);
 });
 
 async function generateDocument(): Promise<void> {
-    if (!isTemplateReady.value || !templateBuffer.value) {
-        toast.error('Template bawaan belum siap dipakai.');
+    if (!canGenerate.value) {
+        toast.error('Semua field wajib diisi dulu.');
         return;
     }
 
-    const missingField = requiredFields.find((field) => form.value[field].trim().length === 0);
+    const csrfToken = getCsrfToken();
 
-    if (missingField) {
-        toast.error('Semua field wajib diisi dulu.');
+    if (!csrfToken) {
+        toast.error('CSRF token tidak ditemukan.');
         return;
     }
 
     isGenerating.value = true;
 
     try {
-        const zip = new PizZip(templateBuffer.value.slice(0));
-        const originalDocumentXml = zip.file('word/document.xml')?.asText();
+        const formData = new FormData();
 
-        if (!originalDocumentXml) {
-            throw new Error('word/document.xml tidak ditemukan di template.');
+        for (const field of requiredFields) {
+            formData.append(field, form.value[field].trim());
         }
 
-        zip.file('word/document.xml', normalizeSplitPlaceholders(originalDocumentXml, placeholderNames));
+        formData.append('has_foto_satu', fotoSatu.value.file ? '1' : '0');
+        formData.append('has_foto_dua', fotoDua.value.file ? '1' : '0');
 
-        const doc = new Docxtemplater(zip, {
-            linebreaks: true,
-            paragraphLoop: true,
+        if (fotoSatu.value.file) {
+            formData.append('foto_satu', fotoSatu.value.file, fotoSatu.value.file.name);
+        }
+
+        if (fotoDua.value.file) {
+            formData.append('foto_dua', fotoDua.value.file, fotoDua.value.file.name);
+        }
+
+        const response = await fetch('/app/tools/generator-dokumen/generate', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                Accept: 'application/json, application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            },
+            body: formData,
+            credentials: 'same-origin',
         });
 
-        doc.render({
-            nama_petugas: form.value.nama_petugas.trim(),
-            anggaran_membiayai: form.value.anggaran_membiayai.trim(),
-            tujuan: form.value.tujuan.trim(),
-            anggaran_diperiksa: form.value.anggaran_diperiksa.trim(),
-            jadwal: form.value.jadwal.trim(),
-            ringkasan_hasil: form.value.ringkasan_hasil.trim(),
-            pejabat_dikunjungi: form.value.pejabat_dikunjungi.trim(),
-        });
+        if (!response.ok) {
+            const message = await extractResponseError(response);
+            throw new Error(message);
+        }
 
-        const outputBlob = doc.getZip().generate({
-            type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-
-        downloadBlob(outputBlob, buildFileName());
+        const blob = await response.blob();
+        downloadBlob(blob, buildFileName());
         toast.success('Dokumen berhasil digenerate.');
     } catch (error) {
         console.error(error);
-        toast.error(extractErrorMessage(error, 'Gagal generate dokumen.'));
+        toast.error(error instanceof Error ? error.message : 'Gagal generate dokumen.');
     } finally {
         isGenerating.value = false;
     }
 }
 
-async function loadTemplate(): Promise<void> {
-    isTemplateLoading.value = true;
-    isTemplateReady.value = false;
+async function onSelectImage(event: Event, target: ImageTarget): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
 
-    try {
-        const response = await fetch(templateUrl, {
-            credentials: 'same-origin',
-        });
-
-        if (!response.ok) {
-            throw new Error(`Template gagal dimuat (${response.status}).`);
-        }
-
-        const contentType = response.headers.get('content-type') ?? '';
-
-        if (!contentType.includes('wordprocessingml.document')) {
-            throw new Error('Response template bukan file DOCX.');
-        }
-
-        const buffer = await response.arrayBuffer();
-        const zip = new PizZip(buffer);
-        const xml = zip.file('word/document.xml')?.asText();
-
-        if (!xml) {
-            throw new Error('word/document.xml tidak ditemukan di template.');
-        }
-
-        templateBuffer.value = buffer;
-        isTemplateReady.value = true;
-    } catch (error) {
-        console.error(error);
-        templateBuffer.value = null;
-        isTemplateReady.value = false;
-        toast.error(extractErrorMessage(error, 'Template bawaan gagal dimuat.'));
-    } finally {
-        isTemplateLoading.value = false;
-    }
-}
-
-function normalizeSplitPlaceholders(xml: string, placeholderKeys: string[]): string {
-    let normalizedXml = xml;
-
-    for (const key of placeholderKeys) {
-        normalizedXml = normalizePlaceholder(normalizedXml, key);
+    if (!file) {
+        return;
     }
 
-    return normalizedXml;
+    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+        toast.error('Foto harus berformat JPG atau PNG.');
+        input.value = '';
+        return;
+    }
+
+    const imageState = imageStateFor(target);
+
+    revokePreview(imageState.value.previewUrl);
+    imageState.value = {
+        file,
+        previewUrl: URL.createObjectURL(file),
+    };
 }
 
-function normalizePlaceholder(xml: string, key: string): string {
-    const escapedKey = escapeRegExp(key);
-    const runPattern = `<w:r[^>]*>(?:<w:rPr[\\s\\S]*?<\\/w:rPr>)?(?:<w:t[^>]*>\\{<\\/w:t>|<w:t[^>]*>${escapedKey}<\\/w:t>|<w:t[^>]*>\\}<\\/w:t>)<\\/w:r>`;
-    const proofPattern = `<w:proofErr[^>]*/>`;
-    const placeholderPattern = new RegExp(
-        `${runPattern}(?:${proofPattern})?${runPattern}(?:${proofPattern})?${runPattern}`,
-        'g',
-    );
+function clearImage(target: ImageTarget): void {
+    const imageState = imageStateFor(target);
 
-    return xml.replace(placeholderPattern, `<w:r><w:t>{${key}}</w:t></w:r>`);
+    revokePreview(imageState.value.previewUrl);
+    imageState.value = { file: null, previewUrl: null };
 }
 
-function escapeRegExp(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function imageStateFor(target: ImageTarget): typeof fotoSatu {
+    return target === 'foto_satu' ? fotoSatu : fotoDua;
+}
+
+function getCsrfToken(): string | null {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? null;
+}
+
+async function extractResponseError(response: Response): Promise<string> {
+    const contentType = response.headers.get('content-type') ?? '';
+
+    if (contentType.includes('application/json')) {
+        const payload = (await response.json()) as {
+            message?: string;
+            errors?: Record<string, string[]>;
+        };
+
+        const firstError = payload.errors ? Object.values(payload.errors)[0]?.[0] : null;
+
+        return firstError ?? payload.message ?? `Gagal generate dokumen (${response.status}).`;
+    }
+
+    return `Gagal generate dokumen (${response.status}).`;
 }
 
 function buildFileName(): string {
-    const baseName = 'laporan-perjalanan-dinas';
     const petugasSlug = form.value.nama_petugas
         .trim()
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
 
-    return `${baseName}-${petugasSlug || 'hasil'}.docx`;
-}
-
-function extractErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof Error && error.message.trim().length > 0) {
-        return error.message;
-    }
-
-    return fallback;
+    return `laporan-perjalanan-dinas-${petugasSlug || 'hasil'}.docx`;
 }
 
 function downloadBlob(blob: Blob, fileName: string): void {
@@ -216,6 +205,12 @@ function toParagraphs(value: string): string[] {
         .map((paragraph) => paragraph.trim())
         .filter((paragraph) => paragraph.length > 0);
 }
+
+function revokePreview(url: string | null): void {
+    if (url) {
+        URL.revokeObjectURL(url);
+    }
+}
 </script>
 
 <template>
@@ -224,7 +219,7 @@ function toParagraphs(value: string): string[] {
             <CardHeader class="border-b border-border">
                 <CardTitle class="text-lg sm:text-xl">Generator Dokumen DOCX</CardTitle>
                 <CardDescription>
-                    Template sudah fix di module `Tool`, jadi user tinggal isi form lalu unduh hasilnya. Belum memakai database.
+                    Template sudah fix di module `Tool`. Text dan gambar diproses penuh lewat backend `PhpWord`.
                 </CardDescription>
             </CardHeader>
             <CardContent class="space-y-4 p-4 sm:p-5">
@@ -233,9 +228,7 @@ function toParagraphs(value: string): string[] {
                     <p class="mt-1 text-xs text-muted-foreground">
                         `Modules/Tool/resources/assets/kosongan.docx`
                     </p>
-                    <p class="mt-2 text-xs" :class="isTemplateReady ? 'text-success' : 'text-destructive'">
-                        {{ isTemplateLoading ? 'Memuat template...' : isTemplateReady ? 'Template siap digunakan.' : 'Template belum siap.' }}
-                    </p>
+                    <p class="mt-2 text-xs text-success">Template siap digunakan.</p>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
@@ -310,9 +303,39 @@ function toParagraphs(value: string): string[] {
                     />
                 </div>
 
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-foreground" for="foto_satu">Foto Dokumentasi 1</label>
+                        <input
+                            id="foto_satu"
+                            type="file"
+                            accept="image/png,image/jpeg"
+                            class="block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground"
+                            @change="(event) => onSelectImage(event, 'foto_satu')"
+                        />
+                        <Button v-if="fotoSatu.file" type="button" variant="outline" class="cursor-pointer" @click="clearImage('foto_satu')">
+                            Hapus Foto 1
+                        </Button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-foreground" for="foto_dua">Foto Dokumentasi 2</label>
+                        <input
+                            id="foto_dua"
+                            type="file"
+                            accept="image/png,image/jpeg"
+                            class="block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground"
+                            @change="(event) => onSelectImage(event, 'foto_dua')"
+                        />
+                        <Button v-if="fotoDua.file" type="button" variant="outline" class="cursor-pointer" @click="clearImage('foto_dua')">
+                            Hapus Foto 2
+                        </Button>
+                    </div>
+                </div>
+
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <p class="text-xs text-muted-foreground">
-                        Placeholder template Word yang pecah akan dirapikan otomatis sebelum generate.
+                        Generator ini memakai `PhpWord` penuh, dengan dua slot dokumentasi terpisah untuk foto yang dipilih.
                     </p>
                     <Button type="button" class="cursor-pointer" :disabled="!canGenerate" @click="generateDocument">
                         {{ isGenerating ? 'Generating...' : 'Generate DOCX' }}
@@ -384,12 +407,28 @@ function toParagraphs(value: string): string[] {
 
                         <section class="space-y-3">
                             <h3 class="text-center text-sm font-bold tracking-wide text-foreground">DOKUMENTASI</h3>
-                            <div class="grid gap-3 sm:grid-cols-2">
-                                <div class="rounded-2xl border border-dashed border-border bg-muted/35 p-6 text-center text-xs text-muted-foreground">
-                                    Foto dokumentasi disisipkan manual setelah `.docx` digenerate.
+                            <div class="space-y-3">
+                                <div class="overflow-hidden rounded-2xl border border-border bg-muted/25 p-3">
+                                    <img
+                                        v-if="fotoSatu.previewUrl"
+                                        :src="fotoSatu.previewUrl"
+                                        alt="Preview dokumentasi 1"
+                                        class="h-48 w-full rounded-xl object-cover"
+                                    />
+                                    <div v-else class="grid h-48 place-items-center rounded-xl border border-dashed border-border text-xs text-muted-foreground">
+                                        Foto dokumentasi 1 belum dipilih
+                                    </div>
                                 </div>
-                                <div class="rounded-2xl border border-dashed border-border bg-muted/35 p-6 text-center text-xs text-muted-foreground">
-                                    Slot dokumentasi kedua juga masih manual.
+                                <div class="overflow-hidden rounded-2xl border border-border bg-muted/25 p-3">
+                                    <img
+                                        v-if="fotoDua.previewUrl"
+                                        :src="fotoDua.previewUrl"
+                                        alt="Preview dokumentasi 2"
+                                        class="h-48 w-full rounded-xl object-cover"
+                                    />
+                                    <div v-else class="grid h-48 place-items-center rounded-xl border border-dashed border-border text-xs text-muted-foreground">
+                                        Foto dokumentasi 2 belum dipilih
+                                    </div>
                                 </div>
                             </div>
                         </section>

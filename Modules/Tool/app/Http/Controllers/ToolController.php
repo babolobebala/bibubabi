@@ -3,8 +3,13 @@
 namespace Modules\Tool\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Tool\Http\Requests\GenerateTemplateDocumentRequest;
+use Modules\Tool\Services\TemplateDocumentGeneratorService;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ToolController extends Controller
@@ -23,13 +28,6 @@ class ToolController extends Controller
         );
     }
 
-    public function documentGeneratorDocx(): Response
-    {
-        return Inertia::render(
-            'tool::DocumentGeneratorDocx'
-        );
-    }
-
     public function documentGeneratorTemplate(): BinaryFileResponse
     {
         $templatePath = base_path('Modules/Tool/resources/assets/kosongan.docx');
@@ -40,5 +38,34 @@ class ToolController extends Controller
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'Content-Disposition' => 'inline; filename="kosongan.docx"',
         ]);
+    }
+
+    public function generateDocument(
+        GenerateTemplateDocumentRequest $request,
+        TemplateDocumentGeneratorService $templateDocumentGeneratorService,
+    ): BinaryFileResponse|JsonResponse {
+        $validated = $request->validated();
+
+        try {
+            $generatedPath = $templateDocumentGeneratorService->generate(
+                $validated,
+                $request->file('foto_satu'),
+                $request->file('foto_dua'),
+            );
+
+            $debugDirectory = storage_path('app/private/tool-debug');
+            File::ensureDirectoryExists($debugDirectory);
+            File::copy($generatedPath, $debugDirectory.'/last-generator-dokumen.docx');
+
+            return response()->download(
+                $generatedPath,
+                $templateDocumentGeneratorService->buildDownloadFilename($validated),
+                ['Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+            )->deleteFileAfterSend();
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
     }
 }

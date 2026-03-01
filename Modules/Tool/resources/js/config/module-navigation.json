@@ -25,15 +25,6 @@
             "componentKey": "tool.generator-dokumen",
             "description": "Isi template DOCX dari form web lalu unduh hasilnya langsung.",
             "iconImage": "/images/icons/tools.png"
-        },
-        {
-            "key": "generator-dokumen-docx",
-            "title": "Generator DOCX",
-            "level": 2,
-            "href": "/app/tools/generator-dokumen-docx",
-            "componentKey": "tool.generator-dokumen-docx",
-            "description": "Bangun dokumen DOCX langsung dari kode, termasuk dukungan foto dokumentasi.",
-            "iconImage": "/images/icons/tools.png"
         }
     ]
 }
