@@ -33,9 +33,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
-- For frontend color usage, prefer semantic Tailwind theme tokens such as `background`, `foreground`, `card`, `primary`, `secondary`, `accent`, `muted`, `border`, `input`, `destructive`, and `success`.
-- Avoid hard-coded frontend color literals in components such as hex, RGB/RGBA, and palette-specific utilities like `text-slate-700` or `bg-white` when an existing semantic token can express the same intent.
-- If a color is needed in gradients, canvas drawing, or third-party component props, source it from the theme CSS variables in `resources/css/app.css` instead of duplicating raw color values.
 
 ## Verification Scripts
 

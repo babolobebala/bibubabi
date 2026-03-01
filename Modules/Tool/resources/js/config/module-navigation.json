@@ -16,6 +16,24 @@
             "componentKey": "tool.geotagging-gambar",
             "description": "Tambah lokasi, waktu, dan overlay informasi pada foto.",
             "iconImage": "/images/icons/tool-geotagging.png"
+        },
+        {
+            "key": "generator-dokumen",
+            "title": "Generator Dokumen",
+            "level": 2,
+            "href": "/app/tools/generator-dokumen",
+            "componentKey": "tool.generator-dokumen",
+            "description": "Isi template DOCX dari form web lalu unduh hasilnya langsung.",
+            "iconImage": "/images/icons/tools.png"
+        },
+        {
+            "key": "generator-dokumen-docx",
+            "title": "Generator DOCX",
+            "level": 2,
+            "href": "/app/tools/generator-dokumen-docx",
+            "componentKey": "tool.generator-dokumen-docx",
+            "description": "Bangun dokumen DOCX langsung dari kode, termasuk dukungan foto dokumentasi.",
+            "iconImage": "/images/icons/tools.png"
         }
     ]
 }
