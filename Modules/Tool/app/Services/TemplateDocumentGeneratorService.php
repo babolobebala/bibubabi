@@ -7,7 +7,6 @@ use DOMElement;
 use DOMNode;
 use DOMXPath;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use PhpOffice\PhpWord\TemplateProcessor;
 use RuntimeException;
@@ -41,12 +40,6 @@ class TemplateDocumentGeneratorService
         $normalizedTemplatePath = $this->createTemporaryDocxPath();
         $generatedPath = $this->createTemporaryDocxPath();
         $temporaryImagePaths = [];
-        $debug = [
-            'has_foto_satu' => (bool) ($data['has_foto_satu'] ?? false),
-            'has_foto_dua' => (bool) ($data['has_foto_dua'] ?? false),
-            'foto_satu_request' => $this->describeUploadedFile($fotoSatu),
-            'foto_dua_request' => $this->describeUploadedFile($fotoDua),
-        ];
 
         $this->assertExpectedImagesArePresent($data, $fotoSatu, $fotoDua);
 
@@ -79,16 +72,11 @@ class TemplateDocumentGeneratorService
                     ? $this->prepareUploadedImage($fotoDua, $temporaryImagePaths)
                     : null,
             ];
-            $debug['image_map'] = $imageMap;
 
-            $this->injectDocumentationImages($generatedPath, $imageMap, $debug);
-            $this->writeDebugSnapshot($debug);
+            $this->injectDocumentationImages($generatedPath, $imageMap);
 
             return $generatedPath;
         } catch (Throwable $throwable) {
-            $debug['exception'] = $throwable->getMessage();
-            $this->writeDebugSnapshot($debug);
-
             if (is_file($generatedPath)) {
                 @unlink($generatedPath);
             }
@@ -292,9 +280,8 @@ class TemplateDocumentGeneratorService
 
     /**
      * @param  array<string, array{path: string, extension: string, content_type: string}|null>  $imageMap
-     * @param  array<string, mixed>  $debug
      */
-    private function injectDocumentationImages(string $docxPath, array $imageMap, array &$debug): void
+    private function injectDocumentationImages(string $docxPath, array $imageMap): void
     {
         $archive = new ZipArchive;
 
@@ -338,23 +325,9 @@ class TemplateDocumentGeneratorService
 
         $nextRelationshipId = $this->nextRelationshipId($relationshipsXPath);
         $imageIndex = 1;
-        $debug['placeholder_results'] = [];
 
         foreach ($imageMap as $placeholder => $imageData) {
             $placeholderNodes = $documentXPath->query(sprintf('//w:t[text()="${%s}"]', $placeholder));
-            $placeholderCount = $placeholderNodes === false ? 0 : $placeholderNodes->length;
-            $debug['placeholder_results'][$placeholder] = [
-                'placeholder_count' => $placeholderCount,
-                'image_data' => is_array($imageData)
-                    ? [
-                        'path' => $imageData['path'],
-                        'path_exists' => is_file($imageData['path']),
-                        'extension' => $imageData['extension'],
-                        'content_type' => $imageData['content_type'],
-                    ]
-                    : null,
-                'inserted' => false,
-            ];
 
             if ($placeholderNodes === false || $placeholderNodes->length === 0) {
                 continue;
@@ -393,9 +366,6 @@ class TemplateDocumentGeneratorService
 
                     [$widthEmu, $heightEmu] = $this->calculateImageDimensions($imageData['path']);
                     $replacementXml = $this->buildImageParagraphXml($relationshipId, $widthEmu, $heightEmu);
-                    $debug['placeholder_results'][$placeholder]['inserted'] = true;
-                    $debug['placeholder_results'][$placeholder]['relationship_id'] = $relationshipId;
-                    $debug['placeholder_results'][$placeholder]['image_name'] = $imageName;
                 }
 
                 $fragment = $document->createDocumentFragment();
@@ -407,61 +377,7 @@ class TemplateDocumentGeneratorService
         $archive->addFromString('word/document.xml', $document->saveXML() ?: '');
         $archive->addFromString('word/_rels/document.xml.rels', $relationships->saveXML() ?: '');
         $archive->addFromString('[Content_Types].xml', $contentTypes->saveXML() ?: '');
-        $debug['docx_entries_after_injection'] = $this->collectArchiveEntries($archive);
         $archive->close();
-    }
-
-    private function describeUploadedFile(?UploadedFile $file): ?array
-    {
-        if (! $file instanceof UploadedFile) {
-            return null;
-        }
-
-        $resolvedPath = $this->resolveUploadedFilePath($file);
-
-        return [
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'client_extension' => $file->getClientOriginalExtension(),
-            'pathname' => $file->getPathname(),
-            'real_path' => $file->getRealPath() ?: null,
-            'resolved_path' => $resolvedPath,
-            'resolved_path_exists' => is_string($resolvedPath) && is_file($resolvedPath),
-            'size' => $file->getSize(),
-        ];
-    }
-
-    private function writeDebugSnapshot(array $debug): void
-    {
-        $debugDirectory = storage_path('app/private/tool-debug');
-        File::ensureDirectoryExists($debugDirectory);
-        File::put(
-            $debugDirectory.'/last-generator-dokumen-debug.json',
-            json_encode($debug, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-        );
-    }
-
-    /**
-     * @return array<int, array{name: string, size: int}>
-     */
-    private function collectArchiveEntries(ZipArchive $archive): array
-    {
-        $entries = [];
-
-        for ($index = 0; $index < $archive->numFiles; $index++) {
-            $stat = $archive->statIndex($index);
-
-            if ($stat === false || ! isset($stat['name'], $stat['size'])) {
-                continue;
-            }
-
-            $entries[] = [
-                'name' => (string) $stat['name'],
-                'size' => (int) $stat['size'],
-            ];
-        }
-
-        return $entries;
     }
 
     private function nextRelationshipId(DOMXPath $relationshipsXPath): int

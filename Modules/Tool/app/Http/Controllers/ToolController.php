@@ -4,7 +4,6 @@ namespace Modules\Tool\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Tool\Http\Requests\GenerateTemplateDocumentRequest;
@@ -52,10 +51,6 @@ class ToolController extends Controller
                 $request->file('foto_satu'),
                 $request->file('foto_dua'),
             );
-
-            $debugDirectory = storage_path('app/private/tool-debug');
-            File::ensureDirectoryExists($debugDirectory);
-            File::copy($generatedPath, $debugDirectory.'/last-generator-dokumen.docx');
 
             return response()->download(
                 $generatedPath,
