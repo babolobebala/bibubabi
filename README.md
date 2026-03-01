@@ -14,7 +14,7 @@ Project modular Laravel 12 + Inertia v2 + Vue 3 + Vite untuk aplikasi internal d
 - Composer 2
 - Node.js 22
 - pnpm 10.x
-
+ 
 ## Menjalankan Project
 1. Install dependency PHP dan JS.
 2. Jalankan server Laravel + Vite dev server.
