@@ -7,6 +7,7 @@ use DOMElement;
 use DOMNode;
 use DOMXPath;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use PhpOffice\PhpWord\TemplateProcessor;
 use RuntimeException;
@@ -61,8 +62,9 @@ class TemplateDocumentGeneratorService
             ]);
 
             $templateProcessor = new TemplateProcessor($normalizedTemplatePath);
-            $templateProcessor->setValues($this->textPlaceholders($data));
+            $templateProcessor->setValues($this->inlineTextPlaceholders($data));
             $templateProcessor->saveAs($generatedPath);
+            $this->injectNarrativeTextBlocks($generatedPath, $this->blockTextPlaceholders($data));
 
             $imageMap = [
                 'dokumentasi_foto1' => $fotoSatu instanceof UploadedFile
@@ -103,7 +105,7 @@ class TemplateDocumentGeneratorService
         return 'laporan-perjalanan-dinas-'.($name !== '' ? $name : 'hasil').'.docx';
     }
 
-    private function textPlaceholders(array $data): array
+    private function inlineTextPlaceholders(array $data): array
     {
         return [
             'nama_petugas' => (string) $data['nama_petugas'],
@@ -111,6 +113,12 @@ class TemplateDocumentGeneratorService
             'tujuan' => (string) $data['tujuan'],
             'anggaran_diperiksa' => (string) $data['anggaran_diperiksa'],
             'jadwal' => (string) $data['jadwal'],
+        ];
+    }
+
+    private function blockTextPlaceholders(array $data): array
+    {
+        return [
             'ringkasan_hasil' => (string) $data['ringkasan_hasil'],
             'pejabat_dikunjungi' => (string) $data['pejabat_dikunjungi'],
         ];
@@ -380,6 +388,58 @@ class TemplateDocumentGeneratorService
         $archive->close();
     }
 
+    private function injectNarrativeTextBlocks(string $docxPath, array $blockMap): void
+    {
+        $archive = new ZipArchive;
+
+        if ($archive->open($docxPath) !== true) {
+            throw new RuntimeException('Gagal membuka hasil dokumen DOCX.');
+        }
+
+        $documentXml = $archive->getFromName('word/document.xml');
+
+        if (! is_string($documentXml)) {
+            $archive->close();
+
+            throw new RuntimeException('Isi hasil DOCX tidak lengkap.');
+        }
+
+        $document = new DOMDocument('1.0', 'UTF-8');
+        $document->preserveWhiteSpace = true;
+        $document->formatOutput = false;
+        $document->loadXML($documentXml);
+
+        $documentXPath = new DOMXPath($document);
+        $documentXPath->registerNamespace('w', self::WORD_NAMESPACE);
+
+        foreach ($blockMap as $placeholder => $text) {
+            $placeholderNodes = $documentXPath->query(sprintf('//w:t[text()="${%s}"]', $placeholder));
+
+            if ($placeholderNodes === false || $placeholderNodes->length === 0) {
+                continue;
+            }
+
+            foreach (Arr::wrap(iterator_to_array($placeholderNodes)) as $placeholderNode) {
+                if (! $placeholderNode instanceof DOMNode) {
+                    continue;
+                }
+
+                $paragraphNode = $this->findAncestorElement($placeholderNode, 'p');
+
+                if (! $paragraphNode instanceof DOMElement) {
+                    continue;
+                }
+
+                $fragment = $document->createDocumentFragment();
+                $fragment->appendXML($this->buildNarrativeParagraphsXml($paragraphNode, $text));
+                $paragraphNode->parentNode?->replaceChild($fragment, $paragraphNode);
+            }
+        }
+
+        $archive->addFromString('word/document.xml', $document->saveXML() ?: '');
+        $archive->close();
+    }
+
     private function nextRelationshipId(DOMXPath $relationshipsXPath): int
     {
         $nodes = $relationshipsXPath->query('//rel:Relationship');
@@ -513,6 +573,83 @@ XML;
   </w:r>
 </w:p>
 XML;
+    }
+
+    private function buildNarrativeParagraphsXml(DOMElement $paragraphNode, string $text): string
+    {
+        $document = $paragraphNode->ownerDocument;
+        $paragraphProperties = $document?->saveXML($this->firstChildElementByLocalName($paragraphNode, 'pPr')) ?: '';
+        $runProperties = $document?->saveXML($this->firstDescendantElementByLocalName($paragraphNode, 'rPr')) ?: '';
+        $lines = preg_split("/\r\n|\n|\r/", $text) ?: [''];
+
+        if ($lines === []) {
+            $lines = [''];
+        }
+
+        $paragraphXml = [];
+
+        foreach ($lines as $line) {
+            $paragraphXml[] = $this->buildNarrativeParagraphXml($line, $paragraphProperties, $runProperties);
+        }
+
+        return implode('', $paragraphXml);
+    }
+
+    private function buildNarrativeParagraphXml(string $line, string $paragraphProperties, string $runProperties): string
+    {
+        $wordNamespace = self::WORD_NAMESPACE;
+        preg_match('/^\t+/', $line, $tabMatches);
+        preg_match('/^(?:\t+)?( +)/', $line, $spaceMatches);
+
+        $tabCount = isset($tabMatches[0]) ? strlen($tabMatches[0]) : 0;
+        $spacePrefix = $spaceMatches[1] ?? '';
+        $content = substr($line, $tabCount + strlen($spacePrefix));
+
+        $runChildren = '';
+
+        if ($tabCount > 0) {
+            $runChildren .= str_repeat('<w:tab/>', $tabCount);
+        }
+
+        if ($spacePrefix !== '' || $content !== '') {
+            $runChildren .= '<w:t xml:space="preserve">'.htmlspecialchars($spacePrefix.$content, ENT_XML1).'</w:t>';
+        }
+
+        if ($runChildren === '') {
+            $runChildren = '<w:t xml:space="preserve"></w:t>';
+        }
+
+        return <<<XML
+<w:p xmlns:w="{$wordNamespace}">
+  {$paragraphProperties}
+  <w:r>
+    {$runProperties}
+    {$runChildren}
+  </w:r>
+</w:p>
+XML;
+    }
+
+    private function firstChildElementByLocalName(DOMElement $element, string $localName): ?DOMElement
+    {
+        foreach ($element->childNodes as $childNode) {
+            if ($childNode instanceof DOMElement && $childNode->localName === $localName) {
+                return $childNode;
+            }
+        }
+
+        return null;
+    }
+
+    private function firstDescendantElementByLocalName(DOMElement $element, string $localName): ?DOMElement
+    {
+        foreach ($element->getElementsByTagNameNS(self::WORD_NAMESPACE, $localName) as $descendant) {
+            if ($descendant instanceof DOMElement) {
+                return $descendant;
+            }
+        }
+
+        return null;
     }
 
     private function findAncestorElement(DOMNode $node, string $localName): ?DOMElement

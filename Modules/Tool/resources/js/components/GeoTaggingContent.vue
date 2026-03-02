@@ -6,6 +6,7 @@ import * as exifr from 'exifr';
 import type { LeafletMouseEvent } from 'leaflet';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { normalizeImageFile } from '../../../../Shared/resources/js/lib/heic';
 import 'leaflet/dist/leaflet.css';
 
 interface OverlayTextSection {
@@ -132,19 +133,39 @@ const applyPresetLocation = async (): Promise<void> => {
 };
 
 const processUploadedFile = async (file: File): Promise<void> => {
-    if (!file.type.startsWith('image/')) {
-        showError('File harus berupa gambar.');
+    let normalizedFile = file;
+
+    try {
+        const normalizedImage = await normalizeImageFile(normalizedFile, {
+            jpegQuality: 0.92,
+            supportedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+        });
+
+        normalizedFile = normalizedImage.file;
+
+        if (normalizedImage.convertedFromHeic) {
+            toast.success('File HEIC berhasil dikonversi ke JPG.');
+        }
+    } catch (error) {
+        console.error(error);
+
+        if (error instanceof Error && error.message === 'unsupported_image_type') {
+            showError('File harus berupa gambar.');
+        } else {
+            showError('File HEIC gagal dikonversi. Coba file lain.');
+        }
+
         return;
     }
 
     revokeUrl(imagePreviewUrl.value);
     revokeUrl(processedImageUrl.value);
 
-    imageFile.value = file;
-    imagePreviewUrl.value = URL.createObjectURL(file);
+    imageFile.value = normalizedFile;
+    imagePreviewUrl.value = URL.createObjectURL(normalizedFile);
     processedImageUrl.value = null;
 
-    await readExifData(file);
+    await readExifData(normalizedFile);
 };
 
 const readExifData = async (file: File): Promise<void> => {
@@ -262,12 +283,13 @@ const generateOverlayImage = async (): Promise<void> => {
 
         ctx.drawImage(bitmap, 0, 0);
 
-        const minDimension = Math.min(canvas.width, canvas.height);
-        const baseFont = Math.round(clampValue(minDimension * 0.035 * textScale.value, 14, 46));
-        const detailFont = Math.max(12, Math.round(baseFont * 0.7));
-        const metaFont = Math.max(12, Math.round(baseFont * 0.68));
-        const panelPadding = Math.round(clampValue(baseFont * 0.72, 10, 34));
-        const horizontalMargin = Math.round(clampValue(minDimension * 0.028, 12, 44));
+        const panelWidth = Math.round(canvas.width * 0.7);
+        const horizontalMargin = Math.round(canvas.width * 0.03);
+        const panelPadding = Math.round(canvas.width * 0.025);
+        const baseFont = Math.round(clampValue(canvas.width * 0.035 * textScale.value, 18, 120));
+        const detailFont = Math.max(14, Math.round(baseFont * 0.58));
+        const metaFont = Math.max(13, Math.round(baseFont * 0.52));
+        const minimumPanelHeight = Math.round(canvas.height * 0.15);
 
         const dateText = formatDateForOverlayUtc8(dateTimeValue.value);
         const latLonText =
@@ -277,11 +299,8 @@ const generateOverlayImage = async (): Promise<void> => {
         const shortAddressText = shortAddress.value || '-';
         const fullAddressText = fullAddress.value || '-';
 
-        const panelMaxWidth = canvas.width - horizontalMargin * 2;
-        const panelMinWidth = Math.min(300, panelMaxWidth);
-        const panelWidth = Math.round(clampValue(canvas.width * 0.86, panelMinWidth, panelMaxWidth));
-        let mapThumbWidth = Math.round(clampValue(panelWidth * 0.24, 68, 220));
-        const mapGap = Math.round(clampValue(baseFont * 0.65, 10, 24));
+        let mapThumbWidth = Math.round(clampValue(panelWidth * 0.2, 84, 280));
+        const mapGap = Math.round(clampValue(canvas.width * 0.018, 12, 28));
 
         const minimumTextWidth = 150;
         let textAreaWidth = panelWidth - panelPadding * 2 - mapThumbWidth - mapGap;
@@ -315,9 +334,10 @@ const generateOverlayImage = async (): Promise<void> => {
             return total + sectionHeight + spacing;
         }, 0);
 
-        const contentHeight = Math.max(textContentHeight, Math.round(mapThumbWidth * 1.15));
+        const targetContentHeight = Math.max(0, minimumPanelHeight - panelPadding * 2);
+        const contentHeight = Math.max(textContentHeight, targetContentHeight);
         const mapThumbHeight = contentHeight;
-        const boxHeight = contentHeight + panelPadding * 2;
+        const boxHeight = Math.max(minimumPanelHeight, contentHeight + panelPadding * 2);
         const x = horizontalMargin;
         const y = canvas.height - horizontalMargin - boxHeight;
 
@@ -920,7 +940,13 @@ onMounted(() => {
                         @dragleave="onDragLeave"
                         @drop="onDrop"
                     >
-                        <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="onSelectImage" />
+                        <input
+                            ref="fileInputRef"
+                            type="file"
+                            accept="image/*"
+                            class="hidden"
+                            @change="onSelectImage"
+                        />
                         <p class="text-md text-muted-foreground">Drag & drop gambar di sini atau klik area ini</p>
                         <Button type="button" class="mt-3 cursor-pointer" @click.prevent="openFilePicker">Pilih Gambar</Button>
                     </label>

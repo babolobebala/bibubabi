@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { media } from '@/lib/media';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Bell, CircleUserRound, House, LayoutGrid, LogOut } from 'lucide-vue-next';
@@ -89,20 +90,20 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
 
             <header class="border-b border-border bg-background/90 backdrop-blur">
                 <div class="mx-auto flex h-13 max-w-400 items-center justify-between px-4 sm:h-14 sm:px-6">
-                <div class="flex items-center gap-3">
-                    <img src="/img/logo/saku.png" alt="SAKU" class="h-12 w-auto sm:h-14" />
-                    <div class="">
-                        <p class="text-sm font-semibold text-foreground">{{ fixedHeader.title }}</p>
-                        <p class="text-xs text-muted-foreground">{{ fixedHeader.subtitle }}</p>
+                    <div class="flex items-center gap-3">
+                        <img :src="media + 'img/logo/saku.png'" alt="SAKU" class="h-12 w-auto sm:h-14" />
+                        <div class="">
+                            <p class="text-sm font-semibold text-foreground">{{ fixedHeader.title }}</p>
+                            <p class="text-xs text-muted-foreground">{{ fixedHeader.subtitle }}</p>
+                        </div>
                     </div>
-                </div>
 
-                <Button as-child variant="default" class="cursor-pointer rounded-xl border-border px-3">
-                    <Link href="/logout" class="inline-flex items-center gap-2">
-                        <LogOut class="h-4 w-4" />
-                        <span class="text-sm">Logout</span>
-                    </Link>
-                </Button>
+                    <Button as-child variant="default" class="cursor-pointer rounded-xl border-border px-3">
+                        <Link href="/logout" class="inline-flex items-center gap-2">
+                            <LogOut class="h-4 w-4" />
+                            <span class="text-sm">Logout</span>
+                        </Link>
+                    </Button>
                 </div>
             </header>
         </div>
