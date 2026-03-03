@@ -123,14 +123,14 @@ function resolveModulePage(name: string, modulePages: Record<string, () => Promi
 
 function applyDefaultModuleLayout(name: string, page: unknown): unknown {
     const [moduleAlias] = name.split('::');
-    if (!moduleAlias || moduleAlias.toLowerCase() === 'umum') {
+    if (!moduleAlias) {
         return page;
     }
 
     const pageModule = page as { default?: Component;[key: string]: unknown };
     const component = (pageModule.default ?? page) as DefineComponent & { layout?: unknown };
 
-    if (component.layout) {
+    if ('layout' in component) {
         return page;
     }
 

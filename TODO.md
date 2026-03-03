@@ -17,3 +17,7 @@ Todo 4 maret 2026
 5. belum selesainya, fitur pilih menu (tidak terlalu krusial)
 
 6. belum selesainya fitur notifikasi (aku bahkan ga tau notifikasi ini nanti buat apa AHAHAH) 
+
+7. belum selesainya fitur tabel
+
+8. kalau mau ditambahin monitoring kegiatan, akan sangat bagus sekali sih

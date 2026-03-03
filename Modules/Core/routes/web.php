@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Core\Http\Controllers\CoreController;
 
+Route::get('welcome', [CoreController::class, 'welcome'])
+    ->name('login');
+
 Route::middleware('auth')->group(function () {
     Route::get('app', [CoreController::class, 'index'])
         ->name('home');

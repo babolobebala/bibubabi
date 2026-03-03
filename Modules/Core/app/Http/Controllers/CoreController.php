@@ -8,6 +8,11 @@ use Inertia\Response;
 
 class CoreController extends Controller
 {
+    public function welcome(): Response
+    {
+        return Inertia::render('core::WelcomePage');
+    }
+
     /**
      * Display a listing of the resource.
      */
