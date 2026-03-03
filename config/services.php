@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
+        'drive_folder_id' => env('GOOGLE_DRIVE_FOLDER_ID'),
+        'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
+        'cache_store' => env('GOOGLE_CACHE_STORE', env('CACHE_STORE', 'database')),
+        'access_token_cache_key' => env('GOOGLE_ACCESS_TOKEN_CACHE_KEY', 'google_drive_access_token'),
+        'access_token_lock_key' => env('GOOGLE_ACCESS_TOKEN_LOCK_KEY', 'google_drive_access_token_refresh_lock'),
+    ],
+
 ];

@@ -54,6 +54,15 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - Be concise in your explanations - focus on what's important rather than explaining obvious details.
 
+## Cache Standardization
+
+- Application cache is standardized as server-side cache, never browser/device cache.
+- Default shared cache store for application features should be `database` unless the user explicitly asks for Redis or another store.
+- Shared integration tokens such as Google Drive `access_token` must use Laravel cache with lock support and must not be stored in frontend code.
+- Long-lived secrets such as `GOOGLE_REFRESH_TOKEN` stay in `.env`; short-lived `access_token` values go to Laravel cache only.
+- For database cache, use the `cache` and `cache_locks` tables consistently.
+- New feature-level cache usage should read the cache store and cache keys from configuration rather than hard-coding store names in services.
+
 === boost rules ===
 
 # Laravel Boost
