@@ -8,7 +8,9 @@ Todo 4 maret 2026
 
 2. Halaman umum belum dapat enable/disable, aku ekspektasi nya ingin jika umum ini disable
     maka yang muncul hanyalah card login gitu ahahahah. jika belum login card login, jika udah tombol
-    goto app (kasus tidak ada umum)
+    goto app (kasus tidak ada umum) ==> DONE
+
+2a. seragamkan input field nya pakai tanstack form. 
 
 3. di halaman core, belum ada menu khusus admin untuk mengatur user user uhuy
 

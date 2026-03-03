@@ -1,21 +1,18 @@
 # Module Umum
 
 ## Fungsi
-Module `Umum` berisi halaman publik / landing page (non-internal app shell).
+Module `Umum` berisi komponen penyusun halaman publik / landing page.
 
-Module ini **dikecualikan** dari auto persistent layout `SharedModuleLayout`.
+Ownership route/page publik utama sekarang berada di module `Core`, tetapi konten landing page tetap dideklarasikan di module ini.
 
-## Route Web
-- `GET /welcome` -> `UmumController@welcome_page`
-
-File:
-- `Modules/Umum/routes/web.php`
-- `Modules/Umum/app/Http/Controllers/UmumController.php`
-
-## Inertia Page
-- `umum::WelcomePage` -> `Modules/Umum/resources/js/pages/WelcomePage.vue`
+## Komponen Penting
+- `Modules/Umum/resources/js/components/landing-page/WelcomeContent.vue`
+  - wrapper konten landing page publik
+- `Modules/Umum/resources/js/components/landing-page/LoginDialog.vue`
+  - wrapper dialog login untuk navbar landing page
+  - isi kontennya memakai komponen shared
 
 ## Catatan
-- Karena sifatnya halaman publik/landing, layout dan navigasi visualnya berdiri sendiri.
-- Jika ingin memakai shell internal, lakukan secara eksplisit (jangan mengandalkan auto-layout default).
+- Module ini tidak lagi menjadi owner route `/welcome`.
+- Jika ada page dari module ini yang tidak boleh memakai auto layout default, nonaktifkan secara eksplisit di page tersebut.
 - Module ini umumnya tidak perlu ikut `module-navigation.json` untuk menu internal `Core`.
