@@ -10,6 +10,9 @@ type InertiaLikePageProps = {
 
 let lastSyncedSignature: string | null = null;
 let isSyncInFlight = false;
+let isCleanupInFlight = false;
+const boundEndpointStorageKey = 'push:last-bound-endpoint';
+const boundUserStorageKey = 'push:last-bound-user';
 
 function getCsrfToken(): string | null {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? null;
@@ -38,6 +41,13 @@ function resolveUserId(pageProps: InertiaLikePageProps): string {
     return String(user.id ?? 'auth-user');
 }
 
+type PushSubscriptionPayload = {
+    endpoint: string;
+    public_key: string | null;
+    auth_token: string | null;
+    encoding: string;
+};
+
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -57,6 +67,15 @@ function encodeSubscriptionKey(key: ArrayBuffer | null): string | null {
     }
 
     return window.btoa(String.fromCharCode(...new Uint8Array(key)));
+}
+
+function buildSubscriptionPayload(subscription: PushSubscription): PushSubscriptionPayload {
+    return {
+        endpoint: subscription.endpoint,
+        public_key: encodeSubscriptionKey(subscription.getKey('p256dh') as ArrayBuffer | null),
+        auth_token: encodeSubscriptionKey(subscription.getKey('auth') as ArrayBuffer | null),
+        encoding: (PushManager.supportedContentEncodings || ['aesgcm'])[0],
+    };
 }
 
 async function ensureServiceWorkerRegistration(): Promise<ServiceWorkerRegistration | null> {
@@ -113,12 +132,7 @@ async function syncSubscriptionToBackend(subscription: PushSubscription): Promis
         return;
     }
 
-    const body = {
-        endpoint: subscription.endpoint,
-        public_key: encodeSubscriptionKey(subscription.getKey('p256dh') as ArrayBuffer | null),
-        auth_token: encodeSubscriptionKey(subscription.getKey('auth') as ArrayBuffer | null),
-        encoding: (PushManager.supportedContentEncodings || ['aesgcm'])[0],
-    };
+    const body = buildSubscriptionPayload(subscription);
 
     const response = await fetch('/notifications/subscribe', {
         method: 'POST',
@@ -135,9 +149,83 @@ async function syncSubscriptionToBackend(subscription: PushSubscription): Promis
     }
 }
 
+async function unbindSubscriptionFromBackend(subscription: PushSubscription): Promise<void> {
+    const csrfToken = getCsrfToken();
+    if (!csrfToken) {
+        return;
+    }
+
+    const response = await fetch('/notifications/unbind', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify(buildSubscriptionPayload(subscription)),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Push unbind request failed with status ${response.status}`);
+    }
+}
+
+function rememberBoundSubscription(userId: string, subscription: PushSubscription): void {
+    window.localStorage.setItem(boundUserStorageKey, userId);
+    window.localStorage.setItem(boundEndpointStorageKey, subscription.endpoint);
+}
+
+function clearRememberedBoundSubscription(): void {
+    window.localStorage.removeItem(boundUserStorageKey);
+    window.localStorage.removeItem(boundEndpointStorageKey);
+}
+
+async function getExistingBrowserSubscription(): Promise<PushSubscription | null> {
+    const registration = await ensureServiceWorkerRegistration();
+
+    if (!registration) {
+        return null;
+    }
+
+    return registration.pushManager.getSubscription();
+}
+
+export async function cleanupPushSubscriptionBinding(): Promise<void> {
+    if (isCleanupInFlight) {
+        return;
+    }
+
+    const rememberedEndpoint = window.localStorage.getItem(boundEndpointStorageKey);
+
+    if (!rememberedEndpoint) {
+        lastSyncedSignature = null;
+        return;
+    }
+
+    isCleanupInFlight = true;
+
+    try {
+        const subscription = await getExistingBrowserSubscription();
+
+        if (!subscription || subscription.endpoint !== rememberedEndpoint) {
+            clearRememberedBoundSubscription();
+            lastSyncedSignature = null;
+            return;
+        }
+
+        await unbindSubscriptionFromBackend(subscription);
+        clearRememberedBoundSubscription();
+        lastSyncedSignature = null;
+    } catch (error) {
+        console.error('Push binding cleanup failed.', error);
+    } finally {
+        isCleanupInFlight = false;
+    }
+}
+
 export async function autoSubscribePushForAuthenticatedUser(pageProps: unknown): Promise<void> {
     if (!isAuthenticated(pageProps)) {
-        lastSyncedSignature = null;
+        await cleanupPushSubscriptionBinding();
         return;
     }
 
@@ -170,6 +258,7 @@ export async function autoSubscribePushForAuthenticatedUser(pageProps: unknown):
         }
 
         await syncSubscriptionToBackend(subscription);
+        rememberBoundSubscription(userId, subscription);
         lastSyncedSignature = syncSignature;
     } catch (error) {
         console.error('Auto push subscribe failed.', error);

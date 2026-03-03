@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MarkNotificationsReadRequest;
 use App\Http\Requests\NotificationHistoryRequest;
+use App\Http\Requests\UnbindPushSubscriptionRequest;
 use App\Models\User;
 use App\Notifications\NewUserActivity;
 use Illuminate\Http\JsonResponse;
@@ -96,6 +97,48 @@ class NotificationManagerController extends Controller
         }
 
         return response()->json(['message' => 'Unsubscribed!']);
+    }
+
+    public function unbind(UnbindPushSubscriptionRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $subscriptionModel = config('webpush.model');
+
+        if (! is_string($subscriptionModel) || ! class_exists($subscriptionModel)) {
+            return response()->json(['message' => 'Push subscription model is not configured.'], 500);
+        }
+
+        $subscription = $subscriptionModel::query()
+            ->where('endpoint', $validated['endpoint'])
+            ->first();
+
+        if (! $subscription) {
+            return response()->json(['message' => 'Push subscription binding already cleared.']);
+        }
+
+        $publicKey = $validated['public_key'] ?? null;
+        $authToken = $validated['auth_token'] ?? null;
+
+        if (
+            $subscription->public_key !== $publicKey
+            || $subscription->auth_token !== $authToken
+        ) {
+            Log::warning('Push unbind rejected due to subscription credential mismatch.', [
+                'endpoint' => $validated['endpoint'],
+                'host' => $request->getHost(),
+            ]);
+
+            return response()->json(['message' => 'Push subscription credentials do not match.'], 403);
+        }
+
+        $subscription->delete();
+
+        Log::info('Push binding cleared from backend.', [
+            'endpoint' => $validated['endpoint'],
+            'host' => $request->getHost(),
+        ]);
+
+        return response()->json(['message' => 'Push subscription binding cleared.']);
     }
 
     public function send(Request $req): RedirectResponse|JsonResponse

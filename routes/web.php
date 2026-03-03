@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
 // Notification
 Route::post('/notifications/subscribe', [NotificationManagerController::class, 'subscribe']);
 Route::post('/notifications/unsubscribe', [NotificationManagerController::class, 'unsubscribe']);
+Route::post('/notifications/unbind', [NotificationManagerController::class, 'unbind']);
 Route::get('/notifications/send', [NotificationManagerController::class, 'send'])->middleware(['auth']);
 Route::get('/notifications/history', [NotificationManagerController::class, 'history'])->middleware(['auth']);
 Route::post('/notifications/read', [NotificationManagerController::class, 'markAsRead'])->middleware(['auth']);

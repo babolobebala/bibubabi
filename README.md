@@ -31,6 +31,44 @@ Catatan:
 - Jika perubahan frontend tidak muncul, pastikan `pnpm run dev` aktif.
 - Jika memakai Laravel Herd, akses project via domain `.test` yang sesuai.
 
+## Runtime Persistence
+- Session aplikasi disimpan di database (`sessions` table).
+- Cache aplikasi default disimpan di database (`cache` dan `cache_locks` tables).
+- Queue default saat ini memakai koneksi database.
+- Setelah menarik perubahan baru yang menambah migration persistence, jalankan:
+
+```bash
+php artisan migrate
+php artisan config:clear
+php artisan cache:clear
+```
+
+## Integrasi Google Drive
+- Integrasi Google Drive memakai satu akun Google admin yang dihubungkan sekali via OAuth.
+- Pegawai tetap login menggunakan auth aplikasi; mereka tidak perlu login Google di device masing-masing.
+- `GOOGLE_REFRESH_TOKEN` disimpan di backend sebagai secret jangka panjang.
+- `access_token` Google Drive tidak disimpan di browser dan tidak disimpan permanen di `.env`; token ini di-cache server-side lewat Laravel cache.
+- Halaman operasional Google Drive tersedia di `/google-drive`.
+
+### Environment yang diperlukan
+```env
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=
+GOOGLE_DRIVE_FOLDER_ID=
+GOOGLE_REFRESH_TOKEN=
+GOOGLE_CACHE_STORE=database
+```
+
+### Route Google Drive
+- `/auth/google/drive` -> menghubungkan akun Google admin dan mengambil `refresh token`
+- `/google-drive` -> halaman UI untuk list, upload, rename, delete, dan copy link file
+
+### Catatan Keamanan
+- Jangan commit `GOOGLE_CLIENT_SECRET` atau `GOOGLE_REFRESH_TOKEN`.
+- Jika secret atau refresh token pernah terekspos, rotate credential Google OAuth dan lakukan consent ulang untuk mendapatkan token baru.
+- Seluruh operasi file Google Drive berjalan atas nama akun Google admin yang terhubung, sehingga authorization internal tetap harus dijaga dari sisi Laravel role/auth.
+
 ## Arsitektur Module (Ringkas)
 Project memakai folder `Modules/`:
 - `Core` -> hub utama (`/home`) untuk daftar module internal

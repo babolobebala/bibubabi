@@ -4,7 +4,7 @@ import type { Component, DefineComponent } from 'vue';
 import { createApp, Fragment, h } from 'vue';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton.vue';
 import { Toaster } from '@/components/ui/sonner';
-import { autoSubscribePushForAuthenticatedUser } from '@/lib/push-auto-subscribe';
+import { autoSubscribePushForAuthenticatedUser, cleanupPushSubscriptionBinding } from '@/lib/push-auto-subscribe';
 import { markInstalled, setDeferredInstallPrompt, type BeforeInstallPromptEvent } from '@/lib/pwa-install';
 import { initializeTheme } from '@/lib/theme';
 import SharedModuleLayout from '../../Modules/Shared/resources/js/components/layouts/SharedModuleLayout.vue';
@@ -53,6 +53,36 @@ window.addEventListener('beforeinstallprompt', (event) => {
 
 window.addEventListener('appinstalled', () => {
     markInstalled();
+});
+
+document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) {
+        return;
+    }
+
+    const anchor = event.target.closest<HTMLAnchorElement>('a[href="/logout"]');
+
+    if (!anchor || event.defaultPrevented) {
+        return;
+    }
+
+    const mouseEvent = event as MouseEvent;
+
+    if (
+        mouseEvent.button !== 0
+        || mouseEvent.metaKey
+        || mouseEvent.ctrlKey
+        || mouseEvent.shiftKey
+        || mouseEvent.altKey
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+
+    void cleanupPushSubscriptionBinding().finally(() => {
+        window.location.assign(anchor.href);
+    });
 });
 
 function resolvePage(name: string) {

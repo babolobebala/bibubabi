@@ -63,6 +63,20 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - For database cache, use the `cache` and `cache_locks` tables consistently.
 - New feature-level cache usage should read the cache store and cache keys from configuration rather than hard-coding store names in services.
 
+## Session Standardization
+
+- Application session is standardized as Laravel server-side session backed by the database driver.
+- Use `$request->session()` or Laravel auth/session APIs consistently; do not mix Laravel session handling with native `$_SESSION`.
+- OAuth state values for external integrations such as BPS SSO or Google Drive OAuth must be stored in Laravel session, not native PHP session.
+- The `sessions` table must be created and maintained via migration.
+
+## Google Drive Integration
+
+- Google Drive integration uses one admin-owned Google account connected via OAuth, while pegawai tetap login lewat auth aplikasi.
+- `GOOGLE_REFRESH_TOKEN` is treated as a long-lived backend secret and must never be exposed to frontend code or committed to version control.
+- Google Drive `access_token` is cached server-side through Laravel cache with a lock-backed refresh flow.
+- The current default shared persistence for this project is: `sessions` in database, cache in database, queue in database.
+
 === boost rules ===
 
 # Laravel Boost
