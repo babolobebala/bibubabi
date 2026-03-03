@@ -50,6 +50,15 @@ php artisan cache:clear
 - `access_token` Google Drive tidak disimpan di browser dan tidak disimpan permanen di `.env`; token ini di-cache server-side lewat Laravel cache.
 - Halaman operasional Google Drive tersedia di `/google-drive`.
 
+### Lifecycle Access Token
+- Yang direfresh oleh aplikasi adalah `access_token`, bukan `refresh_token`.
+- Saat ada request ke Google Drive, backend akan lebih dulu mengecek `access_token` di Laravel cache.
+- Jika token cache masih ada dan belum expired, token yang sama dipakai ulang untuk request tersebut.
+- Jika token cache kosong atau sudah expired, backend memakai `GOOGLE_REFRESH_TOKEN` untuk meminta `access_token` baru ke Google.
+- Token baru lalu disimpan lagi ke cache server-side.
+- TTL cache token saat ini diset ke `expires_in - 60 detik`, dengan minimum 60 detik.
+- Refresh token flow memakai cache lock, jadi saat banyak request datang bersamaan, hanya satu request yang refresh token dan request lain memakai hasil cache yang sama.
+
 ### Environment yang diperlukan
 ```env
 GOOGLE_CLIENT_ID=
@@ -57,7 +66,6 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=
 GOOGLE_DRIVE_FOLDER_ID=
 GOOGLE_REFRESH_TOKEN=
-GOOGLE_CACHE_STORE=database
 ```
 
 ### Route Google Drive
