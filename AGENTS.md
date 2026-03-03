@@ -46,6 +46,11 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `pnpm run build`, `pnpm run dev`, or `composer run dev`. Ask them.
 
+## Public Auth UI
+
+- Untuk entry login di halaman publik/landing, gunakan komponen `Dialog` dari shadcn-vue, bukan redirect langsung dari tombol navbar.
+- Gunakan pewarnaan semantik shadcn/Tailwind seperti `primary`, `secondary`, `muted`, `destructive`, `border`, dan `ring`; hindari warna hard-coded jika komponen UI sudah punya token semantik.
+
 ## Documentation Files
 
 - You must only create documentation files if explicitly requested by the user.

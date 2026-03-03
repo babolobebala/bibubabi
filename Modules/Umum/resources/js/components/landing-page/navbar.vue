@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { media } from '@/lib/media';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import LoginDialog from './LoginDialog.vue';
 
 interface NavbarPageProps {
     [key: string]: unknown;
@@ -102,9 +103,7 @@ onBeforeUnmount(() => {
             </nav>
 
             <div class="flex items-center gap-2.5 sm:gap-2">
-                <Button v-if="!isAuthenticated" as-child class="h-10 cursor-pointer rounded-full px-3.5 text-sm sm:h-8 sm:px-2.5 sm:text-xs" variant="default">
-                    <a href="/bypass/?nama=fatihwisesa"> Login SSO BPS</a>
-                </Button>
+                <LoginDialog v-if="!isAuthenticated" />
                 <Button v-else as-child class="h-10 cursor-pointer rounded-full px-3.5 text-sm sm:h-8 sm:px-2.5 sm:text-xs" variant="default">
                     <Link href="/app"> Masuk ke SAKU </Link>
                 </Button>

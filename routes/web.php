@@ -4,10 +4,10 @@ use App\Http\Controllers\GoogleDriveAuthController;
 use App\Http\Controllers\GoogleDriveFileController;
 use App\Http\Controllers\GoogleDrivePageController;
 use App\Http\Controllers\NotificationManagerController;
+use App\Http\Controllers\PasswordLoginController;
 use App\Http\Controllers\SSOBPSController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 // DEBUG. ILEGAL ROUTE (TOLONG DIKOMEN KALAU DI PRODUCTION)
 Route::get('bypass', [SSOBPSController::class, 'bypassLogin'])
@@ -23,13 +23,10 @@ Route::get('login_sso', [SSOBPSController::class, 'ssoBPSLogin'])
 Route::get('logout', [SSOBPSController::class, 'logout'])
     ->name('logout');
 
-// Login Route
-// Route::middleware('guest')->group(function () {
-//     Route::get('login', function () {
-//         return Inertia::render('LoginPage');
-//     })
-//         ->name('login');
-// });
+Route::middleware('guest')->group(function () {
+    Route::post('login-password', [PasswordLoginController::class, 'store'])
+        ->name('password.login');
+});
 
 // Testing
 Route::middleware('auth')->group(function () {

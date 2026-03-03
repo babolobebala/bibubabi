@@ -19,13 +19,26 @@ class User extends Authenticatable
         'nama',
         'email_bps',
         'email_gmail',
+        'status_pegawai',
         'golongan',
         'jabatan',
         'url_foto',
+        'password',
     ];
 
     protected $hidden = [
+        'password',
         'created_at',
         'updated_at',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
 }

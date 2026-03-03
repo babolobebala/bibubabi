@@ -19,9 +19,11 @@ return new class extends Migration
             $table->string('nama')->nullable();
             $table->string('email_bps')->unique();
             $table->string('email_gmail')->unique()->nullable();
+            $table->enum('status_pegawai', ['aktif', 'tidak aktif'])->default('aktif');
             $table->string('golongan')->nullable();
             $table->string('jabatan')->nullable();
             $table->string('url_foto')->nullable();
+            $table->string('password')->nullable();
             $table->timestamps();
         });
     }
