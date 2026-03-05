@@ -5,7 +5,7 @@
         "title": "Know",
         "anchor": "know",
         "description": "Kelola knowledge dan dokumentasi internal.",
-        "iconImage": "/img/logo/logo.png"
+        "iconImage": "img/logo/logo.png"
     },
     "pages": [
         {
@@ -14,7 +14,7 @@
             "level": 2,
             "href": "/knows",
             "description": "Lihat daftar knowledge yang tersedia.",
-            "iconImage": "/images/icons/know-list.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "create",
@@ -22,7 +22,7 @@
             "level": 2,
             "href": "/knows/create",
             "description": "Buat knowledge baru untuk dibagikan.",
-            "iconImage": "/images/icons/know-create.png"
+            "iconImage": "img/logo/logo.png"
         }
     ]
 }

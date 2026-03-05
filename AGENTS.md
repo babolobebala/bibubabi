@@ -290,6 +290,8 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
+
+
 === tailwindcss/core rules ===
 
 # Tailwind CSS
@@ -299,3 +301,60 @@ Vue components must have a single root element.
 - IMPORTANT: Activate `tailwindcss-development` every time you're working with a Tailwind CSS or styling-related task.
 
 </laravel-boost-guidelines>
+
+=== project/dev-commands ===
+
+# Dev Commands
+
+- Dev: `composer run dev` (serve + queue + vite sekaligus)
+- Frontend only: `pnpm run dev` | Build: `pnpm run build`
+- Test: `php artisan test --compact`
+- Format PHP: `vendor/bin/pint --dirty --format agent`
+- Cache clear: `php artisan config:clear && php artisan cache:clear`
+- Migrate: `php artisan migrate`
+
+=== project/module-architecture ===
+
+# Module Architecture (nwidart/laravel-modules)
+
+Semua module di `Modules/`. Scaffold: `php artisan module:make {Name} --no-interaction`.
+
+| Module | Fungsi | URL |
+|--------|--------|-----|
+| `Core` | Hub utama + owner `/welcome` | `/app` |
+| `Shared` | Layout shell + komponen reusable | — |
+| `Tool` | Utilitas internal | `/app#tools` |
+| `Know` | Knowledge internal | `/app#know` |
+| `Umum` | Landing page publik (diload Core) | — |
+
+**Struktur frontend per module:** `resources/js/{pages, components, config/module-navigation.json, lib/navigation.ts}`
+
+**Route:** prefix `app/{module-key}`, middleware `['auth', 'verified']`, nama `{module-key}.{feature}`.
+
+**Inertia page:** `Inertia::render('{name}::{PageName}')`. Layout `SharedModuleLayout` **otomatis** via `app.ts` — jangan set manual. Opt-out publik: `defineOptions({ layout: null })`.
+
+**Shared components penting:**
+- `ModuleContentShell` — breadcrumb + body wrapper, prop `body-variant`: `hub`/`page`
+- `ModuleHubContent` — grid/list menu hub dengan search
+- `SharedModuleLayout` — shell sidebar + navbar
+- `LoginContent` — form login reusable
+
+=== project/module-navigation-schema ===
+
+# module-navigation.json
+
+Path: `Modules/{Name}/resources/js/config/module-navigation.json`
+Dibaca otomatis Core via `import.meta.glob` — tidak perlu registrasi manual.
+`Umum` dan `Shared` tidak perlu file ini.
+
+**Schema ringkas:**
+```json
+{
+  "module": { "key": "slug", "name": "Name", "title": "Label", "anchor": "slug", "description": "...", "iconImage": "img/logo/logo.png" },
+  "pages": [
+    { "key": "slug-fitur", "title": "Label", "level": 2, "href": "/app/{module}/{fitur}", "componentKey": "{module}.{fitur}", "description": "...", "iconImage": "img/logo/logo.png" }
+  ]
+}
+```
+Setiap feature page baru wajib tambah entry di `pages[]`.
+

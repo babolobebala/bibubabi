@@ -5,7 +5,7 @@
         "title": "Tools",
         "anchor": "tools",
         "description": "Kumpulan utilitas seperti geotagging gambar dan tools operasional lain.",
-        "iconImage": "/images/icons/tools.png"
+        "iconImage": "img/logo/logo.png"
     },
     "pages": [
         {
@@ -15,7 +15,7 @@
             "href": "/app/tools/geotagging-gambar",
             "componentKey": "tool.geotagging-gambar",
             "description": "Tambah lokasi, waktu, dan overlay informasi pada foto.",
-            "iconImage": "/images/icons/tool-geotagging.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "generator-dokumen",
@@ -24,7 +24,7 @@
             "href": "/app/tools/generator-dokumen",
             "componentKey": "tool.generator-dokumen",
             "description": "Isi template DOCX dari form web lalu unduh hasilnya langsung.",
-            "iconImage": "/images/icons/tools.png"
+            "iconImage": "img/logo/logo.png"
         }
     ]
 }

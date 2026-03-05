@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { media } from '@/lib/media';
 import { Link } from '@inertiajs/vue3';
 import { ChevronRight, Grid3X3, List, Search, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -116,7 +117,6 @@ function markBrokenIcon(itemKey: string): void {
                         class="w-full border-0 bg-transparent p-0 text-sm text-foreground outline-none placeholder:text-muted-foreground"
                     />
                 </div>
-
                 <div class="ml-auto flex items-center gap-2 rounded-xl bg-muted p-1">
                     <Button
                         size="icon"
@@ -152,7 +152,7 @@ function markBrokenIcon(itemKey: string): void {
                             <div class="grid h-12 w-12 place-items-center rounded-full border border-primary/15 bg-accent">
                                 <img
                                     v-if="item.iconImage && !brokenIconKeys[item.key]"
-                                    :src="item.iconImage"
+                                    :src="media + item.iconImage"
                                     :alt="`${item.title} icon`"
                                     class="h-6 w-6 object-contain"
                                     @error="markBrokenIcon(item.key)"
@@ -178,7 +178,7 @@ function markBrokenIcon(itemKey: string): void {
                             <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-primary/15 bg-accent">
                                 <img
                                     v-if="item.iconImage && !brokenIconKeys[item.key]"
-                                    :src="item.iconImage"
+                                    :src="media + item.iconImage"
                                     :alt="`${item.title} icon`"
                                     class="h-5 w-5 object-contain"
                                     @error="markBrokenIcon(item.key)"
@@ -209,7 +209,7 @@ function markBrokenIcon(itemKey: string): void {
                             <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-primary/15 bg-accent">
                                 <img
                                     v-if="item.iconImage && !brokenIconKeys[item.key]"
-                                    :src="item.iconImage"
+                                    :src="media + item.iconImage"
                                     :alt="`${item.title} icon`"
                                     class="h-5 w-5 object-contain"
                                     @error="markBrokenIcon(item.key)"

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nip_baru')->unique()->nullable();
             $table->string('username')->unique()->nullable();
             $table->string('nama')->nullable();
-            $table->string('email_bps')->unique();
+            $table->string('email_bps')->unique()->nullable();
             $table->string('email_gmail')->unique()->nullable();
             $table->enum('status_pegawai', ['aktif', 'tidak aktif'])->default('aktif');
             $table->string('golongan')->nullable();

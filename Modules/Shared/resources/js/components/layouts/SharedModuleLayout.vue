@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { media } from '@/lib/media';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { media } from '@/lib/media';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Bell, CircleUserRound, House, LayoutGrid, LogOut } from 'lucide-vue-next';
 import type { Component } from 'vue';

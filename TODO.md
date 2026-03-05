@@ -12,7 +12,7 @@ Todo 4 maret 2026
 
 2a. seragamkan input field nya pakai tanstack form. 
 
-3. di halaman core, belum ada menu khusus admin untuk mengatur user user uhuy
+3. di halaman core, belum ada menu khusus admin untuk mengatur user user uhuy. di app internal sidebar juga tambahkan AKUN YANG LOGIN skrg
 
 4. di halaman core, belum ada menu untuk list aplikasi BPS (ini taroh di shared aja kali ya)
 

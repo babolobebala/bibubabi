@@ -5,7 +5,7 @@
         "title": "Aplikasi Eksternal BPS",
         "anchor": "external-bps",
         "description": "Kumpulan aplikasi dan layanan eksternal BPS yang sering diakses.",
-        "iconImage": "/img/logo/logo.png"
+        "iconImage": "img/logo/logo.png"
     },
     "pages": [
         {
@@ -14,7 +14,7 @@
             "level": 2,
             "href": "https://www.bps.go.id",
             "description": "Portal utama Badan Pusat Statistik.",
-            "iconImage": "/img/logo/logo.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "web-api-bps",
@@ -22,7 +22,7 @@
             "level": 2,
             "href": "https://webapi.bps.go.id",
             "description": "Akses data statistik BPS melalui API.",
-            "iconImage": "/img/logo/logo.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "sirusa",
@@ -30,7 +30,7 @@
             "level": 2,
             "href": "https://sirusa.bps.go.id",
             "description": "Sistem informasi rujukan statistik.",
-            "iconImage": "/img/logo/logo.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "romantik",
@@ -38,7 +38,7 @@
             "level": 2,
             "href": "https://romantik.web.bps.go.id",
             "description": "Rekomendasi kegiatan statistik.",
-            "iconImage": "/img/logo/logo.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "pst",
@@ -46,7 +46,7 @@
             "level": 2,
             "href": "https://pst.bps.go.id",
             "description": "Layanan permintaan data dan konsultasi statistik.",
-            "iconImage": "/img/logo/logo.png"
+            "iconImage": "img/logo/logo.png"
         },
         {
             "key": "microdata",
@@ -54,7 +54,7 @@
             "level": 2,
             "href": "https://microdata.bps.go.id",
             "description": "Portal metadata dan akses microdata BPS.",
-            "iconImage": "/img/logo/logo.png"
+            "iconImage": "img/logo/logo.png"
         }
     ]
 }
