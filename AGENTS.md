@@ -345,16 +345,62 @@ Semua module di `Modules/`. Scaffold: `php artisan module:make {Name} --no-inter
 
 Path: `Modules/{Name}/resources/js/config/module-navigation.json`
 Dibaca otomatis Core via `import.meta.glob` — tidak perlu registrasi manual.
-`Umum` dan `Shared` tidak perlu file ini.
+Module `Core` tidak memiliki file ini (dihapus — Core adalah shell, bukan module berkonten).
 
-**Schema ringkas:**
+**Schema lengkap:**
 ```json
 {
-  "module": { "key": "slug", "name": "Name", "title": "Label", "anchor": "slug", "description": "...", "iconImage": "img/logo/logo.png" },
+  "module": {
+    "key": "slug",
+    "name": "Name",
+    "title": "Label Tampil",
+    "anchor": "slug",
+    "description": "...",
+    "iconImage": "img/logo/logo.png",
+    "roles": ["nama_role"]
+  },
   "pages": [
-    { "key": "slug-fitur", "title": "Label", "level": 2, "href": "/app/{module}/{fitur}", "componentKey": "{module}.{fitur}", "description": "...", "iconImage": "img/logo/logo.png" }
+    {
+      "key": "slug-fitur",
+      "title": "Label",
+      "level": 2,
+      "href": "/app/{module}/{fitur}",
+      "componentKey": "{module}.{fitur}",
+      "description": "...",
+      "iconImage": "img/logo/logo.png",
+      "roles": ["nama_role"]
+    }
   ]
 }
 ```
+
+## Field `roles` — Role-Based Visibility (Opsional)
+
+Field `roles` bersifat **opsional** di dua level. Jika tidak didefinisikan, item tampil untuk **semua user**.
+
+| Level | Efek jika roles didefinisikan |
+|-------|-------------------------------|
+| `module.roles` | Seluruh tile modul + semua page-nya disembunyikan jika user tidak punya role yang cocok |
+| `pages[].roles` | Hanya page tersebut yang disembunyikan; tile modul tetap muncul |
+
+**Nilai roles:** sesuai nama role di Spatie Permission (contoh: `"super_admin"`, `"admin"`).
+**Multi-role:** user hanya perlu memiliki **salah satu** role yang terdaftar (OR logic).
+
+**Alur sistem:**
+1. `HandleInertiaRequests.php` → share `auth.roles` (array string dari Spatie) ke semua halaman
+2. `CorePage.vue` → baca `auth.roles` dari `usePage().props`, pass ke `getCoreModuleEntries(userRoles)`
+3. `core-menu.ts` → filter module (level atas) dengan `hasRoleAccess()`, filter pages dengan `filterPagesByRoles()`
+4. Helper ada di `Modules/Shared/resources/js/lib/module-navigation.ts`: `hasRoleAccess()` dan `filterPagesByRoles()`
+
+**Contoh — filter level module** (semua page ikut tersembunyi):
+```json
+"module": { "key": "admin", "anchor": "admin", "roles": ["super_admin"] }
+```
+
+**Contoh — filter level page** (tile modul tetap muncul, hanya page tertentu yang dibatasi):
+```json
+{ "key": "laporan-sensitif", "level": 2, "href": "...", "roles": ["super_admin", "admin"] }
+```
+
 Setiap feature page baru wajib tambah entry di `pages[]`.
 

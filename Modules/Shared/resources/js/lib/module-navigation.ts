@@ -15,6 +15,7 @@ export interface ModuleNavigationMenuItem {
 export interface ModuleNavigationPageItem extends ModuleNavigationMenuItem {
     level: number;
     parentKey?: string;
+    roles?: string[];
 }
 
 export interface ModuleNavigationHubConfig {
@@ -31,6 +32,7 @@ export interface ModuleNavigationConfig {
         anchor?: string;
         description?: string;
         iconImage?: string;
+        roles?: string[];
     };
     pages?: ModuleNavigationPageItem[];
 }
@@ -81,7 +83,7 @@ export function getModuleHubConfig(config: ModuleNavigationConfig, _hubKey = 'in
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getModuleHubItems(config: ModuleNavigationConfig, _hubKey = 'index'): ModuleNavigationMenuItem[] {
+export function getModuleHubItems(config: ModuleNavigationConfig, _hubKey = 'index'): ModuleNavigationPageItem[] {
     return getModulePagesByLevel(config, 2);
 }
 
@@ -116,4 +118,19 @@ export function getModulePageBreadcrumbs(config: ModuleNavigationConfig, pageKey
     breadcrumbs.push({ label: page.title });
 
     return breadcrumbs;
+}
+
+export function hasRoleAccess(roles: string[] | undefined, userRoles: string[]): boolean {
+    if (!roles || roles.length === 0) {
+        return true;
+    }
+
+    return roles.some((role) => userRoles.includes(role));
+}
+
+export function filterPagesByRoles(
+    pages: ModuleNavigationPageItem[],
+    userRoles: string[],
+): ModuleNavigationPageItem[] {
+    return pages.filter((page) => hasRoleAccess(page.roles, userRoles));
 }

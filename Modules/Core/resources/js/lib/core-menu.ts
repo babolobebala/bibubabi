@@ -1,8 +1,10 @@
 import { onBeforeUnmount, onMounted, ref, type Ref } from 'vue';
 import {
+    filterPagesByRoles,
     getModuleCoreMenu,
     getModuleHubConfig,
     getModuleHubItems,
+    hasRoleAccess,
     type ModuleNavigationConfig,
     type ModuleNavigationMenuItem,
 } from '../../../../Shared/resources/js/lib/module-navigation';
@@ -15,7 +17,7 @@ export interface CoreModuleEntry {
     features: ModuleNavigationMenuItem[];
 }
 
-export function getCoreModuleEntries(): CoreModuleEntry[] {
+export function getCoreModuleEntries(userRoles: string[]): CoreModuleEntry[] {
     const moduleNavigationFiles = import.meta.glob('../../../../*/resources/js/config/module-navigation.json', {
         eager: true,
         import: 'default',
@@ -29,9 +31,13 @@ export function getCoreModuleEntries(): CoreModuleEntry[] {
                 return null;
             }
 
+            if (!hasRoleAccess(navigation.module.roles, userRoles)) {
+                return null;
+            }
+
             return loadModuleValue<CoreModuleEntry | null>(
                 moduleName,
-                () => buildCoreModuleEntry(moduleName, navigation),
+                () => buildCoreModuleEntry(moduleName, navigation, userRoles),
                 null,
             );
         })
@@ -97,18 +103,25 @@ export function useCoreMenuHashSection(moduleEntries: Ref<CoreModuleEntry[]>) {
     };
 }
 
-function buildCoreModuleEntry(moduleName: string, navigation: ModuleNavigationConfig): CoreModuleEntry | null {
+function buildCoreModuleEntry(
+    moduleName: string,
+    navigation: ModuleNavigationConfig,
+    userRoles: string[],
+): CoreModuleEntry | null {
     const menu = getModuleCoreMenu(navigation);
 
     if (!menu) {
         return null;
     }
 
+    const allFeatures = getModuleHubItems(navigation);
+    const filteredFeatures = filterPagesByRoles(allFeatures, userRoles);
+
     return {
         moduleName,
         menu,
         hubConfig: getModuleHubConfig(navigation),
-        features: getModuleHubItems(navigation),
+        features: filteredFeatures,
     };
 }
 

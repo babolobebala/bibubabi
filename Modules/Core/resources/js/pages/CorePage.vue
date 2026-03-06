@@ -3,18 +3,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { media } from '@/lib/media';
 import { Link } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import { ChevronRight, Grid3X3, List, Search, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
 import {
-    getModuleHubBreadcrumbs,
     type ModuleNavigationBreadcrumbItem,
     type ModuleNavigationMenuItem,
 } from '../../../../Shared/resources/js/lib/module-navigation';
-import coreNavigation from '../config/module-navigation.json';
 import { getCoreModuleEntries, useCoreMenuHashSection } from '../lib/core-menu';
 
-const moduleEntries = ref(getCoreModuleEntries());
+const HOME_BREADCRUMBS: ModuleNavigationBreadcrumbItem[] = [{ label: 'Home' }];
+
+const userRoles = (usePage().props.auth as { roles?: string[] })?.roles ?? [];
+const moduleEntries = ref(getCoreModuleEntries(userRoles));
 const { activeModuleKey, clearHash, setHash } = useCoreMenuHashSection(moduleEntries);
 
 type CoreMenuUiItem = Omit<ModuleNavigationMenuItem, 'href'> & {
@@ -106,7 +108,7 @@ function markBrokenIcon(itemKey: string): void {
 
 <template>
     <div>
-        <ModuleContentShell :breadcrumbs="activeModule ? menuBreadcrumbs : getModuleHubBreadcrumbs(coreNavigation)" body-variant="hub">
+        <ModuleContentShell :breadcrumbs="activeModule ? menuBreadcrumbs : HOME_BREADCRUMBS" body-variant="hub">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 shadow-sm">
                     <Search class="h-4 w-4 text-muted-foreground" />
