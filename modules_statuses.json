@@ -3,5 +3,6 @@
     "Know": true,
     "Core": true,
     "Tool": true,
-    "Shared": true
+    "Shared": true,
+    "Admin": true
 }

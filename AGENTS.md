@@ -46,11 +46,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `pnpm run build`, `pnpm run dev`, or `composer run dev`. Ask them.
 
-## Public Auth UI
-
-- Untuk entry login di halaman publik/landing, gunakan komponen `Dialog` dari shadcn-vue, bukan redirect langsung dari tombol navbar.
-- Gunakan pewarnaan semantik shadcn/Tailwind seperti `primary`, `secondary`, `muted`, `destructive`, `border`, dan `ring`; hindari warna hard-coded jika komponen UI sudah punya token semantik.
-
 ## Documentation Files
 
 - You must only create documentation files if explicitly requested by the user.
@@ -58,29 +53,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 ## Replies
 
 - Be concise in your explanations - focus on what's important rather than explaining obvious details.
-
-## Cache Standardization
-
-- Application cache is standardized as server-side cache, never browser/device cache.
-- Default shared cache store for application features should be `database` unless the user explicitly asks for Redis or another store.
-- Shared integration tokens such as Google Drive `access_token` must use Laravel cache with lock support and must not be stored in frontend code.
-- Long-lived secrets such as `GOOGLE_REFRESH_TOKEN` stay in `.env`; short-lived `access_token` values go to Laravel cache only.
-- For database cache, use the `cache` and `cache_locks` tables consistently.
-- New feature-level cache usage should read the cache store and cache keys from configuration rather than hard-coding store names in services.
-
-## Session Standardization
-
-- Application session is standardized as Laravel server-side session backed by the database driver.
-- Use `$request->session()` or Laravel auth/session APIs consistently; do not mix Laravel session handling with native `$_SESSION`.
-- OAuth state values for external integrations such as BPS SSO or Google Drive OAuth must be stored in Laravel session, not native PHP session.
-- The `sessions` table must be created and maintained via migration.
-
-## Google Drive Integration
-
-- Google Drive integration uses one admin-owned Google account connected via OAuth, while pegawai tetap login lewat auth aplikasi.
-- `GOOGLE_REFRESH_TOKEN` is treated as a long-lived backend secret and must never be exposed to frontend code or committed to version control.
-- Google Drive `access_token` is cached server-side through Laravel cache with a lock-backed refresh flow.
-- The current default shared persistence for this project is: `sessions` in database, cache in database, queue in database.
 
 === boost rules ===
 
@@ -289,8 +261,6 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 
 Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
-
-
 
 === tailwindcss/core rules ===
 
