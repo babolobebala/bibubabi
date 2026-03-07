@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         $users = User::query()
             ->with('roles')
-            ->orderBy('nama')
+            ->orderBy('nip_baru')
             ->get()
             ->map(fn (User $user) => [
                 'id' => $user->id,

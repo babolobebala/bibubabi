@@ -84,7 +84,7 @@ export const userColumns: ColumnDef<UserItem>[] = [
                 'button',
                 {
                     class: [
-                        'flex h-6 w-6 items-center justify-center rounded-full border transition-colors',
+                        'flex h-6 w-6 items-center justify-center rounded-full border transition-colors cursor-pointer',
                         row.getIsExpanded()
                             ? 'border-foreground/30 bg-foreground/10 text-foreground'
                             : 'border-border bg-transparent text-muted-foreground hover:border-foreground/30 hover:bg-muted',
@@ -111,18 +111,26 @@ export const userColumns: ColumnDef<UserItem>[] = [
                     h('img', {
                         src: row.original.url_foto
                             ? media + row.original.url_foto
-                            : '/img/illustrations/avatar.png',
+                            : media + 'img/avatar/default.png',
                         alt: row.original.nama,
                         class: 'h-full w-full object-cover',
                         onError: (e: Event) => {
                             (e.target as HTMLImageElement).src =
-                                '/img/illustrations/avatar.png';
+                                media + 'img/avatar/default.png';
                         },
                     }),
                     h(AvatarFallback, { class: 'text-[10px]' }, () => ''),
                 ]),
-                h('span', { class: 'truncate text-sm font-medium' }, row.original.nama),
+                h('span', { class: 'truncate text-xs sm:text-sm font-medium' }, row.original.nama),
             ]),
+    },
+
+    // Kolom 3: Email Gmail
+    {
+        accessorKey: 'email_gmail',
+        header: 'Email',
+        cell: ({ row }) => h('span', { class: 'text-sm text-foreground' }, row.original.email_gmail ?? '-'),
+        meta: { hideOnMobile: true },
     },
 
     // Kolom 3: Status pegawai (badge)

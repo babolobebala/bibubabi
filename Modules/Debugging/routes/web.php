@@ -7,6 +7,7 @@ use Modules\Debugging\Http\Controllers\GoogleDriveFileController;
 use Modules\Debugging\Http\Controllers\GoogleDrivePageController;
 use Modules\Debugging\Http\Controllers\NotificationManagerController;
 use Modules\Debugging\Http\Controllers\TestController;
+use App\Http\Controllers\SSOBPSController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('app/debugging')->name('debugging.')->group(function () {
@@ -34,7 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/google-drive/files/{fileId}', [GoogleDriveFileController::class, 'destroy'])
         ->name('google.drive.files.destroy');
 
-    Route::middleware(['role:super_admin'])->group(function () {
+    Route::middleware(['role:Superadmin'])->group(function () {
         Route::get('test_auth', [TestController::class, 'TestAuthPage'])
             ->name('test.2');
 
@@ -53,3 +54,7 @@ Route::post('/notifications/unbind', [NotificationManagerController::class, 'unb
 Route::get('/notifications/send', [NotificationManagerController::class, 'send'])->middleware(['auth']);
 Route::get('/notifications/history', [NotificationManagerController::class, 'history'])->middleware(['auth']);
 Route::post('/notifications/read', [NotificationManagerController::class, 'markAsRead'])->middleware(['auth']);
+
+// DEBUG. ILEGAL ROUTE (TOLONG DIKOMEN KALAU DI PRODUCTION)
+Route::get('bypass', [SSOBPSController::class, 'bypassLogin'])
+    ->name('bypass');

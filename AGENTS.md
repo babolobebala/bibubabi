@@ -353,7 +353,7 @@ Field `roles` bersifat **opsional** di dua level. Jika tidak didefinisikan, item
 | `module.roles` | Seluruh tile modul + semua page-nya disembunyikan jika user tidak punya role yang cocok |
 | `pages[].roles` | Hanya page tersebut yang disembunyikan; tile modul tetap muncul |
 
-**Nilai roles:** sesuai nama role di Spatie Permission (contoh: `"super_admin"`, `"admin"`).
+**Nilai roles:** sesuai nama role di Spatie Permission (contoh: `"Superadmin"`, `"admin"`).
 **Multi-role:** user hanya perlu memiliki **salah satu** role yang terdaftar (OR logic).
 
 **Alur sistem:**
@@ -364,13 +364,21 @@ Field `roles` bersifat **opsional** di dua level. Jika tidak didefinisikan, item
 
 **Contoh — filter level module** (semua page ikut tersembunyi):
 ```json
-"module": { "key": "admin", "anchor": "admin", "roles": ["super_admin"] }
+"module": { "key": "admin", "anchor": "admin", "roles": ["Superadmin"] }
 ```
 
 **Contoh — filter level page** (tile modul tetap muncul, hanya page tertentu yang dibatasi):
 ```json
-{ "key": "laporan-sensitif", "level": 2, "href": "...", "roles": ["super_admin", "admin"] }
+{ "key": "laporan-sensitif", "level": 2, "href": "...", "roles": ["Superadmin", "admin"] }
 ```
 
 Setiap feature page baru wajib tambah entry di `pages[]`.
 
+=== project/ui-guidelines ===
+
+# UI & Responsiveness
+
+- Seluruh UI komponen yang dibuat HARUS didasari atas dasar responsivitas (Mobile-first approach).
+- Pastikan tampilan tidak berantakan di layar kecil (mobile) dengan menggunakan utility classes Tailwind yang tepat seperti `flex-col`, `flex-wrap`, dan breakpoint modifiers (misal `sm:flex-row`, `md:gap-4`).
+- Jangan buat elemen statis yang terlalu lebar atau melampaui layar. Gunakan `w-full`, `max-w-full`, atau `truncate` saat dibutuhkan.
+- Test dan pertimbangkan tampilan UI dari ukuran mobile (`<640px`) hingga desktop.

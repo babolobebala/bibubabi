@@ -58,10 +58,10 @@ class MinimalistSeeder extends Seeder
         }
 
         // ROLE
-        Role::create(['name' => 'super_admin', 'description' => 'Memiliki semua akses dan kontrol penuh terhadap sistem.']);
+        Role::create(['name' => 'Superadmin', 'description' => 'Memiliki semua akses dan kontrol penuh terhadap sistem.']);
 
         // ROLE-USER
         $user1 = User::where('username', 'fatihwisesa')->first();
-        $user1->assignRole(['super_admin']);
+        $user1->assignRole(['Superadmin']);
     }
 }

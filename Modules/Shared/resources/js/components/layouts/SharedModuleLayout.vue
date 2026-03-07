@@ -34,17 +34,10 @@ const authUser = computed(() => (page.props.auth as any)?.user ?? null);
 
 const userFotoUrl = computed(() => {
     const foto = authUser.value?.url_foto;
-    return foto ? (foto.startsWith('http') ? foto : media + foto) : null;
+    return foto ? (foto.startsWith('http') ? foto : media + foto) : media + 'img/avatar/default.png';
 });
 
-const userInitials = computed(() => {
-    const nama: string = authUser.value?.nama ?? '';
-    return nama
-        .split(' ')
-        .slice(0, 2)
-        .map((w: string) => w[0]?.toUpperCase() ?? '')
-        .join('');
-});
+
 
 const authRoles = computed(() => (page.props.auth as any)?.roles ?? []);
 
@@ -105,18 +98,21 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
 
             <header class="border-b border-border bg-background/90 backdrop-blur">
                 <div class="mx-auto flex h-13 max-w-400 items-center justify-between px-4 sm:h-14 sm:px-6">
-
                     <!-- Kiri: Mobile → Avatar + Nama -->
                     <div class="flex items-center gap-2.5 lg:hidden">
                         <Avatar class="h-8 w-8 ring-2 ring-primary/80 ring-offset-1 ring-offset-background">
-                            <AvatarImage v-if="userFotoUrl" :src="userFotoUrl" :alt="authUser?.nama ?? 'Foto'" class="h-full w-full object-cover object-top" />
+                            <AvatarImage
+                                v-if="userFotoUrl"
+                                :src="userFotoUrl"
+                                :alt="authUser?.nama ?? 'Foto'"
+                                class="h-full w-full object-cover object-top"
+                            />
                             <AvatarFallback class="bg-muted text-[10px] font-bold text-primary">
-                                {{ userInitials || '?' }}
+                                <img :src="media + 'img/avatar/default.png'" alt="Default Foto" class="h-full w-full object-cover object-top" />
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <p class="text-sm font-semibold leading-tight text-foreground">{{ authUser?.nama ?? '-' }}</p>
-                            <p class="text-[11px] text-muted-foreground">{{ authUser?.nip ?? '' }}</p>
+                            <p class="text-sm leading-tight font-semibold text-foreground">{{ authUser?.nama ?? '-' }}</p>
                         </div>
                     </div>
 
@@ -154,8 +150,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                     class="h-full w-full object-cover object-top"
                                 />
                                 <AvatarFallback class="bg-muted text-muted-foreground">
-                                    <span v-if="userInitials" class="text-lg font-bold text-primary">{{ userInitials }}</span>
-                                    <CircleUserRound v-else class="h-10 w-10" />
+                                    <img :src="media + 'img/avatar/default.png'" alt="Default Foto" class="h-full w-full object-cover object-top" />
                                 </AvatarFallback>
                             </Avatar>
 
@@ -221,8 +216,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                                 class="h-full w-full object-cover object-top"
                                             />
                                             <AvatarFallback class="bg-muted text-muted-foreground">
-                                                <span v-if="userInitials" class="text-2xl font-bold text-primary">{{ userInitials }}</span>
-                                                <CircleUserRound v-else class="h-14 w-14" />
+                                                <img :src="media + 'img/avatar/default.png'" alt="Default Foto" class="h-full w-full object-cover object-top" />
                                             </AvatarFallback>
                                         </Avatar>
 

@@ -4,9 +4,6 @@ use App\Http\Controllers\PasswordLoginController;
 use App\Http\Controllers\SSOBPSController;
 use Illuminate\Support\Facades\Route;
 
-// DEBUG. ILEGAL ROUTE (TOLONG DIKOMEN KALAU DI PRODUCTION)
-Route::get('bypass', [SSOBPSController::class, 'bypassLogin'])
-    ->name('bypass');
 
 // SSO Route
 Route::get('/', [SSOBPSController::class, 'ssoBPSRedirect'])

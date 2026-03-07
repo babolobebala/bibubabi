@@ -61,7 +61,7 @@ const multiFieldFilterFn: FilterFn<TData> = (row, _columnId, filterValue: string
     const fields = props.searchFields ?? [];
     return fields.some((field) => {
         const value = (row.original as Record<string, unknown>)[field];
-        // Support array field (misal: roles: ['admin', 'super_admin'])
+        // Support array field (misal: roles: ['admin', 'Superadmin'])
         if (Array.isArray(value)) {
             return value.some((v) => String(v ?? '').toLowerCase().includes(keyword));
         }
@@ -151,14 +151,14 @@ const showSearch = computed(() => isMultiField.value || !!activeSearchColumn.val
         <!-- Search -->
         <div
             v-if="showSearch"
-            class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 shadow-sm"
+            class="flex w-full max-w-sm items-center gap-2 rounded-lg border border-input bg-background px-3 h-9 shadow-sm"
         >
             <Search class="h-4 w-4 shrink-0 text-muted-foreground" />
             <Input
                 :model-value="searchValue"
                 type="text"
                 :placeholder="searchPlaceholder"
-                class="border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
+                class="border-0 bg-transparent p-0 h-full text-xs sm:text-sm shadow-none focus-visible:ring-0"
                 @update:model-value="onSearchInput(String($event))"
             />
         </div>

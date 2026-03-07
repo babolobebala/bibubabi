@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
     <br />
     <a href="/notifications/send?target=all">Send to all users</a>
     <br />
-    <a href="/notifications/send?target=role&role=super_admin">Send to super_admin users</a>
+    <a href="/notifications/send?target=role&role=Superadmin">Send to Superadmin users</a>
 
     <div class="mt-4 rounded-md border p-3">
         <div class="mb-2 flex items-center justify-between">

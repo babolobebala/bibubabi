@@ -152,7 +152,7 @@ class NotificationManagerController extends Controller
         }
 
         $target = $req->query('target', 'self');
-        $role = $req->query('role', 'super_admin');
+        $role = $req->query('role', 'Superadmin');
 
         try {
             if ($target === 'all') {

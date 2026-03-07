@@ -16,7 +16,7 @@ class GoogleDrivePageController extends Controller
         $user = $request->user();
 
         return Inertia::render('debugging::GoogleDrivePage', [
-            'canConnectGoogleDrive' => $user instanceof User && $user->hasRole('super_admin'),
+            'canConnectGoogleDrive' => $user instanceof User && $user->hasRole('Superadmin'),
             'hasGoogleRefreshToken' => config('services.google.refresh_token') !== null
                 && config('services.google.refresh_token') !== '',
             'googleDriveFolderId' => config('services.google.drive_folder_id'),

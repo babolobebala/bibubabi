@@ -6,7 +6,7 @@
         "anchor": "admin",
         "description": "Pengelolaan akun pengguna dan hak akses sistem.",
         "iconImage": "img/logo/logo.png",
-        "roles": ["super_admin"]
+        "roles": ["Superadmin"]
     },
     "pages": [
         {
