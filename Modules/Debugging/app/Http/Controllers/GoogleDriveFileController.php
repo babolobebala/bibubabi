@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Modules\Debugging\Http\Controllers;
+
+use App\Http\Controllers\Controller;
 
 use App\Http\Requests\GoogleDriveListFilesRequest;
 use App\Http\Requests\StoreGoogleDriveFileRequest;

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Modules\Debugging\Http\Controllers;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,7 +15,7 @@ class GoogleDrivePageController extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('GoogleDrivePage', [
+        return Inertia::render('debugging::GoogleDrivePage', [
             'canConnectGoogleDrive' => $user instanceof User && $user->hasRole('super_admin'),
             'hasGoogleRefreshToken' => config('services.google.refresh_token') !== null
                 && config('services.google.refresh_token') !== '',

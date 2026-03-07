@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Modules\Debugging\Http\Controllers;
+
+use App\Http\Controllers\Controller;
 
 use App\Services\GoogleDriveService;
 use Illuminate\Http\RedirectResponse;
