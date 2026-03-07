@@ -1,0 +1,11 @@
+{
+    "name": "Debugging",
+    "alias": "debugging",
+    "description": "Alat bantu debugging dan pemantauan sistem.",
+    "keywords": ["debugging", "monitoring", "devtools"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Debugging\\Providers\\DebuggingServiceProvider"
+    ],
+    "files": []
+}

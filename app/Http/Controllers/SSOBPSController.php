@@ -46,12 +46,12 @@ class SSOBPSController extends Controller
                 'code' => $code,
             ]);
         } catch (Throwable $exception) {
-            return response('Gagal mendapatkan akses token : '.$exception->getMessage(), 500);
+            return response('Gagal mendapatkan akses token : ' . $exception->getMessage(), 500);
         }
 
         try {
             $dataSso = $provider->getResourceOwner($token);
-            $kodeSatker = $dataSso->getKodeProvinsi().$dataSso->getKodeKabupaten();
+            $kodeSatker = $dataSso->getKodeProvinsi() . $dataSso->getKodeKabupaten();
 
             if ($kodeSatker !== '5207') {
                 return redirect('login')->with('bps', 'Maaf, Aplikasi Ini Hanya Untuk Pegawai BPS Kabupaten Sumbawa Barat, Provinsi Nusa Tenggara Barat');
@@ -68,7 +68,7 @@ class SSOBPSController extends Controller
                     'email_bps' => $dataSso->getEmail(),
                     'golongan' => $dataSso->getGolongan(),
                     'jabatan' => $dataSso->getJabatan(),
-                    'url_foto' => $dataSso->getUrlFoto(),
+                    'url_foto' => null,
                 ]);
             } else {
                 $user->update([
@@ -78,7 +78,6 @@ class SSOBPSController extends Controller
                     'nama' => $dataSso->getName(),
                     'golongan' => $dataSso->getGolongan(),
                     'jabatan' => $dataSso->getJabatan(),
-                    'url_foto' => $dataSso->getUrlFoto(),
                 ]);
             }
 
@@ -87,7 +86,7 @@ class SSOBPSController extends Controller
 
             return redirect('/');
         } catch (Throwable $exception) {
-            return response('Gagal login: '.$exception->getMessage(), 500);
+            return response('Gagal login: ' . $exception->getMessage(), 500);
         }
     }
 
@@ -140,7 +139,7 @@ class SSOBPSController extends Controller
 
             return redirect('/');
         } catch (Throwable $exception) {
-            return response('Gagal bypass: '.$exception->getMessage(), 500);
+            return response('Gagal bypass: ' . $exception->getMessage(), 500);
         }
     }
 

@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/debugging",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Debugging\\": "app/",
+            "Modules\\Debugging\\Database\\Factories\\": "database/factories/",
+            "Modules\\Debugging\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Debugging\\Tests\\": "tests/"
+        }
+    }
+}

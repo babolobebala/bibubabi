@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { media } from '@/lib/media';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Bell, CircleUserRound, House, LayoutGrid, LogOut } from 'lucide-vue-next';
+import { Bell, ChevronDown, CircleUserRound, Eye, House, LayoutGrid, LogOut } from 'lucide-vue-next';
 import type { Component } from 'vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 interface SharedNavItem {
     key: string;
@@ -28,12 +30,25 @@ const fixedHeader = {
     subtitle: 'Satu Aplikasi untuk Kinerja Unggul',
 };
 
-const fixedProfile = {
-    name: 'Fatih Mahawisesa',
-    id: '200206252024121002',
-    unit: 'BPS Kabupaten Sumbawa Barat',
-    organization: 'Badan Pusat Statistik Wilayah Kanreg Denpasar',
-};
+const authUser = computed(() => (page.props.auth as any)?.user ?? null);
+
+const userFotoUrl = computed(() => {
+    const foto = authUser.value?.url_foto;
+    return foto ? (foto.startsWith('http') ? foto : media + foto) : null;
+});
+
+const userInitials = computed(() => {
+    const nama: string = authUser.value?.nama ?? '';
+    return nama
+        .split(' ')
+        .slice(0, 2)
+        .map((w: string) => w[0]?.toUpperCase() ?? '')
+        .join('');
+});
+
+const authRoles = computed(() => (page.props.auth as any)?.roles ?? []);
+
+const rolesOpen = ref(false);
 
 const fixedNavItems: SharedNavItem[] = [
     { key: 'beranda', label: 'Beranda', icon: House, href: '/app', match: ['/app'] },
@@ -90,14 +105,31 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
 
             <header class="border-b border-border bg-background/90 backdrop-blur">
                 <div class="mx-auto flex h-13 max-w-400 items-center justify-between px-4 sm:h-14 sm:px-6">
-                    <div class="flex items-center gap-3">
+
+                    <!-- Kiri: Mobile → Avatar + Nama -->
+                    <div class="flex items-center gap-2.5 lg:hidden">
+                        <Avatar class="h-8 w-8 ring-2 ring-primary/80 ring-offset-1 ring-offset-background">
+                            <AvatarImage v-if="userFotoUrl" :src="userFotoUrl" :alt="authUser?.nama ?? 'Foto'" class="h-full w-full object-cover object-top" />
+                            <AvatarFallback class="bg-muted text-[10px] font-bold text-primary">
+                                {{ userInitials || '?' }}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p class="text-sm font-semibold leading-tight text-foreground">{{ authUser?.nama ?? '-' }}</p>
+                            <p class="text-[11px] text-muted-foreground">{{ authUser?.nip ?? '' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Kiri: Desktop → Logo + Judul -->
+                    <div class="hidden items-center gap-3 lg:flex">
                         <img :src="media + 'img/logo/saku.png'" alt="SAKU" class="h-12 w-auto sm:h-14" />
-                        <div class="">
+                        <div>
                             <p class="text-sm font-semibold text-foreground">{{ fixedHeader.title }}</p>
                             <p class="text-xs text-muted-foreground">{{ fixedHeader.subtitle }}</p>
                         </div>
                     </div>
 
+                    <!-- Kanan: Logout (sama di semua ukuran) -->
                     <Button as-child variant="default" class="cursor-pointer rounded-xl border-border px-3">
                         <Link href="/logout" class="inline-flex items-center gap-2">
                             <LogOut class="h-4 w-4" />
@@ -111,19 +143,130 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
         <main class="mx-auto grid max-w-400 gap-4 px-3 py-4 sm:gap-5 sm:px-4 sm:py-5 lg:grid-cols-[176px_minmax(0,1fr)]">
             <aside class="hidden lg:flex lg:flex-col lg:gap-4">
                 <Card class="gap-0 rounded-2xl border-border p-1.5">
-                    <CardContent class="pt-0">
+                    <CardContent class="px-2 pt-0">
                         <div class="mt-1 flex flex-col items-center text-center">
-                            <Avatar class="h-20 w-20 border-3 border-primary/90 bg-muted p-0.5 shadow-inner">
+                            <!-- Foto -->
+                            <Avatar class="h-20 w-20 shadow-inner ring-3 ring-primary/90 ring-offset-2 ring-offset-card">
+                                <AvatarImage
+                                    v-if="userFotoUrl"
+                                    :src="userFotoUrl"
+                                    :alt="authUser?.nama ?? 'Foto'"
+                                    class="h-full w-full object-cover object-top"
+                                />
                                 <AvatarFallback class="bg-muted text-muted-foreground">
-                                    <CircleUserRound class="h-10 w-10" />
+                                    <span v-if="userInitials" class="text-lg font-bold text-primary">{{ userInitials }}</span>
+                                    <CircleUserRound v-else class="h-10 w-10" />
                                 </AvatarFallback>
                             </Avatar>
-                            <h2 class="mt-3 text-sm leading-4 font-bold tracking-tight text-foreground">{{ fixedProfile.name }}</h2>
-                            <p class="mt-2 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-primary">
-                                {{ fixedProfile.id }}
-                            </p>
-                            <p class="mt-3 text-xs leading-4 font-semibold text-foreground">{{ fixedProfile.unit }}</p>
-                            <p class="mt-1 text-[11px] leading-4 text-muted-foreground">{{ fixedProfile.organization }}</p>
+
+                            <!-- Nama + Lihat Profil -->
+                            <Dialog>
+                                <div class="mt-3 flex items-center justify-center gap-1">
+                                    <h2 class="text-sm leading-tight font-bold tracking-tight text-foreground">
+                                        {{ authUser?.nama ?? '-' }}
+                                    </h2>
+                                    <DialogTrigger as-child>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="group relative h-5 w-5 shrink-0 cursor-pointer overflow-visible rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        >
+                                            <Eye class="h-3 w-3" />
+                                            <span
+                                                class="pointer-events-none absolute bottom-full left-1/2 mb-1.5 hidden -translate-x-1/2 rounded-md bg-foreground px-2 py-1 text-[10px] font-medium whitespace-nowrap text-background group-hover:block"
+                                            >
+                                                Lihat Profil
+                                            </span>
+                                        </Button>
+                                    </DialogTrigger>
+                                </div>
+
+                                <!-- Divider -->
+                                <div class="my-3 w-full border-t border-border" />
+
+                                <!-- Collapsible Role -->
+                                <Collapsible v-if="authRoles.length" v-model:open="rolesOpen" class="w-full">
+                                    <CollapsibleTrigger
+                                        class="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-1.5 text-[10px] font-semibold text-foreground transition-colors hover:bg-muted"
+                                    >
+                                        <span>Role</span>
+                                        <ChevronDown class="h-3 w-3 transition-transform duration-200" :class="{ 'rotate-180': rolesOpen }" />
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <div class="mt-1.5 flex flex-wrap gap-1">
+                                            <span
+                                                v-for="role in authRoles"
+                                                :key="role"
+                                                class="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-semibold text-primary"
+                                            >
+                                                {{ role }}
+                                            </span>
+                                        </div>
+                                    </CollapsibleContent>
+                                </Collapsible>
+
+                                <DialogContent class="max-w-sm">
+                                    <DialogHeader>
+                                        <DialogTitle>Profil Saya</DialogTitle>
+                                        <DialogDescription>Informasi akun yang sedang login.</DialogDescription>
+                                    </DialogHeader>
+
+                                    <div class="flex flex-col items-center gap-5 pt-1">
+                                        <!-- Foto besar -->
+                                        <Avatar class="h-28 w-28 shadow-md ring-3 ring-primary/90 ring-offset-2 ring-offset-background">
+                                            <AvatarImage
+                                                v-if="userFotoUrl"
+                                                :src="userFotoUrl"
+                                                :alt="authUser?.nama ?? 'Foto'"
+                                                class="h-full w-full object-cover object-top"
+                                            />
+                                            <AvatarFallback class="bg-muted text-muted-foreground">
+                                                <span v-if="userInitials" class="text-2xl font-bold text-primary">{{ userInitials }}</span>
+                                                <CircleUserRound v-else class="h-14 w-14" />
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        <!-- Nama -->
+                                        <p class="-mt-2 text-center text-base leading-tight font-bold text-foreground">
+                                            {{ authUser?.nama ?? '-' }}
+                                        </p>
+
+                                        <!-- Detail fields -->
+                                        <div class="w-full space-y-3">
+                                            <div class="space-y-0.5">
+                                                <p class="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">NIP</p>
+                                                <p class="text-sm font-medium text-foreground">{{ authUser?.nip ?? '-' }}</p>
+                                            </div>
+                                            <div class="space-y-0.5">
+                                                <p class="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">NIP Baru</p>
+                                                <p class="text-sm font-medium text-foreground">{{ authUser?.nip_baru ?? '-' }}</p>
+                                            </div>
+                                            <div class="space-y-0.5">
+                                                <p class="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">Email BPS</p>
+                                                <p class="text-sm font-medium text-foreground">{{ authUser?.email_bps ?? '-' }}</p>
+                                            </div>
+                                            <div class="space-y-0.5">
+                                                <p class="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">Gmail</p>
+                                                <p class="text-sm font-medium text-foreground">{{ authUser?.email_gmail ?? '-' }}</p>
+                                            </div>
+
+                                            <!-- Role di modal -->
+                                            <div v-if="authRoles.length" class="space-y-1.5">
+                                                <p class="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">Role</p>
+                                                <div class="flex flex-wrap gap-1.5">
+                                                    <span
+                                                        v-for="role in authRoles"
+                                                        :key="role"
+                                                        class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary capitalize"
+                                                    >
+                                                        {{ role }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </CardContent>
                 </Card>

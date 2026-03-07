@@ -58,3 +58,4 @@ jobs:
             **/vendor/**
             **/storage/**
             **/.env
+            **/Modules/Debugging/**

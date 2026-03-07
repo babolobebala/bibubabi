@@ -4,5 +4,6 @@
     "Core": true,
     "Tool": true,
     "Shared": true,
-    "Admin": true
+    "Admin": true,
+    "Debugging": true
 }

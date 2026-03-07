@@ -1,0 +1,21 @@
+{
+    "module": {
+        "key": "debugging",
+        "name": "Debugging",
+        "title": "Debugging",
+        "anchor": "debugging",
+        "description": "Alat bantu debugging dan pemantauan sistem.",
+        "iconImage": "img/logo/logo.png"
+    },
+    "pages": [
+        {
+            "key": "index",
+            "title": "Dashboard Debugging",
+            "level": 2,
+            "href": "/app/debugging",
+            "componentKey": "debugging.index",
+            "description": "Halaman utama alat bantu debugging.",
+            "iconImage": "img/logo/logo.png"
+        }
+    ]
+}
