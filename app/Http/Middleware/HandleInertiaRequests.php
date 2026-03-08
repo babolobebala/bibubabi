@@ -43,7 +43,12 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'roles' => $request->user()?->getRoleNames()->values()->all() ?? [],
             ],
-            'flash' => fn () => $request->session()->get('bps'),
+            'flash' => fn () => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+                'warning' => $request->session()->get('warning'),
+                'info' => $request->session()->get('info'),
+            ],
             'modules' => [
                 'statuses' => $this->moduleStatuses(),
             ],

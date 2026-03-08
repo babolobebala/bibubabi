@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { router, usePage } from '@inertiajs/vue3';
+import { TanStackCombobox } from '@/components/ui/form';
+import { router } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
 
@@ -18,8 +17,6 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
-
-const page = usePage();
 
 const roleForm = useForm({
     defaultValues: {
@@ -58,37 +55,13 @@ watch(
                 <DialogDescription> Konfigurasi role untuk {{ userName }}. </DialogDescription>
             </DialogHeader>
             <form @submit.prevent="roleForm.handleSubmit" class="space-y-4 py-4">
-                <roleForm.Field name="roles">
-                    <template #default="{ field }">
-                        <div class="space-y-3">
-                            <Label>Pilih Role</Label>
-                            <div class="mt-2 grid grid-cols-2 gap-3 rounded-md border bg-muted/10 p-4">
-                                <div v-for="role in availableRoles" :key="role" class="flex items-center space-x-2">
-                                    <Checkbox
-                                        :id="`role-${role}`"
-                                        :checked="field.state.value.includes(role)"
-                                        @update:checked="
-                                            (checked: boolean) => {
-                                                const val = [...field.state.value];
-                                                if (checked) {
-                                                    val.push(role);
-                                                } else {
-                                                    const ix = val.indexOf(role);
-                                                    if (ix > -1) val.splice(ix, 1);
-                                                }
-                                                field.handleChange(val);
-                                            }
-                                        "
-                                    />
-                                    <Label :for="`role-${role}`" class="cursor-pointer text-sm font-normal">{{ role }}</Label>
-                                </div>
-                            </div>
-                            <p v-if="page.props.errors?.roles" class="text-xs text-destructive">
-                                {{ page.props.errors.roles }}
-                            </p>
-                        </div>
-                    </template>
-                </roleForm.Field>
+                <TanStackCombobox
+                    :form="roleForm"
+                    name="roles"
+                    label="Pilih Role"
+                    :options="availableRoles"
+                    multiple
+                />
 
                 <DialogFooter>
                     <roleForm.Subscribe :selector="(state) => state.isSubmitting">

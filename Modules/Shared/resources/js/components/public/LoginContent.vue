@@ -11,7 +11,12 @@ interface PublicLoginContentPageProps {
     auth?: {
         user?: unknown | null;
     };
-    flash?: string | null;
+    flash?: {
+        success?: string | null;
+        error?: string | null;
+        warning?: string | null;
+        info?: string | null;
+    } | null;
 }
 
 const emit = defineEmits<{
@@ -26,7 +31,7 @@ const form = useForm({
     password: '',
 });
 
-const flashMessage = computed(() => page.props.flash ?? null);
+const flashMessage = computed(() => page.props.flash?.error ?? null);
 const isAuthenticated = computed(() => Boolean(page.props.auth?.user));
 
 watch(flashMessage, (value) => {

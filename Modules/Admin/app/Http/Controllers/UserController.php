@@ -19,7 +19,7 @@ class UserController extends Controller
             ->with('roles')
             ->orderBy('nip_baru')
             ->get()
-            ->map(fn (User $user) => [
+            ->map(fn(User $user) => [
                 'id' => $user->id,
                 'nama' => $user->nama,
                 'nip' => $user->nip,
@@ -45,7 +45,7 @@ class UserController extends Controller
     public function updatePassword(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
-            'password' => ['required', 'string', Password::min(8)->letters()->numbers(), 'confirmed'],
+            'password' => ['required', 'string', 'confirmed'],
         ]);
 
         $user->update(['password' => $validated['password']]);

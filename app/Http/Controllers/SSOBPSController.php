@@ -54,7 +54,7 @@ class SSOBPSController extends Controller
             $kodeSatker = $dataSso->getKodeProvinsi() . $dataSso->getKodeKabupaten();
 
             if ($kodeSatker !== '5207') {
-                return redirect('login')->with('bps', 'Maaf, Aplikasi Ini Hanya Untuk Pegawai BPS Kabupaten Sumbawa Barat, Provinsi Nusa Tenggara Barat');
+                return redirect('login')->with('error', 'Maaf, Aplikasi Ini Hanya Untuk Pegawai BPS Kabupaten Sumbawa Barat, Provinsi Nusa Tenggara Barat');
             }
 
             $user = User::query()->where('email_bps', $dataSso->getEmail())->first();

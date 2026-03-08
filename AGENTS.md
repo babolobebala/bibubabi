@@ -261,7 +261,32 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 
 Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
-- FORM HANDLING: Use `@tanstack/vue-form` for form management. When submitting forms to the backend, use `@inertiajs/vue3`'s `router.post()`, `router.put()`, etc., inside the TanStack form's `onSubmit` handler.
+-### FORM HANDLING
+All form handling and user input MUST utilize `@tanstack/vue-form` to ensure standard state management and robust client-side validation. **DO NOT** use default Inertia useForm wrappers for core user input logic unless handling file uploads exclusively.
+
+When building forms with Shadcn UI, you **MUST** use the custom form wrapper components (`TanStackInput`, `TanStackCheckbox`, `TanStackCombobox`) rather than manually declaring `<form.Field>`, `<Label>`, and `<Input>` tags repeatedly. 
+
+Example Usage:
+```vue
+<script setup lang="ts">
+import { TanStackInput, TanStackCombobox } from '@/components/ui/form';
+import { useForm } from '@tanstack/vue-form';
+
+const form = useForm({ defaultValues: { username: '', role: [] } });
+</script>
+
+<template>
+  <form @submit.prevent="form.handleSubmit" class="space-y-4">
+    <TanStackInput :form="form" name="username" label="Nama Pengguna" type="text" />
+    <TanStackCombobox :form="form" name="role" label="Akses" :options="['Admin', 'User']" multiple />
+  </form>
+</template>
+```
+
+### FORM VALIDATION
+Dalam kasus validasi form (misalnya panjang karakter minimal untuk password, dsb), **prioritaskan validasi diletakkan di UI/Frontend (via atribut `:validators` di komponen TanStack form)** untuk memberikan _instant feedback_ kepada pengguna. 
+- Backend (Laravel) cukup memvalidasi keamanan esensial (`required`, format type, dsb) atau status unik database (`unique:users,email`).
+- Jangan menduplikat validasi panjang karakter (`min:X`, `max:X`) terlalu ketat di backend jika itu di-*handle* sepenuhnya secara dinamis oleh frontend, kecuali untuk menjaga *security* di endpoint API public.
 
 === tailwindcss/core rules ===
 

@@ -2,6 +2,7 @@ import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { Component, DefineComponent } from 'vue';
 import { createApp, Fragment, h } from 'vue';
+import FlashMessageListener from '@/components/common/FlashMessageListener.vue';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton.vue';
 import { Toaster } from '@/components/ui/sonner';
 import { autoSubscribePushForAuthenticatedUser, cleanupPushSubscriptionBinding } from '@/lib/push-auto-subscribe';
@@ -23,11 +24,12 @@ createInertiaApp({
             render: () =>
                 h(Fragment, [
                     h(App, props),
+                    h(FlashMessageListener),
                     h(Toaster, {
                         richColors: true,
                         position: 'top-right',
                         closeButton: false,
-                        duration: 2000,
+                        duration: 5000,
                     }),
                     h(ScrollToTopButton),
                 ]),
