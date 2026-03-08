@@ -41,7 +41,12 @@ export function getCoreModuleEntries(userRoles: string[]): CoreModuleEntry[] {
                 null,
             );
         })
-        .filter((item): item is CoreModuleEntry => item !== null);
+        .filter((item): item is CoreModuleEntry => item !== null)
+        .sort((a, b) => {
+            const orderA = a.menu.order ?? 999;
+            const orderB = b.menu.order ?? 999;
+            return orderA - orderB;
+        });
 }
 
 export function useCoreMenuHashSection(moduleEntries: Ref<CoreModuleEntry[]>) {

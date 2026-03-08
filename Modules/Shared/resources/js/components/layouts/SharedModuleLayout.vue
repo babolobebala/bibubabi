@@ -6,9 +6,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { media } from '@/lib/media';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Bell, ChevronDown, CircleUserRound, Eye, House, LayoutGrid, LogOut } from 'lucide-vue-next';
+import { Bell, ChevronDown, CircleUserRound, Eye, House, KeyRound, LayoutGrid, LogOut, Pencil } from 'lucide-vue-next';
 import type { Component } from 'vue';
 import { computed, ref } from 'vue';
+import UpdateMyEmailDialog from './UpdateMyEmailDialog.vue';
+import UpdateMyPasswordDialog from './UpdateMyPasswordDialog.vue';
 
 interface SharedNavItem {
     key: string;
@@ -37,11 +39,12 @@ const userFotoUrl = computed(() => {
     return foto ? (foto.startsWith('http') ? foto : media + foto) : media + 'img/avatar/default.png';
 });
 
-
-
 const authRoles = computed(() => (page.props.auth as any)?.roles ?? []);
 
 const rolesOpen = ref(false);
+const passwordModalOpen = ref(false);
+const emailModalOpen = ref(false);
+const profileModalOpen = ref(false);
 
 const fixedNavItems: SharedNavItem[] = [
     { key: 'beranda', label: 'Beranda', icon: House, href: '/app', match: ['/app'] },
@@ -99,7 +102,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
             <header class="border-b border-border bg-background/90 backdrop-blur">
                 <div class="mx-auto flex h-13 max-w-400 items-center justify-between px-4 sm:h-14 sm:px-6">
                     <!-- Kiri: Mobile → Avatar + Nama -->
-                    <div class="flex items-center gap-2.5 lg:hidden">
+                    <div @click="profileModalOpen = true" class="flex cursor-pointer items-center gap-2.5 lg:hidden">
                         <Avatar class="h-8 w-8 ring-2 ring-primary/80 ring-offset-1 ring-offset-background">
                             <AvatarImage
                                 v-if="userFotoUrl"
@@ -155,7 +158,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                             </Avatar>
 
                             <!-- Nama + Lihat Profil -->
-                            <Dialog>
+                            <Dialog v-model:open="profileModalOpen">
                                 <div class="mt-3 flex items-center justify-center gap-1">
                                     <h2 class="text-sm leading-tight font-bold tracking-tight text-foreground">
                                         {{ authUser?.nama ?? '-' }}
@@ -216,14 +219,28 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                                 class="h-full w-full object-cover object-top"
                                             />
                                             <AvatarFallback class="bg-muted text-muted-foreground">
-                                                <img :src="media + 'img/avatar/default.png'" alt="Default Foto" class="h-full w-full object-cover object-top" />
+                                                <img
+                                                    :src="media + 'img/avatar/default.png'"
+                                                    alt="Default Foto"
+                                                    class="h-full w-full object-cover object-top"
+                                                />
                                             </AvatarFallback>
                                         </Avatar>
 
                                         <!-- Nama -->
-                                        <p class="-mt-2 text-center text-base leading-tight font-bold text-foreground">
-                                            {{ authUser?.nama ?? '-' }}
-                                        </p>
+                                        <div class="flex flex-col items-center">
+                                            <p class="-mt-2 text-center text-base leading-tight font-bold text-foreground">
+                                                {{ authUser?.nama ?? '-' }}
+                                            </p>
+                                            <a
+                                                href="#"
+                                                @click.prevent="passwordModalOpen = true"
+                                                class="mt-1 flex cursor-pointer items-center gap-1 text-[11px] font-medium text-primary hover:underline"
+                                            >
+                                                <KeyRound class="h-3 w-3" />
+                                                Ubah Password
+                                            </a>
+                                        </div>
 
                                         <!-- Detail fields -->
                                         <div class="w-full space-y-3">
@@ -240,7 +257,17 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                                 <p class="text-sm font-medium text-foreground">{{ authUser?.email_bps ?? '-' }}</p>
                                             </div>
                                             <div class="space-y-0.5">
-                                                <p class="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">Gmail</p>
+                                                <p
+                                                    class="flex items-center gap-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase"
+                                                >
+                                                    Gmail (<button
+                                                        @click.prevent="emailModalOpen = true"
+                                                        class="flex cursor-pointer items-center gap-0.5 font-medium text-primary lowercase hover:underline"
+                                                    >
+                                                        <Pencil class="h-2.5 w-2.5" />
+                                                        ganti gmail</button
+                                                    >)
+                                                </p>
                                                 <p class="text-sm font-medium text-foreground">{{ authUser?.email_gmail ?? '-' }}</p>
                                             </div>
 
@@ -329,5 +356,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
         </nav>
 
         <div class="h-24 lg:hidden" />
+        <UpdateMyPasswordDialog v-model:open="passwordModalOpen" />
+        <UpdateMyEmailDialog v-model:open="emailModalOpen" :current-email="authUser?.email_gmail ?? null" />
     </div>
 </template>

@@ -10,12 +10,19 @@ export interface ModuleNavigationMenuItem {
     description?: string;
     componentKey?: string;
     iconImage?: string;
+    order?: number;
 }
 
 export interface ModuleNavigationPageItem extends ModuleNavigationMenuItem {
     level: number;
     parentKey?: string;
     roles?: string[];
+}
+
+export interface CoreModuleEntry {
+    menu: ModuleNavigationMenuItem;
+    hubConfig: ReturnType<typeof getModuleHubConfig>;
+    features: ModuleNavigationPageItem[];
 }
 
 export interface ModuleNavigationHubConfig {
@@ -33,6 +40,7 @@ export interface ModuleNavigationConfig {
         description?: string;
         iconImage?: string;
         roles?: string[];
+        order?: number;
     };
     pages?: ModuleNavigationPageItem[];
 }
@@ -53,6 +61,27 @@ export function getModulePagesByLevel(config: ModuleNavigationConfig, level: num
     return getModulePages(config).filter((item) => item.level === level);
 }
 
+export function getCoreModuleEntries(configs: ModuleNavigationConfig[]): CoreModuleEntry[] {
+    return configs
+        .map((config) => {
+            const menu = getModuleCoreMenu(config);
+            if (!menu) {
+                return null;
+            }
+            return {
+                menu,
+                hubConfig: getModuleHubConfig(config),
+                features: getModuleHubItems(config),
+            };
+        })
+        .filter((item) => item !== null)
+        .sort((a, b) => {
+            const orderA = a.menu.order ?? 999;
+            const orderB = b.menu.order ?? 999;
+            return orderA - orderB;
+        });
+}
+
 export function getModulePageByKey(config: ModuleNavigationConfig, pageKey: string): ModuleNavigationPageItem | null {
     return getModulePages(config).find((item) => item.key === pageKey) ?? null;
 }
@@ -70,6 +99,7 @@ export function getModuleCoreMenu(config: ModuleNavigationConfig): ModuleNavigat
         href: `/app#${anchor}`,
         description: config.module.description,
         iconImage: config.module.iconImage,
+        order: config.module.order,
     };
 }
 

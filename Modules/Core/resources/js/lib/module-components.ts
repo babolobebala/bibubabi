@@ -13,7 +13,8 @@ export function loadModuleValue<T>(
     resolver: () => T,
     fallback: T,
 ): T {
-    const statuses = (usePage().props.modules?.statuses ?? {}) as ModuleStatuses;
+    const props = usePage().props as unknown as { modules?: { statuses?: ModuleStatuses } };
+    const statuses = props.modules?.statuses ?? {};
 
     if (!statuses[moduleName]) {
         return fallback;
@@ -26,7 +27,8 @@ export function loadModuleComponent(
     moduleName: string,
     loader: () => Promise<{ default: Component }>,
 ): Component {
-    const statuses = (usePage().props.modules?.statuses ?? {}) as ModuleStatuses;
+    const props = usePage().props as unknown as { modules?: { statuses?: ModuleStatuses } };
+    const statuses = props.modules?.statuses ?? {};
 
     if (!statuses[moduleName]) {
         return EmptyComponent;

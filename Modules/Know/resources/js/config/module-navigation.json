@@ -4,8 +4,8 @@
         "name": "Know",
         "title": "Know",
         "anchor": "know",
-        "description": "Kelola knowledge dan dokumentasi internal.",
-        "iconImage": "img/logo/logo.png"
+        "iconImage": "img/logo/logo.png",
+        "order": 3
     },
     "pages": [
         {

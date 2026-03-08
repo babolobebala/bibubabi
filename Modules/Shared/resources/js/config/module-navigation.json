@@ -4,8 +4,8 @@
         "name": "Shared",
         "title": "Aplikasi Eksternal BPS",
         "anchor": "external-bps",
-        "description": "Kumpulan aplikasi dan layanan eksternal BPS yang sering diakses.",
-        "iconImage": "img/logo/logo.png"
+        "iconImage": "img/logo/logo.png",
+        "order": 4
     },
     "pages": [
         {

@@ -2,11 +2,12 @@
     "module": {
         "key": "admin",
         "name": "Admin",
-        "title": "Administrasi",
+        "title": "Menu Admin",
         "anchor": "admin",
         "description": "Pengelolaan akun pengguna dan hak akses sistem.",
         "iconImage": "img/logo/logo.png",
-        "roles": ["Superadmin"]
+        "roles": ["Superadmin"],
+        "order": 1
     },
     "pages": [
         {

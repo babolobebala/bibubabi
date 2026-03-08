@@ -4,8 +4,8 @@
         "name": "Tool",
         "title": "Tools",
         "anchor": "tools",
-        "description": "Kumpulan utilitas seperti geotagging gambar dan tools operasional lain.",
-        "iconImage": "img/logo/logo.png"
+        "iconImage": "img/logo/logo.png",
+        "order": 5
     },
     "pages": [
         {
