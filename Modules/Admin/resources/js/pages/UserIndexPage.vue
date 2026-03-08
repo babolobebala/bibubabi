@@ -3,10 +3,10 @@ import { DataTable } from '@/components/ui/data-table';
 import { computed, ref } from 'vue';
 import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
 import { getModulePageBreadcrumbs, type ModuleNavigationConfig } from '../../../../Shared/resources/js/lib/module-navigation';
-import UpdatePasswordDialog from '../components/UpdatePasswordDialog.vue';
-import UpdateRoleDialog from '../components/UpdateRoleDialog.vue';
-import { getUserColumns, type UserItem } from '../components/user-columns';
-import UserExpandedRow from '../components/UserExpandedRow.vue';
+import UpdatePasswordDialog from '../components/user/UpdatePasswordDialog.vue';
+import UpdateProfileDialog from '../components/user/UpdateProfileDialog.vue';
+import { getUserColumns, type UserItem } from '../components/user/user-columns';
+import UserExpandedRow from '../components/user/UserExpandedRow.vue';
 import moduleNavigation from '../config/module-navigation.json';
 
 const props = defineProps<{
@@ -17,7 +17,7 @@ const props = defineProps<{
 const breadcrumbs = getModulePageBreadcrumbs(moduleNavigation as ModuleNavigationConfig, 'users');
 
 const passwordModalOpen = ref(false);
-const roleModalOpen = ref(false);
+const profileModalOpen = ref(false);
 const selectedUserId = ref<number | null>(null);
 
 const selectedUser = computed(() => {
@@ -25,9 +25,9 @@ const selectedUser = computed(() => {
     return props.users.find((u) => u.id === selectedUserId.value) || null;
 });
 
-const openRoleModal = (id: number) => {
+const openProfileModal = (id: number) => {
     selectedUserId.value = id;
-    roleModalOpen.value = true;
+    profileModalOpen.value = true;
 };
 
 const openPasswordModal = (id: number) => {
@@ -38,7 +38,7 @@ const openPasswordModal = (id: number) => {
 const columns = computed(() =>
     getUserColumns({
         onEditPassword: openPasswordModal,
-        onEditRole: openRoleModal,
+        onEditProfile: openProfileModal,
     }),
 );
 </script>
@@ -61,13 +61,15 @@ const columns = computed(() =>
             </DataTable>
         </div>
 
-        <!-- Dialog Ubah Role -->
-        <UpdateRoleDialog
-            v-model:open="roleModalOpen"
+        <!-- Dialog Ubah Profil -->
+        <UpdateProfileDialog
+            v-model:open="profileModalOpen"
             :user-id="selectedUserId"
             :user-name="selectedUser?.nama || 'Pengguna'"
             :current-user-roles="selectedUser?.roles || []"
             :available-roles="roles"
+            :email-gmail="selectedUser?.email_gmail || null"
+            :status-pegawai="selectedUser?.status_pegawai || null"
         />
 
         <!-- Dialog Ubah Password -->

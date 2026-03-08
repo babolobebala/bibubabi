@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
-import type { UserItem } from '../components/user-columns';
+import type { UserItem } from './user-columns';
 
 defineProps<{
     original: UserItem;

@@ -13,7 +13,7 @@ import {
     getSortedRowModel,
     useVueTable,
 } from '@tanstack/vue-table';
-import { Search } from 'lucide-vue-next';
+import { ArrowDown, ArrowUp, ChevronsUpDown, Search } from 'lucide-vue-next';
 import { computed, ref, useSlots } from 'vue';
 import { Input } from '@/components/ui/input';
 import {
@@ -188,11 +188,30 @@ const showSearch = computed(() => isMultiField.value || !!activeSearchColumn.val
                                 header.column.getCanSort() && header.column.toggleSorting()
                             "
                         >
-                            <FlexRender
+                            <div
                                 v-if="!header.isPlaceholder"
-                                :render="header.column.columnDef.header"
-                                :props="header.getContext()"
-                            />
+                                class="flex items-center gap-2"
+                                :class="header.column.getCanSort() ? 'hover:text-foreground' : ''"
+                            >
+                                <FlexRender
+                                    :render="header.column.columnDef.header"
+                                    :props="header.getContext()"
+                                />
+                                <template v-if="header.column.getCanSort()">
+                                    <ArrowUp
+                                        v-if="header.column.getIsSorted() === 'asc'"
+                                        class="h-3.5 w-3.5 text-foreground"
+                                    />
+                                    <ArrowDown
+                                        v-else-if="header.column.getIsSorted() === 'desc'"
+                                        class="h-3.5 w-3.5 text-foreground"
+                                    />
+                                    <ChevronsUpDown
+                                        v-else
+                                        class="h-3.5 w-3.5 opacity-30 group-hover:opacity-100"
+                                    />
+                                </template>
+                            </div>
                         </TableHead>
                     </tr>
                 </TableHeader>

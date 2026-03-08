@@ -17,6 +17,7 @@ class UserController extends Controller
     {
         $users = User::query()
             ->with('roles')
+            ->orderByRaw("CASE WHEN LOWER(status_pegawai) = 'tidak aktif' THEN 1 ELSE 0 END")
             ->orderBy('nip_baru')
             ->get()
             ->map(fn(User $user) => [
@@ -53,15 +54,22 @@ class UserController extends Controller
         return back()->with('success', "Password {$user->nama} berhasil diubah.");
     }
 
-    public function updateRole(Request $request, User $user): RedirectResponse
+    public function updateProfile(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
+            'email_gmail' => ['nullable', 'email', 'max:255'],
+            'status_pegawai' => ['required', 'string', 'in:Aktif,Tidak Aktif'],
             'roles' => ['required', 'array'],
             'roles.*' => ['string', 'exists:roles,name'],
         ]);
 
+        $user->update([
+            'email_gmail' => $validated['email_gmail'],
+            'status_pegawai' => $validated['status_pegawai'],
+        ]);
+
         $user->syncRoles($validated['roles']);
 
-        return back()->with('success', "Role {$user->nama} berhasil diperbarui.");
+        return back()->with('success', "Profil {$user->nama} berhasil diperbarui.");
     }
 }

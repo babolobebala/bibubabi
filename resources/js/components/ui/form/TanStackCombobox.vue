@@ -1,18 +1,11 @@
 <script setup lang="ts">
-import {
-    Combobox,
-    ComboboxAnchor,
-    ComboboxEmpty,
-    ComboboxGroup,
-    ComboboxInput,
-    ComboboxItem,
-    ComboboxItemIndicator,
-    ComboboxList,
-    ComboboxTrigger,
-} from '@/components/ui/combobox';
+import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { usePage } from '@inertiajs/vue3';
-import { Check, ChevronDown, XCircle } from 'lucide-vue-next';
+import { Check, ChevronsUpDown, XCircle } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const props = defineProps<{
     form: any;
@@ -23,6 +16,8 @@ const props = defineProps<{
     validators?: any;
     multiple?: boolean;
 }>();
+
+const open = ref(false);
 </script>
 
 <template>
@@ -33,38 +28,64 @@ const props = defineProps<{
                     {{ label }}
                 </Label>
 
-                <Combobox
-                    :model-value="field.state.value"
-                    @update:model-value="(val) => field.handleChange(multiple ? ((val || []) as string[]) : (val as string))"
-                    :multiple="multiple"
-                >
-                    <ComboboxAnchor class="relative w-full">
-                        <ComboboxInput
-                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            :placeholder="placeholder || 'Pilih...'"
-                        />
-                        <ComboboxTrigger class="absolute inset-y-0 end-0 flex items-center justify-center px-3" tabindex="-1">
-                            <ChevronDown class="h-4 w-4 opacity-50" />
-                        </ComboboxTrigger>
-                    </ComboboxAnchor>
-
-                    <ComboboxList class="z-50 mt-1 max-h-60 w-(--reka-popper-anchor-width) overflow-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
-                        <ComboboxEmpty class="py-6 text-center text-sm">Opsi tidak ditemukan.</ComboboxEmpty>
-                        <ComboboxGroup>
-                            <ComboboxItem
-                                v-for="option in options"
-                                :key="option"
-                                :value="option"
-                                class="relative flex w-full cursor-default items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none select-none data-[disabled]:opacity-50 data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none"
+                <div class="block">
+                    <Popover v-model:open="open">
+                        <PopoverTrigger as-child>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                :aria-expanded="open"
+                                class="w-full justify-between font-normal"
                             >
-                                <span>{{ option }}</span>
-                                <ComboboxItemIndicator class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-                                    <Check class="h-4 w-4" />
-                                </ComboboxItemIndicator>
-                            </ComboboxItem>
-                        </ComboboxGroup>
-                    </ComboboxList>
-                </Combobox>
+                                <span v-if="!multiple && field.state.value" class="truncate">
+                                    {{ field.state.value }}
+                                </span>
+                                <span v-else-if="multiple && field.state.value && field.state.value.length > 0" class="truncate">
+                                    {{ field.state.value.length }} opsi terpilih
+                                </span>
+                                <span v-else class="text-muted-foreground">
+                                    {{ placeholder || 'Pilih...' }}
+                                </span>
+                                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <!-- Using w-(--reka-popper-anchor-width) so the popover matches the button's width -->
+                        <PopoverContent class="w-(--reka-popper-anchor-width) p-0 z-50">
+                            <Command>
+                                <CommandInput class="h-9" :placeholder="placeholder || 'Cari opsi...'" />
+                                <CommandEmpty>Opsi tidak ditemukan.</CommandEmpty>
+                                <CommandList class="max-h-48">
+                                    <CommandGroup>
+                                        <CommandItem
+                                            v-for="option in options"
+                                            :key="option"
+                                            :value="option"
+                                            @select="(ev) => {
+                                                if (multiple) {
+                                                    const current = Array.isArray(field.state.value) ? field.state.value : [];
+                                                    if (current.includes(option)) {
+                                                        field.handleChange(current.filter((r: string) => r !== option));
+                                                    } else {
+                                                        field.handleChange([...current, option]);
+                                                    }
+                                                } else {
+                                                    field.handleChange(option === field.state.value ? '' : option);
+                                                    open = false;
+                                                }
+                                            }"
+                                        >
+                                            {{ option }}
+                                            <Check
+                                                class="ml-auto h-4 w-4 transition-opacity"
+                                                :class="((multiple && Array.isArray(field.state.value) && field.state.value.includes(option)) || (!multiple && field.state.value === option)) ? 'opacity-100' : 'opacity-0'"
+                                            />
+                                        </CommandItem>
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                </div>
 
                 <!-- Selected Badges untuk Combobox Multiple -->
                 <div v-if="multiple && field.state.value && field.state.value.length > 0" class="mt-3 flex flex-wrap gap-2">

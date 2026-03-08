@@ -6,7 +6,7 @@ import {
     getModulePageBreadcrumbs,
     type ModuleNavigationConfig,
 } from '../../../../Shared/resources/js/lib/module-navigation';
-import { roleColumns, type RoleItem } from '../components/role-columns';
+import { roleColumns, type RoleItem } from '../components/role/role-columns';
 import moduleNavigation from '../config/module-navigation.json';
 
 defineProps<{
