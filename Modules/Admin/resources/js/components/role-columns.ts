@@ -11,7 +11,7 @@ export interface RoleItem {
 }
 
 function roleVariant(role: string): 'default' | 'secondary' | 'destructive' | 'outline' {
-    if (role === 'super_admin') return 'destructive';
+    if (role === 'Superadmin') return 'destructive';
     if (role === 'admin') return 'default';
     return 'secondary';
 }
