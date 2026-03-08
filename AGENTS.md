@@ -261,6 +261,7 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 
 Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
+- FORM HANDLING: Use `@tanstack/vue-form` for form management. When submitting forms to the backend, use `@inertiajs/vue3`'s `router.post()`, `router.put()`, etc., inside the TanStack form's `onSubmit` handler.
 
 === tailwindcss/core rules ===
 

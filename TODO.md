@@ -32,4 +32,6 @@ Todo 4 maret 2026
 
 10. Tambahkan debugging page semuanya ke Module Debugging. 
    ingat, menu debugging ini defaultnya adalah disable 
-   dan juga di dalam git ignore dia itu tidak include.
+   dan juga di dalam git ignore dia itu tidak include. (done)
+
+11. perbarui AI untuk menambahkan multiple select (combobox multiple select)

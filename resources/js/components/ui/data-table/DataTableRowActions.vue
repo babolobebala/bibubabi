@@ -29,7 +29,7 @@ defineProps<{
             <Button
                 variant="ghost"
                 size="icon"
-                class="h-7 w-7 text-muted-foreground data-[state=open]:bg-muted"
+                class="h-7 w-7 text-muted-foreground data-[state=open]:bg-muted cursor-pointer hover:bg-muted"
             >
                 <MoreHorizontal class="h-4 w-4" />
                 <span class="sr-only">Buka menu</span>
@@ -40,7 +40,7 @@ defineProps<{
                 <DropdownMenuSeparator v-if="action.separator && i > 0" />
                 <DropdownMenuItem
                     :class="[
-                        'gap-2 text-sm',
+                        'gap-2 text-sm cursor-pointer',
                         action.destructive
                             ? 'text-destructive focus:bg-destructive/10 focus:text-destructive'
                             : '',

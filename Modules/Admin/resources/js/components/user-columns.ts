@@ -52,29 +52,30 @@ function renderStatusBadge(status: string | null) {
     );
 }
 
-function userActions(userId: number): RowAction[] {
+function userActions(
+    userId: number,
+    onEditPassword: (id: number) => void,
+    onEditRole: (id: number) => void,
+): RowAction[] {
     return [
         {
             label: 'Ubah Password',
             icon: KeyRound,
-            onClick: () => {
-                // TODO: buka dialog ubah password, kirim ke admin.users.password
-                console.log('ubah password user id:', userId);
-            },
+            onClick: () => onEditPassword(userId),
         },
         {
             label: 'Ubah Role',
             icon: ShieldCheck,
             separator: true,
-            onClick: () => {
-                // TODO: buka dialog ubah role, kirim ke admin.users.role
-                console.log('ubah role user id:', userId);
-            },
+            onClick: () => onEditRole(userId),
         },
     ];
 }
 
-export const userColumns: ColumnDef<UserItem>[] = [
+export const getUserColumns = (actions: {
+    onEditPassword: (id: number) => void;
+    onEditRole: (id: number) => void;
+}): ColumnDef<UserItem>[] => [
     // Kolom 1: Toggle expand (Plus/Minus bulat)
     {
         id: 'expander',
@@ -147,7 +148,7 @@ export const userColumns: ColumnDef<UserItem>[] = [
         header: '',
         cell: ({ row }) =>
             h(DataTableRowActions, {
-                actions: userActions(row.original.id),
+                actions: userActions(row.original.id, actions.onEditPassword, actions.onEditRole),
             }),
         enableSorting: false,
         enableColumnFilter: false,

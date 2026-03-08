@@ -56,12 +56,12 @@ class UserController extends Controller
     public function updateRole(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
-            'role' => ['required', 'string', 'exists:roles,name'],
+            'roles' => ['required', 'array'],
+            'roles.*' => ['string', 'exists:roles,name'],
         ]);
 
-        // Ganti semua role user dengan role yang baru dipilih
-        $user->syncRoles([$validated['role']]);
+        $user->syncRoles($validated['roles']);
 
-        return back()->with('success', "Role {$user->nama} berhasil diubah menjadi {$validated['role']}.");
+        return back()->with('success', "Role {$user->nama} berhasil diperbarui.");
     }
 }
