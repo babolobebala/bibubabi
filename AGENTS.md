@@ -178,9 +178,6 @@ protected function isAccessible(User $user, ?string $path = null): bool
 ## Authentication & Authorization
 
 - Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
-- **Role-Based Access Control (RBAC)**: Untuk mengamankan rute dari eksploitasi API/Postman (walaupun menu di UI sudah disembunyikan), WAJIB membungkus *Route* dengan middleware role dari Spatie.
-    - Contoh: `Route::middleware(['auth', 'role:Superadmin'])->group(...)`.
-- **Resource/Ownership-Based Authorization**: Jika data hanya boleh diubah oleh pembuat/pemiliknya (contoh: hapus postingan sendiri), gunakan laravel **Policy** (`php artisan make:policy`) dan lindungi dengan `Gate::authorize()` di controller.
 
 ## URL Generation
 

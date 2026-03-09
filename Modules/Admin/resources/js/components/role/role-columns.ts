@@ -30,87 +30,88 @@ export const getRoleColumns = (actions: {
     onEdit: (role: RoleItem) => void;
     onDelete: (role: RoleItem) => void;
 }): ColumnDef<RoleItem>[] => [
-    // Kolom 1: Toggle expand (Plus/Minus bulat)
-    {
-        id: 'expander',
-        header: '',
-        cell: ({ row }) =>
-            h(
-                'button',
-                {
-                    class: [
-                        'flex h-6 w-6 items-center justify-center rounded-full border transition-colors cursor-pointer',
-                        row.getIsExpanded()
-                            ? 'border-foreground/30 bg-foreground/10 text-foreground'
-                            : 'border-border bg-transparent text-muted-foreground hover:border-foreground/30 hover:bg-muted',
-                    ],
-                    onClick: (e: MouseEvent) => {
-                        e.stopPropagation();
-                        row.toggleExpanded();
+        // Kolom 1: Toggle expand (Plus/Minus bulat)
+        {
+            id: 'expander',
+            header: '',
+            cell: ({ row }) =>
+                h(
+                    'button',
+                    {
+                        class: [
+                            'flex h-6 w-6 items-center justify-center rounded-full border transition-colors cursor-pointer',
+                            row.getIsExpanded()
+                                ? 'border-foreground/30 bg-foreground/10 text-foreground'
+                                : 'border-border bg-transparent text-muted-foreground hover:border-foreground/30 hover:bg-muted',
+                        ],
+                        onClick: (e: MouseEvent) => {
+                            e.stopPropagation();
+                            row.toggleExpanded();
+                        },
                     },
-                },
-                [h(row.getIsExpanded() ? Minus : Plus, { class: 'h-3 w-3' })],
-            ),
-        enableSorting: false,
-        enableColumnFilter: false,
-        meta: { headerClass: 'w-10', cellClass: 'w-10' },
-    },
-    {
-        accessorKey: 'name',
-        header: 'Nama Role',
-        enableSorting: false,
-        cell: ({ row }) =>
-            h('div', { class: 'flex items-center gap-2' }, [
-                h(Badge, { variant: roleVariant(row.original.name), class: 'text-[11px]' }, () =>
-                    row.original.name,
+                    [h(row.getIsExpanded() ? Minus : Plus, { class: 'h-3 w-3' })],
                 ),
-            ]),
-    },
-    {
-        accessorKey: 'description',
-        header: 'Deskripsi',
-        enableSorting: false,
-        cell: ({ row }) =>
-            h('span', { class: 'text-sm text-muted-foreground truncate max-w-[300px] inline-block', title: row.original.description ?? '' }, row.original.description ?? '-'),
-    },
-    {
-        accessorKey: 'users_count',
-        header: 'Jumlah User',
-        enableSorting: false,
-        cell: ({ row }) =>
-            h(
-                'span',
-                { class: 'text-sm text-muted-foreground' },
-                `${row.original.users_count} user`,
-            ),
-        enableColumnFilter: false,
-    },
-    {
-        id: 'actions',
-        header: '',
-        cell: ({ row }) =>
-            h(DataTableRowActions, {
-                actions: [
-                    {
-                        label: 'Edit Role',
-                        icon: Pencil,
-                        onClick: () => {
-                            actions.onEdit(row.original);
+            enableSorting: false,
+            enableColumnFilter: false,
+            meta: { headerClass: 'w-10', cellClass: 'w-10' },
+        },
+        {
+            accessorKey: 'name',
+            header: 'Nama Role',
+            enableSorting: false,
+            cell: ({ row }) =>
+                h('div', { class: 'flex items-center gap-2' }, [
+                    h(Badge, { variant: roleVariant(row.original.name), class: 'text-[11px]' }, () =>
+                        row.original.name,
+                    ),
+                ]),
+        },
+        {
+            accessorKey: 'description',
+            header: 'Deskripsi',
+            enableSorting: false,
+            meta: { hideOnMobile: true },
+            cell: ({ row }) =>
+                h('span', { class: 'text-sm text-muted-foreground truncate max-w-[300px] inline-block', title: row.original.description ?? '' }, row.original.description ?? '-'),
+        },
+        {
+            accessorKey: 'users_count',
+            header: 'Jumlah User',
+            enableSorting: false,
+            cell: ({ row }) =>
+                h(
+                    'span',
+                    { class: 'text-sm text-muted-foreground' },
+                    `${row.original.users_count} user`,
+                ),
+            enableColumnFilter: false,
+        },
+        {
+            id: 'actions',
+            header: '',
+            cell: ({ row }) =>
+                h(DataTableRowActions, {
+                    actions: [
+                        {
+                            label: 'Edit Role',
+                            icon: Pencil,
+                            onClick: () => {
+                                actions.onEdit(row.original);
+                            },
                         },
-                    },
-                    {
-                        label: 'Hapus Role',
-                        icon: Trash2,
-                        destructive: true,
-                        separator: true,
-                        onClick: () => {
-                            actions.onDelete(row.original);
+                        {
+                            label: 'Hapus Role',
+                            icon: Trash2,
+                            destructive: true,
+                            separator: true,
+                            onClick: () => {
+                                actions.onDelete(row.original);
+                            },
                         },
-                    },
-                ],
-            }),
-        enableSorting: false,
-        enableColumnFilter: false,
-        meta: { headerClass: 'w-10', cellClass: 'w-10' },
-    },
-];
+                    ],
+                }),
+            enableSorting: false,
+            enableColumnFilter: false,
+            meta: { headerClass: 'w-10', cellClass: 'w-10' },
+        },
+    ];
