@@ -37,6 +37,7 @@ watch(
     (isOpen) => {
         if (isOpen) {
             passwordForm.reset();
+            router.clearErrors();
         }
     },
 );

@@ -8,23 +8,20 @@ import { watch } from 'vue';
 
 const props = defineProps<{
     open: boolean;
-    userId: number | null;
-    userName: string;
 }>();
 
 const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const passwordForm = useForm({
+const createRoleForm = useForm({
     defaultValues: {
-        password: '',
-        password_confirmation: '',
+        name: '',
+        description: '',
     },
     onSubmit: async ({ value, formApi }) => {
-        if (!props.userId) return;
         return new Promise<void>((resolve) => {
-            router.put(`/app/admin/users/${props.userId}/password`, value, {
+            router.post('/app/admin/roles', value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();
@@ -39,7 +36,7 @@ watch(
     () => props.open,
     (isOpen) => {
         if (isOpen) {
-            passwordForm.reset();
+            createRoleForm.reset();
             router.clearErrors();
         }
     },
@@ -48,33 +45,31 @@ watch(
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent>
+        <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
-                <DialogTitle>Ubah Password</DialogTitle>
-                <DialogDescription> Setel ulang password untuk {{ userName }}. </DialogDescription>
+                <DialogTitle>Tambah Role</DialogTitle>
+                <DialogDescription>Buat role baru untuk sistem aplikasi.</DialogDescription>
             </DialogHeader>
-            <form @submit.prevent="passwordForm.handleSubmit" class="space-y-4 py-4">
-                <TanStackInput :form="passwordForm" name="password" type="password" label="Password Baru" placeholder="Masukkan password baru..." />
-
+            <form @submit.prevent="createRoleForm.handleSubmit" class="space-y-4 py-4">
                 <TanStackInput
-                    :form="passwordForm"
-                    name="password_confirmation"
-                    type="password"
-                    label="Konfirmasi Password Baru"
-                    placeholder="Ketik ulang password..."
+                    :form="createRoleForm"
+                    name="name"
+                    label="Nama Role *"
+                    placeholder="Misal: admin, operator, dll..."
                     :validators="{
-                        onChangeListenTo: ['password'],
-                        onChange: ({ value, fieldApi }: any) => {
-                            if (value !== fieldApi.form.getFieldValue('password')) {
-                                return 'Konfirmasi password tidak cocok.';
-                            }
-                            return undefined;
-                        },
+                        onChange: ({ value }: any) => (!value ? 'Nama Role wajib diisi' : undefined),
                     }"
                 />
 
+                <TanStackInput
+                    :form="createRoleForm"
+                    name="description"
+                    label="Deskripsi"
+                    placeholder="Jelaskan kegunaan role ini..."
+                />
+
                 <DialogFooter>
-                    <passwordForm.Subscribe :selector="(state) => state.isSubmitting">
+                    <createRoleForm.Subscribe :selector="(state) => state.isSubmitting">
                         <template #default="isSubmitting">
                             <Button
                                 type="button"
@@ -85,9 +80,9 @@ watch(
                             >
                                 Batal
                             </Button>
-                            <Button type="submit" class="cursor-pointer" :disabled="isSubmitting"> Simpan Password </Button>
+                            <Button type="submit" class="cursor-pointer" :disabled="isSubmitting">Simpan Role</Button>
                         </template>
-                    </passwordForm.Subscribe>
+                    </createRoleForm.Subscribe>
                 </DialogFooter>
             </form>
         </DialogContent>

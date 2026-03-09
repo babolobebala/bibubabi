@@ -47,6 +47,7 @@ watch(
     (isOpen) => {
         if (isOpen) {
             profileForm.reset();
+            router.clearErrors();
 
             let prefilledStatus = props.statusPegawai || '';
             if (prefilledStatus.toLowerCase() === 'aktif') prefilledStatus = 'Aktif';
