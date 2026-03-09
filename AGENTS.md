@@ -178,6 +178,9 @@ protected function isAccessible(User $user, ?string $path = null): bool
 ## Authentication & Authorization
 
 - Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
+- **Role-Based Access Control (RBAC)**: Untuk mengamankan rute dari eksploitasi API/Postman (walaupun menu di UI sudah disembunyikan), WAJIB membungkus *Route* dengan middleware role dari Spatie.
+    - Contoh: `Route::middleware(['auth', 'role:Superadmin'])->group(...)`.
+- **Resource/Ownership-Based Authorization**: Jika data hanya boleh diubah oleh pembuat/pemiliknya (contoh: hapus postingan sendiri), gunakan laravel **Policy** (`php artisan make:policy`) dan lindungi dengan `Gate::authorize()` di controller.
 
 ## URL Generation
 
@@ -261,32 +264,6 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 
 Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
--### FORM HANDLING
-All form handling and user input MUST utilize `@tanstack/vue-form` to ensure standard state management and robust client-side validation. **DO NOT** use default Inertia useForm wrappers for core user input logic unless handling file uploads exclusively.
-
-When building forms with Shadcn UI, you **MUST** use the custom form wrapper components (`TanStackInput`, `TanStackCheckbox`, `TanStackCombobox`) rather than manually declaring `<form.Field>`, `<Label>`, and `<Input>` tags repeatedly. 
-
-Example Usage:
-```vue
-<script setup lang="ts">
-import { TanStackInput, TanStackCombobox } from '@/components/ui/form';
-import { useForm } from '@tanstack/vue-form';
-
-const form = useForm({ defaultValues: { username: '', role: [] } });
-</script>
-
-<template>
-  <form @submit.prevent="form.handleSubmit" class="space-y-4">
-    <TanStackInput :form="form" name="username" label="Nama Pengguna" type="text" />
-    <TanStackCombobox :form="form" name="role" label="Akses" :options="['Admin', 'User']" multiple />
-  </form>
-</template>
-```
-
-### FORM VALIDATION
-Dalam kasus validasi form (misalnya panjang karakter minimal untuk password, dsb), **prioritaskan validasi diletakkan di UI/Frontend (via atribut `:validators` di komponen TanStack form)** untuk memberikan _instant feedback_ kepada pengguna. 
-- Backend (Laravel) cukup memvalidasi keamanan esensial (`required`, format type, dsb) atau status unik database (`unique:users,email`).
-- Jangan menduplikat validasi panjang karakter (`min:X`, `max:X`) terlalu ketat di backend jika itu di-*handle* sepenuhnya secara dinamis oleh frontend, kecuali untuk menjaga *security* di endpoint API public.
 
 === tailwindcss/core rules ===
 
@@ -408,3 +385,6 @@ Setiap feature page baru wajib tambah entry di `pages[]`.
 - Pastikan tampilan tidak berantakan di layar kecil (mobile) dengan menggunakan utility classes Tailwind yang tepat seperti `flex-col`, `flex-wrap`, dan breakpoint modifiers (misal `sm:flex-row`, `md:gap-4`).
 - Jangan buat elemen statis yang terlalu lebar atau melampaui layar. Gunakan `w-full`, `max-w-full`, atau `truncate` saat dibutuhkan.
 - Test dan pertimbangkan tampilan UI dari ukuran mobile (`<640px`) hingga desktop.
+
+## Penghapusan Data (Delete)
+- **Wajib menggunakan Modal Konfirmasi** (contoh: `DeleteRoleDialog.vue`) daripada menggunakan fungsi native browser `confirm()` saat mengimplementasikan aksi hapus, agar User Experience dan konsistensi UI terjaga.

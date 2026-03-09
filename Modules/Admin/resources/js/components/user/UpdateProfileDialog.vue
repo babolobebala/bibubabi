@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TanStackCombobox, TanStackInput } from '@/components/ui/form';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
 
@@ -47,7 +47,7 @@ watch(
     (isOpen) => {
         if (isOpen) {
             profileForm.reset();
-            router.clearErrors();
+            usePage().props.errors = {};
 
             let prefilledStatus = props.statusPegawai || '';
             if (prefilledStatus.toLowerCase() === 'aktif') prefilledStatus = 'Aktif';
@@ -63,7 +63,7 @@ watch(
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent class="sm:max-w-[425px]">
+        <DialogContent class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>Ubah Profil</DialogTitle>
                 <DialogDescription> Perbarui profil dan role untuk {{ userName }}. </DialogDescription>

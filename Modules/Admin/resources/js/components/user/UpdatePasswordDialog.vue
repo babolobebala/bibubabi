@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TanStackInput } from '@/components/ui/form';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
 
@@ -40,7 +40,7 @@ watch(
     (isOpen) => {
         if (isOpen) {
             passwordForm.reset();
-            router.clearErrors();
+            usePage().props.errors = {};
         }
     },
 );
@@ -48,7 +48,7 @@ watch(
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent>
+        <DialogContent class="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>Ubah Password</DialogTitle>
                 <DialogDescription> Setel ulang password untuk {{ userName }}. </DialogDescription>

@@ -34,8 +34,14 @@ class RoleController extends Controller
                 ]),
             ]);
 
+        $availableUsers = \App\Models\User::orderBy('nama', 'asc')->get()->map(fn ($user) => [
+            'value' => (string) $user->id,
+            'label' => $user->nama,
+        ]);
+
         return Inertia::render('admin::RoleIndexPage', [
             'roles' => $roles,
+            'availableUsers' => $availableUsers,
         ]);
     }
 
@@ -53,5 +59,39 @@ class RoleController extends Controller
         ]);
 
         return back()->with('success', 'Role berhasil ditambahkan');
+    }
+
+    public function update(\Illuminate\Http\Request $request, Role $role)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'description' => 'nullable|string|max:255',
+            'users' => 'nullable|array',
+            'users.*' => 'exists:users,id',
+        ]);
+
+        $role->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        if (isset($validated['users'])) {
+            $role->users()->sync($validated['users']);
+        } else {
+            $role->users()->sync([]);
+        }
+
+        return back()->with('success', 'Role berhasil diperbarui');
+    }
+
+    public function destroy(Role $role)
+    {
+        if ($role->users()->count() > 0) {
+            return back()->withErrors(['error' => 'Gagal! Role ini masih digunakan oleh ' . $role->users()->count() . ' user.']);
+        }
+
+        $role->delete();
+
+        return back()->with('success', 'Role berhasil dihapus');
     }
 }

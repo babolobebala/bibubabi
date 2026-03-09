@@ -12,12 +12,25 @@ const props = defineProps<{
     name: string;
     label: string;
     placeholder?: string;
-    options: string[];
+    options: any[]; // Can be string[] or {label: string, value: any}[]
     validators?: any;
     multiple?: boolean;
 }>();
 
 const open = ref(false);
+
+const getOptionValue = (option: any) => {
+    return typeof option === 'object' && option !== null ? option.value : option;
+};
+
+const getOptionLabel = (option: any) => {
+    return typeof option === 'object' && option !== null ? option.label : option;
+};
+
+const getLabelByValue = (val: any) => {
+    const opt = props.options.find(o => getOptionValue(o) === val);
+    return opt ? getOptionLabel(opt) : val;
+};
 </script>
 
 <template>
@@ -38,7 +51,7 @@ const open = ref(false);
                                 class="w-full justify-between font-normal"
                             >
                                 <span v-if="!multiple && field.state.value" class="truncate">
-                                    {{ field.state.value }}
+                                    {{ getLabelByValue(field.state.value) }}
                                 </span>
                                 <span v-else-if="multiple && field.state.value && field.state.value.length > 0" class="truncate">
                                     {{ field.state.value.length }} opsi terpilih
@@ -57,27 +70,28 @@ const open = ref(false);
                                 <CommandList class="max-h-48">
                                     <CommandGroup>
                                         <CommandItem
-                                            v-for="option in options"
-                                            :key="option"
-                                            :value="option"
+                                            v-for="(option, idx) in options"
+                                            :key="idx"
+                                            :value="getOptionLabel(option)"
                                             @select="(ev) => {
+                                                const val = getOptionValue(option);
                                                 if (multiple) {
                                                     const current = Array.isArray(field.state.value) ? field.state.value : [];
-                                                    if (current.includes(option)) {
-                                                        field.handleChange(current.filter((r: string) => r !== option));
+                                                    if (current.includes(val)) {
+                                                        field.handleChange(current.filter((r: any) => r !== val));
                                                     } else {
-                                                        field.handleChange([...current, option]);
+                                                        field.handleChange([...current, val]);
                                                     }
                                                 } else {
-                                                    field.handleChange(option === field.state.value ? '' : option);
+                                                    field.handleChange(val === field.state.value ? '' : val);
                                                     open = false;
                                                 }
                                             }"
                                         >
-                                            {{ option }}
+                                            {{ getOptionLabel(option) }}
                                             <Check
                                                 class="ml-auto h-4 w-4 transition-opacity"
-                                                :class="((multiple && Array.isArray(field.state.value) && field.state.value.includes(option)) || (!multiple && field.state.value === option)) ? 'opacity-100' : 'opacity-0'"
+                                                :class="((multiple && Array.isArray(field.state.value) && field.state.value.includes(getOptionValue(option))) || (!multiple && field.state.value === getOptionValue(option))) ? 'opacity-100' : 'opacity-0'"
                                             />
                                         </CommandItem>
                                     </CommandGroup>
@@ -94,11 +108,11 @@ const open = ref(false);
                         :key="val"
                         class="flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                     >
-                        <span class="font-medium">{{ val }}</span>
+                        <span class="font-medium">{{ getLabelByValue(val) }}</span>
                         <button
                             type="button"
                             class="text-destructive hover:text-destructive/80 focus:outline-none"
-                            @click="field.handleChange(field.state.value.filter((r: string) => r !== val))"
+                            @click="field.handleChange(field.state.value.filter((r: any) => r !== val))"
                         >
                             <XCircle class="h-4 w-4" />
                         </button>

@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TanStackInput } from '@/components/ui/form';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
 
@@ -36,6 +36,7 @@ watch(
     (isOpen) => {
         if (isOpen) {
             emailForm.reset();
+            usePage().props.errors = {};
             emailForm.setFieldValue('email_gmail', props.currentEmail || '');
         }
     },
@@ -44,7 +45,7 @@ watch(
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent class="z-100">
+        <DialogContent class="z-[100] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>Ganti Gmail</DialogTitle>
                 <DialogDescription> Perbarui alamat email Gmail Anda. </DialogDescription>

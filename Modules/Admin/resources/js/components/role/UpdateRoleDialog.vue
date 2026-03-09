@@ -1,27 +1,32 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { TanStackInput } from '@/components/ui/form';
+import { TanStackCombobox, TanStackInput } from '@/components/ui/form';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
+import type { RoleItem } from './role-columns';
 
 const props = defineProps<{
     open: boolean;
+    role: RoleItem | null;
+    availableUsers: { value: string; label: string }[];
 }>();
 
 const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const createRoleForm = useForm({
+const updateRoleForm = useForm({
     defaultValues: {
         name: '',
         description: '',
+        users: [] as string[],
     },
     onSubmit: async ({ value, formApi }) => {
+        if (!props.role) return;
         return new Promise<void>((resolve) => {
-            router.post('/app/admin/roles', value, {
+            router.put(`/app/admin/roles/${props.role?.id}`, value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();
@@ -36,8 +41,16 @@ watch(
     () => props.open,
     (isOpen) => {
         if (isOpen) {
-            createRoleForm.reset();
+            updateRoleForm.reset();
             usePage().props.errors = {};
+            if (props.role) {
+                updateRoleForm.setFieldValue('name', props.role.name || '');
+                updateRoleForm.setFieldValue('description', props.role.description || '');
+                updateRoleForm.setFieldValue(
+                    'users',
+                    props.role.users ? props.role.users.map((u) => String(u.id)) : []
+                );
+            }
         }
     },
 );
@@ -47,12 +60,12 @@ watch(
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
         <DialogContent class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-                <DialogTitle>Tambah Role</DialogTitle>
-                <DialogDescription>Buat role baru untuk sistem aplikasi.</DialogDescription>
+                <DialogTitle>Ubah Role</DialogTitle>
+                <DialogDescription>Perbarui data role untuk sistem aplikasi.</DialogDescription>
             </DialogHeader>
-            <form @submit.prevent="createRoleForm.handleSubmit" class="space-y-4 py-4">
+            <form @submit.prevent="updateRoleForm.handleSubmit" class="space-y-4 py-4">
                 <TanStackInput
-                    :form="createRoleForm"
+                    :form="updateRoleForm"
                     name="name"
                     label="Nama Role *"
                     placeholder="Misal: admin, operator, dll..."
@@ -62,14 +75,23 @@ watch(
                 />
 
                 <TanStackInput
-                    :form="createRoleForm"
+                    :form="updateRoleForm"
                     name="description"
                     label="Deskripsi"
                     placeholder="Jelaskan kegunaan role ini..."
                 />
 
+                <TanStackCombobox
+                    :form="updateRoleForm"
+                    name="users"
+                    label="Assign User ke Role"
+                    :options="availableUsers"
+                    multiple
+                    placeholder="Pilih user yang mendapatkan role ini"
+                />
+
                 <DialogFooter>
-                    <createRoleForm.Subscribe :selector="(state) => state.isSubmitting">
+                    <updateRoleForm.Subscribe :selector="(state) => state.isSubmitting">
                         <template #default="isSubmitting">
                             <Button
                                 type="button"
@@ -80,9 +102,9 @@ watch(
                             >
                                 Batal
                             </Button>
-                            <Button type="submit" class="cursor-pointer" :disabled="isSubmitting">Simpan Role</Button>
+                            <Button type="submit" class="cursor-pointer" :disabled="isSubmitting">Simpan Perubahan</Button>
                         </template>
-                    </createRoleForm.Subscribe>
+                    </updateRoleForm.Subscribe>
                 </DialogFooter>
             </form>
         </DialogContent>

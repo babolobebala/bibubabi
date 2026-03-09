@@ -26,7 +26,10 @@ function roleVariant(role: string): 'default' | 'secondary' | 'destructive' | 'o
     return 'secondary';
 }
 
-export const roleColumns: ColumnDef<RoleItem>[] = [
+export const getRoleColumns = (actions: {
+    onEdit: (role: RoleItem) => void;
+    onDelete: (role: RoleItem) => void;
+}): ColumnDef<RoleItem>[] => [
     // Kolom 1: Toggle expand (Plus/Minus bulat)
     {
         id: 'expander',
@@ -92,8 +95,7 @@ export const roleColumns: ColumnDef<RoleItem>[] = [
                         label: 'Edit Role',
                         icon: Pencil,
                         onClick: () => {
-                            // TODO: handle edit role
-                            console.log('edit role', row.original);
+                            actions.onEdit(row.original);
                         },
                     },
                     {
@@ -102,8 +104,7 @@ export const roleColumns: ColumnDef<RoleItem>[] = [
                         destructive: true,
                         separator: true,
                         onClick: () => {
-                            // TODO: handle delete role
-                            console.log('delete role', row.original);
+                            actions.onDelete(row.original);
                         },
                     },
                 ],

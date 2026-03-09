@@ -13,7 +13,7 @@ const isOpen = ref(false);
             <Button class="h-10 cursor-pointer rounded-full px-3.5 text-sm sm:h-8 sm:px-2.5 sm:text-xs" variant="default"> Login </Button>
         </DialogTrigger>
 
-        <DialogContent class="overflow-hidden border-border/70 bg-background p-0 shadow-2xl sm:max-w-83 [&>button]:text-muted-foreground">
+        <DialogContent class="max-h-[90vh] overflow-y-auto border-border/70 bg-background p-0 shadow-2xl sm:max-w-83 [&>button]:text-muted-foreground">
             <SharedLoginContent @success="isOpen = false" />
         </DialogContent>
     </Dialog>

@@ -203,7 +203,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                     </CollapsibleContent>
                                 </Collapsible>
 
-                                <DialogContent class="max-w-sm">
+                                <DialogContent class="max-w-sm max-h-[90vh] overflow-y-auto">
                                     <DialogHeader>
                                         <DialogTitle>Profil Saya</DialogTitle>
                                         <DialogDescription>Informasi akun yang sedang login.</DialogDescription>
