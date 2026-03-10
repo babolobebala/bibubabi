@@ -172,7 +172,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ## Controllers & Validation
 
-- Always create Form Request classes for validation rather than inline validation in controllers. Include both validation rules and custom error messages.
+- **WAJIB:** Always create Form Request classes for validation rather than inline validation in controllers. Include both validation rules and custom error messages. **TIDAK BOLEH** menggunakan `$request->validate([...])` secara inline di dalam Controller.
 - Check sibling Form Requests to see if the application uses array or string based validation rules.
 
 ## Authentication & Authorization
@@ -224,7 +224,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ### Models
 
-- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
+- **WAJIB:** Casts MUST be set in a `protected function casts(): array` method on a model rather than the `$casts` property, mengikuti standard Laravel 11/12. Follow existing conventions from other models.
 
 === wayfinder/core rules ===
 
@@ -249,8 +249,10 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 
 ## Pest
 
-- This project uses Pest for testing. Create tests: `php artisan make:test --pest {name}`.
-- Run tests: `php artisan test --compact` or filter: `php artisan test --compact --filter=testName`.
+- This project uses Pest for testing.
+- **Modul Testing:** Setiap module di `Modules/` wajib memiliki Feature Tests (di dalam direktori `Modules/{Name}/tests/Feature/`).
+- **Penting:** Karena command `php artisan module:make-test` tidak mendukung flag `--pest`, Anda harus membuat file Pest test secara manual atau menggunakan `php artisan make:test --pest {Name}` lalu memindahkannya secara manual ke direktori modul yang tepat.
+- Run tests: `php artisan test --compact` atau filter spesifik: `php artisan test --compact --filter={ModuleName}`.
 - Do NOT delete tests without approval.
 - CRITICAL: ALWAYS use `search-docs` tool for version-specific Pest documentation and updated code examples.
 - IMPORTANT: Activate `pest-testing` every time you're working with a Pest or testing-related task.
@@ -261,6 +263,7 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 
 Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
+- **Ziggy Route Helper**: HARAM menggunakan _hardcoded URL path_ string (misal `/app/admin/...`) pada antarmuka Vue (termasuk pada `router.post`, `router.put`, `router.delete`, `useForm`, dan `<Link>`). SELALU gunakan helper `route('nama.rute')` dari Laravel Ziggy. Import helper tersebut menggunakan sintaks `import { route } from 'ziggy-js';` jika belum tersedia secara global di dalam komponen tersebut.
 
 === tailwindcss/core rules ===
 
@@ -384,4 +387,5 @@ Setiap feature page baru wajib tambah entry di `pages[]`.
 - Test dan pertimbangkan tampilan UI dari ukuran mobile (`<640px`) hingga desktop.
 
 ## Penghapusan Data (Delete)
-- **Wajib menggunakan Modal Konfirmasi** (contoh: `DeleteRoleDialog.vue`) daripada menggunakan fungsi native browser `confirm()` saat mengimplementasikan aksi hapus, agar User Experience dan konsistensi UI terjaga.
+- **WAJIB menggunakan Modal Konfirmasi UI** (misalnya komponen `Dialog` / `AlertDialog` dari Shadcn-Vue, contoh: `DeleteRoleDialog.vue`) saat mengimplementasikan aksi hapus. 
+- **DILARANG KERAS** menggunakan fungsi native browser `window.confirm()`. Hal ini mutlak agar User Experience dan konsistensi UI sistem terjaga dengan baik.

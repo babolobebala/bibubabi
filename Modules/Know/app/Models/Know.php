@@ -26,11 +26,14 @@ class Know extends Model
         'updated_at',
     ];
 
-    protected $casts = [
-        'link' => 'array',
-        'kategori' => 'array',
-        'tanggal_pelaksanaan' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'link' => 'array',
+            'kategori' => 'array',
+            'tanggal_pelaksanaan' => 'datetime',
+        ];
+    }
 
     public function creator()
     {

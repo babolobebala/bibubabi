@@ -5,10 +5,10 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Admin\Http\Requests\UpdateUserPasswordRequest;
+use Modules\Admin\Http\Requests\UpdateUserProfileRequest;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -20,7 +20,7 @@ class UserController extends Controller
             ->orderByRaw("CASE WHEN LOWER(status_pegawai) = 'tidak aktif' THEN 1 ELSE 0 END")
             ->orderBy('nip_baru')
             ->get()
-            ->map(fn(User $user) => [
+            ->map(fn (User $user) => [
                 'id' => $user->id,
                 'nama' => $user->nama,
                 'nip' => $user->nip,
@@ -43,25 +43,18 @@ class UserController extends Controller
         ]);
     }
 
-    public function updatePassword(Request $request, User $user): RedirectResponse
+    public function updatePassword(UpdateUserPasswordRequest $request, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'password' => ['required', 'string', 'confirmed'],
-        ]);
+        $validated = $request->validated();
 
         $user->update(['password' => $validated['password']]);
 
         return back()->with('success', "Password {$user->nama} berhasil diubah.");
     }
 
-    public function updateProfile(Request $request, User $user): RedirectResponse
+    public function updateProfile(UpdateUserProfileRequest $request, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'email_gmail' => ['nullable', 'email', 'max:255'],
-            'status_pegawai' => ['required', 'string', 'in:Aktif,Tidak Aktif'],
-            'roles' => ['required', 'array'],
-            'roles.*' => ['string', 'exists:roles,name'],
-        ]);
+        $validated = $request->validated();
 
         $user->update([
             'email_gmail' => $validated['email_gmail'],

@@ -5,6 +5,8 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Admin\Http\Requests\StoreRoleRequest;
+use Modules\Admin\Http\Requests\UpdateRoleRequest;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -45,12 +47,9 @@ class RoleController extends Controller
         ]);
     }
 
-    public function store(\Illuminate\Http\Request $request)
+    public function store(StoreRoleRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name',
-            'description' => 'nullable|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         Role::create([
             'name' => $validated['name'],
@@ -61,14 +60,9 @@ class RoleController extends Controller
         return back()->with('success', 'Role berhasil ditambahkan');
     }
 
-    public function update(\Illuminate\Http\Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
-            'description' => 'nullable|string|max:255',
-            'users' => 'nullable|array',
-            'users.*' => 'exists:users,id',
-        ]);
+        $validated = $request->validated();
 
         $role->update([
             'name' => $validated['name'],
@@ -87,7 +81,7 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         if ($role->users()->count() > 0) {
-            return back()->withErrors(['error' => 'Gagal! Role ini masih digunakan oleh ' . $role->users()->count() . ' user.']);
+            return back()->withErrors(['error' => 'Gagal! Role ini masih digunakan oleh '.$role->users()->count().' user.']);
         }
 
         $role->delete();

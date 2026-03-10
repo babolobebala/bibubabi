@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -31,6 +32,7 @@ const fileItems = ref<GoogleDriveFileItem[]>([]);
 const editingFileId = ref<string | null>(null);
 const editingName = ref('');
 const actionFileId = ref<string | null>(null);
+const fileToDelete = ref<GoogleDriveFileItem | null>(null);
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? null;
 
@@ -194,18 +196,17 @@ async function saveRename(fileId: string): Promise<void> {
     }
 }
 
-async function deleteFile(fileId: string): Promise<void> {
+async function deleteFile(): Promise<void> {
     if (!csrfToken) {
         toast.error('CSRF token tidak ditemukan.');
         return;
     }
 
-    const confirmed = window.confirm('Hapus file ini dari Google Drive?');
-
-    if (!confirmed) {
+    if (!fileToDelete.value) {
         return;
     }
 
+    const fileId = fileToDelete.value.id;
     actionFileId.value = fileId;
 
     try {
@@ -230,6 +231,7 @@ async function deleteFile(fileId: string): Promise<void> {
         toast.error(error instanceof Error ? error.message : 'Delete file gagal.');
     } finally {
         actionFileId.value = null;
+        fileToDelete.value = null;
     }
 }
 
@@ -487,7 +489,7 @@ function formatDate(value: string | null): string {
                                         <Button
                                             variant="destructive"
                                             :disabled="actionFileId === file.id"
-                                            @click="deleteFile(file.id)"
+                                            @click="fileToDelete = file"
                                         >
                                             {{ actionFileId === file.id ? 'Menghapus...' : 'Hapus' }}
                                         </Button>
@@ -499,5 +501,34 @@ function formatDate(value: string | null): string {
                 </Card>
             </div>
         </div>
+
+        <Dialog :open="!!fileToDelete" @update:open="(val) => !val && (fileToDelete = null)">
+            <DialogContent class="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle class="text-destructive">Hapus File?</DialogTitle>
+                    <DialogDescription v-if="fileToDelete">
+                        Apakah Anda yakin ingin menghapus file <span class="font-semibold text-foreground">{{ fileToDelete.name }}</span> dari Google Drive?
+                        <br /><br />
+                        Tindakan ini tidak dapat dibatalkan.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter class="mt-4">
+                    <Button 
+                        variant="outline" 
+                        @click="fileToDelete = null" 
+                        :disabled="actionFileId === fileToDelete?.id"
+                    >
+                        Batal
+                    </Button>
+                    <Button 
+                        variant="destructive" 
+                        @click="deleteFile" 
+                        :disabled="actionFileId === fileToDelete?.id"
+                    >
+                        {{ actionFileId === fileToDelete?.id ? 'Menghapus...' : 'Ya, Hapus' }}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
 </template>

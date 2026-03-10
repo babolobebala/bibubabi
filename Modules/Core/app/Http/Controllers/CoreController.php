@@ -5,7 +5,7 @@ namespace Modules\Core\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
+use Modules\Core\Http\Requests\StoreCoreConfigRequest;
 
 class CoreController extends Controller
 {
@@ -34,12 +34,9 @@ class CoreController extends Controller
         return Inertia::render('core::NotificationPage');
     }
 
-    public function updateQuickMenu(Request $request)
+    public function updateQuickMenu(StoreCoreConfigRequest $request)
     {
-        $validated = $request->validate([
-            'quick_menu_keys' => ['present', 'array'],
-            'quick_menu_keys.*' => ['string'],
-        ]);
+        $validated = $request->validated();
 
         /** @var \App\Models\User $user */
         $user = $request->user();
