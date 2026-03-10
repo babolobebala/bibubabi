@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     canInstallPwa,
@@ -8,6 +7,7 @@ import {
     isIosDevice,
     subscribeInstallState,
 } from '@/lib/pwa-install';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 type NotificationHistoryItem = {
     id: string;

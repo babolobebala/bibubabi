@@ -5,6 +5,7 @@ namespace Modules\Core\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
 
 class CoreController extends Controller
 {
@@ -31,5 +32,22 @@ class CoreController extends Controller
     public function notification(): Response
     {
         return Inertia::render('core::NotificationPage');
+    }
+
+    public function updateQuickMenu(Request $request)
+    {
+        $validated = $request->validate([
+            'quick_menu_keys' => ['present', 'array'],
+            'quick_menu_keys.*' => ['string'],
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $user->update([
+            'quick_menu_keys' => $validated['quick_menu_keys'],
+        ]);
+
+        return back()->with('success', 'Menu cepat berhasil diperbarui.');
     }
 }

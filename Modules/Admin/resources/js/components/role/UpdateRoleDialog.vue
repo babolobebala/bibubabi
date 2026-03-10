@@ -5,6 +5,7 @@ import { TanStackCombobox, TanStackInput } from '@/components/ui/form';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
+import { route } from 'ziggy-js';
 import type { RoleItem } from './role-columns';
 
 const props = defineProps<{
@@ -26,7 +27,7 @@ const updateRoleForm = useForm({
     onSubmit: async ({ value, formApi }) => {
         if (!props.role) return;
         return new Promise<void>((resolve) => {
-            router.put(`/app/admin/roles/${props.role?.id}`, value, {
+            router.put(route('admin.roles.update', props.role!.id), value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();

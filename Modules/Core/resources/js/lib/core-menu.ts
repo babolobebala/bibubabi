@@ -17,7 +17,7 @@ export interface CoreModuleEntry {
     features: ModuleNavigationMenuItem[];
 }
 
-export function getCoreModuleEntries(userRoles: string[]): CoreModuleEntry[] {
+export function getCoreModuleEntries(userRoles: string[], ignoreRoles: boolean = false): CoreModuleEntry[] {
     const moduleNavigationFiles = import.meta.glob('../../../../*/resources/js/config/module-navigation.json', {
         eager: true,
         import: 'default',
@@ -31,13 +31,13 @@ export function getCoreModuleEntries(userRoles: string[]): CoreModuleEntry[] {
                 return null;
             }
 
-            if (!hasRoleAccess(navigation.module.roles, userRoles)) {
+            if (!ignoreRoles && !hasRoleAccess(navigation.module.roles, userRoles)) {
                 return null;
             }
 
             return loadModuleValue<CoreModuleEntry | null>(
                 moduleName,
-                () => buildCoreModuleEntry(moduleName, navigation, userRoles),
+                () => buildCoreModuleEntry(moduleName, navigation, userRoles, ignoreRoles),
                 null,
             );
         })
@@ -112,6 +112,7 @@ function buildCoreModuleEntry(
     moduleName: string,
     navigation: ModuleNavigationConfig,
     userRoles: string[],
+    ignoreRoles: boolean = false
 ): CoreModuleEntry | null {
     const menu = getModuleCoreMenu(navigation);
 
@@ -120,7 +121,7 @@ function buildCoreModuleEntry(
     }
 
     const allFeatures = getModuleHubItems(navigation);
-    const filteredFeatures = filterPagesByRoles(allFeatures, userRoles);
+    const filteredFeatures = ignoreRoles ? allFeatures : filterPagesByRoles(allFeatures, userRoles);
 
     return {
         moduleName,

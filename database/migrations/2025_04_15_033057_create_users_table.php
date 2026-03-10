@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('jabatan')->nullable();
             $table->string('url_foto')->nullable();
             $table->string('password')->nullable();
+            $table->json('quick_menu_keys')->nullable();
             $table->timestamps();
         });
     }

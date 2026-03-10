@@ -31,15 +31,19 @@ const search = ref('');
 const brokenIconKeys = ref<Record<string, true>>({});
 
 const homeMenuItems = computed<CoreMenuUiItem[]>(() =>
-    moduleEntries.value.map((entry) => ({
-        ...entry.menu,
-        href: undefined,
-        onClick: () => openModule(entry.menu.key),
-        searchText: [entry.menu.title, entry.menu.description, ...entry.features.flatMap((feature) => [feature.title, feature.description])]
-            .filter((value): value is string => Boolean(value?.trim()))
-            .join(' ')
-            .toLowerCase(),
-    })),
+    moduleEntries.value.map((entry) => {
+        const hasChildren = entry.features && entry.features.length > 0;
+
+        return {
+            ...entry.menu,
+            href: hasChildren ? undefined : entry.menu.href,
+            onClick: hasChildren ? () => openModule(entry.menu.key) : undefined,
+            searchText: [entry.menu.title, entry.menu.description, ...entry.features.flatMap((feature) => [feature.title, feature.description])]
+                .filter((value): value is string => Boolean(value?.trim()))
+                .join(' ')
+                .toLowerCase(),
+        };
+    }),
 );
 
 const moduleMenuItems = computed<CoreMenuUiItem[]>(() => {

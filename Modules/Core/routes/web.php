@@ -13,4 +13,7 @@ Route::middleware('auth')->group(function () {
         ->name('core.quick-menu');
     Route::get('notification', [CoreController::class, 'notification'])
         ->name('core.notification');
+    
+    Route::put('menu-cepat', [CoreController::class, 'updateQuickMenu'])
+        ->name('core.quick-menu.update');
 });

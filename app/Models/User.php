@@ -24,6 +24,7 @@ class User extends Authenticatable
         'jabatan',
         'url_foto',
         'password',
+        'quick_menu_keys',
     ];
 
     protected $hidden = [
@@ -39,6 +40,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'quick_menu_keys' => 'array',
         ];
     }
 }

@@ -5,6 +5,7 @@ import { TanStackInput } from '@/components/ui/form';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
+import { route } from 'ziggy-js';
 
 const props = defineProps<{
     open: boolean;
@@ -21,7 +22,7 @@ const createRoleForm = useForm({
     },
     onSubmit: async ({ value, formApi }) => {
         return new Promise<void>((resolve) => {
-            router.post('/app/admin/roles', value, {
+            router.post(route('admin.roles.store'), value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();

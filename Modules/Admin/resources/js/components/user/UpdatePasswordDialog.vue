@@ -5,6 +5,7 @@ import { TanStackInput } from '@/components/ui/form';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
+import { route } from 'ziggy-js';
 
 const props = defineProps<{
     open: boolean;
@@ -24,7 +25,7 @@ const passwordForm = useForm({
     onSubmit: async ({ value, formApi }) => {
         if (!props.userId) return;
         return new Promise<void>((resolve) => {
-            router.put(`/app/admin/users/${props.userId}/password`, value, {
+            router.put(route('admin.users.password', props.userId), value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();

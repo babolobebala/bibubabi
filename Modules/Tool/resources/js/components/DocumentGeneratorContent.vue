@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { route } from 'ziggy-js';
 import { normalizeImageFile } from '../../../../Shared/resources/js/lib/heic';
 
 interface DocumentFormState {
@@ -116,7 +117,7 @@ async function generateDocument(): Promise<void> {
             formData.append('foto_dua', fotoDua.value.file, fotoDua.value.file.name);
         }
 
-        const response = await fetch('/app/tools/generator-dokumen/generate', {
+        const response = await fetch(route('tools.document-generator.generate'), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,

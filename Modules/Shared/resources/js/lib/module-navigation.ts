@@ -37,6 +37,7 @@ export interface ModuleNavigationConfig {
         name: string;
         title?: string;
         anchor?: string;
+        href?: string;
         description?: string;
         iconImage?: string;
         roles?: string[];
@@ -88,15 +89,16 @@ export function getModulePageByKey(config: ModuleNavigationConfig, pageKey: stri
 
 export function getModuleCoreMenu(config: ModuleNavigationConfig): ModuleNavigationMenuItem | null {
     const anchor = getModuleAnchor(config);
+    const href = config.module.href?.trim();
 
-    if (!anchor) {
+    if (!anchor && !href) {
         return null;
     }
 
     return {
-        key: anchor,
+        key: anchor || config.module.key,
         title: getModuleTitle(config),
-        href: `/app#${anchor}`,
+        href: href || `/app#${anchor}`,
         description: config.module.description,
         iconImage: config.module.iconImage,
         order: config.module.order,
@@ -155,7 +157,9 @@ export function hasRoleAccess(roles: string[] | undefined, userRoles: string[]):
         return true;
     }
 
-    return roles.some((role) => userRoles.includes(role));
+    return roles.some((role) => 
+        userRoles.map(ur => String(ur).toLowerCase()).includes(String(role).toLowerCase())
+    );
 }
 
 export function filterPagesByRoles(
