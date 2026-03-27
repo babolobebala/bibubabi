@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.2",
         "google/apiclient": "^2.19",
-        "inertiajs/inertia-laravel": "^2.0",
+        "inertiajs/inertia-laravel": "^3.0",
         "irsadarief/jkd-sso": "^1.8",
         "laravel-notification-channels/webpush": "*",
         "laravel/framework": "^13.0",

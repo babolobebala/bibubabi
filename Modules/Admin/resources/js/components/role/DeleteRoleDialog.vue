@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { destroy } from '@/actions/Modules/Admin/Http/Controllers/RoleController';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
-import { route } from 'ziggy-js';
 import type { RoleItem } from './role-columns';
 
 const props = defineProps<{
@@ -21,7 +21,7 @@ const handleDelete = () => {
     if (!props.role) return;
     
     isSubmitting.value = true;
-    router.delete(route('admin.roles.destroy', props.role.id), {
+    router.delete(destroy.url(props.role.id), {
         onSuccess: () => {
             emit('update:open', false);
         },

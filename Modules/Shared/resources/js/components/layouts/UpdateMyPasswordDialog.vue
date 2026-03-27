@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { updatePassword } from '@/actions/App/Http/Controllers/ProfileController';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TanStackInput } from '@/components/ui/form';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
-import { route } from 'ziggy-js';
 
 const props = defineProps<{
     open: boolean;
@@ -22,7 +22,7 @@ const passwordForm = useForm({
     },
     onSubmit: async ({ value, formApi }) => {
         return new Promise<void>((resolve) => {
-            router.put(route('profile.password.update'), value, {
+            router.put(updatePassword.url(), value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();

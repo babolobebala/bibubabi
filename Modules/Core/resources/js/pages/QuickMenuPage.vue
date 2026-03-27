@@ -12,7 +12,7 @@ const breadcrumbs = [
     { label: 'Menu Cepat' },
 ];
 
-const userRoles = (usePage().props.auth as any)?.roles ?? [];
+const userRoles = (usePage().props as any).auth?.roles ?? [];
 // Mengambil modul SECARA KETAT SESUAI ROLE (tanpa membocorkan menu admin jika bukan admin)
 const allModules = getCoreModuleEntries(userRoles);
 
@@ -34,7 +34,7 @@ const allAvailableFeatures = computed(() => {
 
 // Mengekstrak pilihan Key dari profil database user
 const selectedKeys = computed<string[]>(() => {
-    return (usePage().props.auth.user as any)?.quick_menu_keys ?? [];
+    return (usePage().props as any).auth?.user?.quick_menu_keys ?? [];
 });
 
 // Data final mutlak yang muncul di Home

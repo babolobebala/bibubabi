@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { updateProfile } from '@/actions/Modules/Admin/Http/Controllers/UserController';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TanStackCombobox, TanStackInput } from '@/components/ui/form';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { watch } from 'vue';
-import { route } from 'ziggy-js';
 
 const props = defineProps<{
     open: boolean;
@@ -30,9 +30,10 @@ const profileForm = useForm({
         roles: [] as string[],
     },
     onSubmit: async ({ value, formApi }) => {
-        if (!props.userId) return;
+        const userId = props.userId;
+        if (!userId) return;
         return new Promise<void>((resolve) => {
-            router.put(route('admin.users.profile', props.userId), value, {
+            router.put(updateProfile.url(userId), value, {
                 onSuccess: () => {
                     emit('update:open', false);
                     formApi.reset();

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { updateQuickMenu } from '@/actions/Modules/Core/Http/Controllers/CoreController';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -7,7 +8,6 @@ import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { Loader2, Settings } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
-import { route } from 'ziggy-js';
 import type { CoreModuleEntry } from '../lib/core-menu';
 
 defineProps<{
@@ -16,14 +16,14 @@ defineProps<{
 
 const isOpen = ref(false);
 
-const currentUserMenus = (usePage().props.auth.user as any)?.quick_menu_keys ?? [];
+const currentUserMenus = (usePage().props as any).auth?.user?.quick_menu_keys ?? [];
 
 const updateQuickMenuForm = useForm({
     defaultValues: {
         quick_menu_keys: [...currentUserMenus] as string[],
     },
     onSubmit: async ({ value }) => {
-        router.put(route('core.quick-menu.update'), value, {
+        router.put(updateQuickMenu.url(), value, {
             preserveScroll: true,
             onSuccess: () => {
                 isOpen.value = false;
@@ -35,7 +35,7 @@ const updateQuickMenuForm = useForm({
 watch(isOpen, (newVal) => {
     if (newVal) {
         updateQuickMenuForm.reset();
-        const freshKeys = (usePage().props.auth.user as any)?.quick_menu_keys ?? [];
+        const freshKeys = (usePage().props as any).auth?.user?.quick_menu_keys ?? [];
         updateQuickMenuForm.setFieldValue('quick_menu_keys', [...freshKeys]);
     } else {
         usePage().props.errors = {};
@@ -95,7 +95,7 @@ function toggleMenuSelection(key: string, isChecked: boolean) {
                                                 <Checkbox
                                                     :id="`chk-${menu.key}`"
                                                     :checked="field.state.value.includes(menu.key)"
-                                                    @update:checked="(checked) => toggleMenuSelection(menu.key, checked)"
+                                                    @update:checked="toggleMenuSelection(menu.key, !!$event)"
                                                 />
                                                 <img v-if="menu.iconImage" :src="`/` + menu.iconImage" class="h-4 w-4 shrink-0" />
                                                 <div class="flex-1 leading-none">
@@ -113,7 +113,7 @@ function toggleMenuSelection(key: string, isChecked: boolean) {
                                                 <Checkbox
                                                     :id="`chk-${mod.menu.key}`"
                                                     :checked="field.state.value.includes(mod.menu.key)"
-                                                    @update:checked="(checked) => toggleMenuSelection(mod.menu.key, checked)"
+                                                    @update:checked="toggleMenuSelection(mod.menu.key, !!$event)"
                                                     class="mt-1"
                                                 />
                                                 <div class="grid gap-1.5 leading-none">
