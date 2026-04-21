@@ -1,5 +1,6 @@
 <script lang="ts">
 export default {
+    // @ts-expect-error no overload match this call
     layout: null,
 };
 </script>

@@ -46,7 +46,7 @@ const tableColumns = getRoleColumns({
         <Card class="rounded-xl border-border py-0 shadow-sm">
             <CardHeader class="flex flex-row items-center justify-between border-b border-border px-4 py-3">
                 <CardTitle class="text-sm font-semibold">Daftar Role</CardTitle>
-                <Button @click="isCreateModalOpen = true" size="sm" class="h-8 gap-1.5 cursor-pointer">
+                <Button @click="isCreateModalOpen = true" size="sm" class="h-8 cursor-pointer gap-1.5">
                     <Plus class="h-4 w-4" />
                     <span class="hidden sm:inline">Tambah Role</span>
                 </Button>

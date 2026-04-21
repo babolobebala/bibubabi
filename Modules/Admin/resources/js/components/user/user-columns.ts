@@ -123,7 +123,7 @@ export const getUserColumns = (actions: {
                         }),
                         h(AvatarFallback, { class: 'text-[10px]' }, () => ''),
                     ]),
-                    h('span', { class: 'truncate text-xs sm:text-sm font-medium' }, row.original.nama),
+                    h('span', { class: 'truncate text-xs font-medium' }, row.original.nama),
                 ]),
         },
 
@@ -131,7 +131,7 @@ export const getUserColumns = (actions: {
         {
             accessorKey: 'email_gmail',
             header: 'Email',
-            cell: ({ row }) => h('span', { class: 'text-sm text-foreground' }, row.original.email_gmail ?? '-'),
+            cell: ({ row }) => h('span', { class: 'text-foreground' }, row.original.email_gmail ?? '-'),
             meta: { hideOnMobile: true },
             enableSorting: false,
         },

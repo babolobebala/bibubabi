@@ -61,7 +61,7 @@ export const getRoleColumns = (actions: {
             enableSorting: false,
             cell: ({ row }) =>
                 h('div', { class: 'flex items-center gap-2' }, [
-                    h(Badge, { variant: roleVariant(row.original.name), class: 'text-[11px]' }, () =>
+                    h(Badge, { variant: roleVariant(row.original.name), class: 'text-xs' }, () =>
                         row.original.name,
                     ),
                 ]),
@@ -72,7 +72,7 @@ export const getRoleColumns = (actions: {
             enableSorting: false,
             meta: { hideOnMobile: true },
             cell: ({ row }) =>
-                h('span', { class: 'text-sm text-muted-foreground truncate max-w-[300px] inline-block', title: row.original.description ?? '' }, row.original.description ?? '-'),
+                h('span', { class: 'text-xs text-muted-foreground truncate max-w-[300px] inline-block', title: row.original.description ?? '' }, row.original.description ?? '-'),
         },
         {
             accessorKey: 'users_count',

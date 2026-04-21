@@ -109,11 +109,18 @@ async function installApp(): Promise<void> {
                     </Button>
 
                     <Button as-child size="lg" class="rounded-full bg-success text-success-foreground hover:bg-success/90">
+                        <a href="#pengaduan">
+                            <img :src="media + 'img/logo/wa.svg'" alt="WhatsApp" class="h-4 w-4 object-contain brightness-0 invert" />
+                            Hubungi Kami
+                        </a>
+                    </Button>
+
+                    <!-- <Button as-child size="lg" class="rounded-full bg-success text-success-foreground hover:bg-success/90">
                         <a target="_blank" href="http://wa.me/+6282144406055">
                             <img :src="media + 'img/logo/wa.svg'" alt="WhatsApp" class="h-4 w-4 object-contain brightness-0 invert" />
                             Hubungi Kami (WhatsApp)
                         </a>
-                    </Button>
+                    </Button> -->
                 </div>
             </div>
 

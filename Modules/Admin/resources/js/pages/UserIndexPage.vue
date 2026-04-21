@@ -61,7 +61,6 @@ const columns = computed(() =>
             </DataTable>
         </div>
 
-        <!-- Dialog Ubah Profil -->
         <UpdateProfileDialog
             v-model:open="profileModalOpen"
             :user-id="selectedUserId"
@@ -71,12 +70,6 @@ const columns = computed(() =>
             :email-gmail="selectedUser?.email_gmail || null"
             :status-pegawai="selectedUser?.status_pegawai || null"
         />
-
-        <!-- Dialog Ubah Password -->
-        <UpdatePasswordDialog
-            v-model:open="passwordModalOpen"
-            :user-id="selectedUserId"
-            :user-name="selectedUser?.nama || 'Pengguna'"
-        />
+        <UpdatePasswordDialog v-model:open="passwordModalOpen" :user-id="selectedUserId" :user-name="selectedUser?.nama || 'Pengguna'" />
     </ModuleContentShell>
 </template>

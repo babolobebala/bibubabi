@@ -22,7 +22,7 @@
             }
         }
 
-        console.log('[push-debug]', line);
+        // console.log('[push-debug]', line);
 
         if (!Array.isArray(window.__pushDebugLines)) {
             window.__pushDebugLines = [];

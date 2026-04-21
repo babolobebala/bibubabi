@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { media } from '@/lib/media';
+import { Toolbox } from 'lucide-vue-next';
 
 interface LayananCard {
     image: string;
@@ -30,14 +31,18 @@ const layananCards: LayananCard[] = [
         </div>
 
         <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-4xl text-center">
-                <p class="text-xs font-semibold tracking-[0.24em] text-primary uppercase sm:text-sm">Pelayanan Statistik Terpadu</p>
-                <h2 class="mt-3 text-3xl font-black tracking-tight text-foreground sm:text-4xl lg:text-[3rem] lg:leading-[1.02]">
-                    Layanan BPS dalam tampilan baru
-                </h2>
+            <div class="mx-auto mb-7 max-w-4xl text-center">
+                <!-- Header Section -->
+                <div
+                    class="mx-auto mb-4 flex w-fit items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] text-blue-400 uppercase"
+                >
+                    <Toolbox class="h-3.5 w-3.5" />
+                    Pelayanan Statistik Terpadu
+                </div>
+                <h2 class="text-2xl font-black tracking-tight text-foreground sm:text-3xl lg:text-4xl">Layanan BPS Dalam Tampilan Baru</h2>
             </div>
 
-            <div class="mt-7 grid gap-7 md:grid-cols-2 lg:gap-8 xl:grid-cols-3 xl:gap-9">
+            <div class="grid gap-7 md:grid-cols-2 lg:gap-8 xl:grid-cols-3 xl:gap-9">
                 <article
                     v-for="card in layananCards"
                     :key="card.image"
