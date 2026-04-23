@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ComplaintChannels from './complaint-channels.vue';
 import DataStrategis from './data-strategis.vue';
+import WelcomeFooter from './footer.vue';
 import HeroPedal from './hero-pedal.vue';
 import Layanan from './layanan.vue';
 import WelcomeNavbar from './navbar.vue';
@@ -23,5 +24,6 @@ import WelcomeNavbar from './navbar.vue';
                 <ComplaintChannels />
             </section>
         </div>
+        <WelcomeFooter />
     </div>
 </template>

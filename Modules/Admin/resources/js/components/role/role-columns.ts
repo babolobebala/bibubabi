@@ -21,8 +21,7 @@ export interface RoleItem {
 }
 
 function roleVariant(role: string): 'default' | 'secondary' | 'destructive' | 'outline' {
-    if (role === 'Superadmin') return 'destructive';
-    if (role === 'admin') return 'default';
+    if (role === 'Superadmin') return 'default';
     return 'secondary';
 }
 
@@ -72,7 +71,7 @@ export const getRoleColumns = (actions: {
             enableSorting: false,
             meta: { hideOnMobile: true },
             cell: ({ row }) =>
-                h('span', { class: 'text-xs text-muted-foreground truncate max-w-[300px] inline-block', title: row.original.description ?? '' }, row.original.description ?? '-'),
+                h('span', { class: 'text-xs text-muted-foreground', title: row.original.description ?? '' }, row.original.description ?? '-'),
         },
         {
             accessorKey: 'users_count',
