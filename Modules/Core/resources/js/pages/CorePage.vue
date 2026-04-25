@@ -144,7 +144,8 @@ function markBrokenIcon(itemKey: string): void {
                 </div>
             </div>
 
-            <div v-if="viewMode === 'grid'" class="hidden gap-2.5 md:grid md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6">
+            <!-- Grid View -->
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-x-4 gap-y-8 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 <component
                     v-for="item in filteredItems"
                     :key="`grid-${item.key}`"
@@ -153,58 +154,29 @@ function markBrokenIcon(itemKey: string): void {
                     class="block cursor-pointer text-left"
                     @click="!item.href ? handleSelect(item) : undefined"
                 >
-                    <Card class="rounded-lg border-border py-0 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                        <CardContent class="flex flex-col items-center gap-2.5 p-3.5 text-center">
-                            <div class="grid h-12 w-12 place-items-center rounded-full border border-primary/15 bg-accent">
-                                <img
-                                    v-if="item.iconImage && !brokenIconKeys[item.key]"
-                                    :src="media + item.iconImage"
-                                    :alt="`${item.title} icon`"
-                                    class="h-6 w-6 object-contain"
-                                    @error="markBrokenIcon(item.key)"
-                                />
-                                <ShieldCheck v-else class="h-6 w-6 text-primary" />
-                            </div>
-                            <p class="line-clamp-2 min-h-9 text-[13px] leading-4 font-medium text-foreground">{{ item.title }}</p>
-                        </CardContent>
-                    </Card>
-                </component>
-            </div>
-            <div v-else class="hidden space-y-2 md:block">
-                <component
-                    v-for="item in filteredItems"
-                    :key="`desktop-list-${item.key}`"
-                    :is="item.href ? Link : 'button'"
-                    v-bind="item.href ? { href: item.href } : { type: 'button' }"
-                    class="block w-full cursor-pointer text-left"
-                    @click="!item.href ? handleSelect(item) : undefined"
-                >
-                    <Card class="rounded-xl border-border py-0 shadow-sm transition hover:shadow-md">
-                        <CardContent class="flex items-center gap-3 p-3">
-                            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-primary/15 bg-accent">
-                                <img
-                                    v-if="item.iconImage && !brokenIconKeys[item.key]"
-                                    :src="media + item.iconImage"
-                                    :alt="`${item.title} icon`"
-                                    class="h-5 w-5 object-contain"
-                                    @error="markBrokenIcon(item.key)"
-                                />
-                                <ShieldCheck v-else class="h-5 w-5 text-primary" />
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-medium text-foreground">{{ item.title }}</p>
-                                <p v-if="item.description" class="truncate text-xs text-muted-foreground">{{ item.description }}</p>
-                            </div>
-                            <ChevronRight class="h-4 w-4 text-muted-foreground" />
-                        </CardContent>
-                    </Card>
+                    <div class="group flex flex-col items-center gap-3 transition hover:-translate-y-1">
+                        <div class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition group-hover:shadow-md md:h-24 md:w-24">
+                            <img
+                                v-if="item.iconImage && !brokenIconKeys[item.key]"
+                                :src="media + item.iconImage"
+                                :alt="`${item.title} icon`"
+                                class="h-10 w-10 object-contain md:h-14 md:w-14"
+                                @error="markBrokenIcon(item.key)"
+                            />
+                            <ShieldCheck v-else class="h-10 w-10 text-primary md:h-12 md:w-12" />
+                        </div>
+                        <p class="line-clamp-2 max-w-[100px] text-center text-[12px] leading-tight font-semibold text-foreground group-hover:text-primary md:max-w-[140px] md:text-[13px]">
+                            {{ item.title }}
+                        </p>
+                    </div>
                 </component>
             </div>
 
-            <div class="space-y-2 md:hidden">
+            <!-- List View -->
+            <div v-else class="space-y-2">
                 <component
                     v-for="item in filteredItems"
-                    :key="`mobile-list-${item.key}`"
+                    :key="`list-${item.key}`"
                     :is="item.href ? Link : 'button'"
                     v-bind="item.href ? { href: item.href } : { type: 'button' }"
                     class="block w-full cursor-pointer text-left"
@@ -224,6 +196,7 @@ function markBrokenIcon(itemKey: string): void {
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-sm font-medium text-foreground">{{ item.title }}</p>
+                                <p v-if="item.description" class="hidden truncate text-xs text-muted-foreground md:block">{{ item.description }}</p>
                             </div>
                             <ChevronRight class="h-4 w-4 text-muted-foreground" />
                         </CardContent>

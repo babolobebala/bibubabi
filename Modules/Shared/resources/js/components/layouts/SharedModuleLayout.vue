@@ -56,13 +56,13 @@ const fixedNavItems: SharedNavItem[] = [
 const fixedReminderItems: SharedReminderItem[] = [
     {
         key: 'review',
-        title: 'Review Konten',
-        description: 'Ada 3 draft knowledge yang belum dipublish minggu ini.',
+        title: 'Tes',
+        description: 'SATU',
     },
     {
         key: 'sync',
-        title: 'Sinkronisasi Data',
-        description: 'Jadwalkan sinkronisasi dokumen sebelum Jumat pukul 16:00.',
+        title: 'Tes dua',
+        description: 'DUA',
     },
 ];
 
