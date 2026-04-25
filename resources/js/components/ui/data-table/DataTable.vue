@@ -148,19 +148,24 @@ const showSearch = computed(() => isMultiField.value || !!activeSearchColumn.val
 
 <template>
     <div class="space-y-3">
-        <!-- Search -->
-        <div
-            v-if="showSearch"
-            class="flex w-full max-w-sm items-center gap-2 rounded-lg border border-input bg-background px-3 h-9 shadow-sm"
-        >
-            <Search class="h-4 w-4 shrink-0 text-muted-foreground" />
-            <Input
-                :model-value="searchValue"
-                type="text"
-                :placeholder="searchPlaceholder"
-                class="border-0 bg-transparent p-0 h-full text-xs sm:text-sm shadow-none focus-visible:ring-0"
-                @update:model-value="onSearchInput(String($event))"
-            />
+        <!-- Search & Actions -->
+        <div v-if="showSearch || $slots.actions" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div
+                v-if="showSearch"
+                class="flex w-full max-w-sm items-center gap-2 rounded-lg border border-input bg-background px-3 h-9 shadow-sm"
+            >
+                <Search class="h-4 w-4 shrink-0 text-muted-foreground" />
+                <Input
+                    :model-value="searchValue"
+                    type="text"
+                    :placeholder="searchPlaceholder"
+                    class="border-0 bg-transparent p-0 h-full text-xs sm:text-sm shadow-none focus-visible:ring-0"
+                    @update:model-value="onSearchInput(String($event))"
+                />
+            </div>
+            <div v-if="$slots.actions" class="flex items-center gap-2">
+                <slot name="actions" />
+            </div>
         </div>
 
         <!-- Table -->

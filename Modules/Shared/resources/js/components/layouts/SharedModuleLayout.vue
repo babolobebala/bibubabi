@@ -69,7 +69,7 @@ const fixedReminderItems: SharedReminderItem[] = [
 const page = usePage();
 
 const currentPath = computed(() => {
-    const [path] = page.url.split('?');
+    const [path] = page.url.split(/[?#]/);
     return path || '/';
 });
 
@@ -85,12 +85,22 @@ const mobileNavItems = computed(() => navItemsWithActive.value.slice(0, 4));
 
 function isNavItemActive(path: string, item: SharedNavItem): boolean {
     const patterns = item.match ?? (item.href ? [item.href] : []);
+    const normalizedPath = path.replace(/\/+$/, '') || '/';
 
     if (item.exact) {
-        return patterns.some((pattern) => path === pattern);
+        return patterns.some((pattern) => {
+            const normalizedPattern = pattern.replace(/\/+$/, '') || '/';
+            return normalizedPath === normalizedPattern;
+        });
     }
 
-    return patterns.some((pattern) => path === pattern || path.startsWith(`${pattern}/`));
+    return patterns.some((pattern) => {
+        const normalizedPattern = pattern.replace(/\/+$/, '') || '/';
+        if (normalizedPattern === '/') {
+            return normalizedPath === '/';
+        }
+        return normalizedPath === normalizedPattern || normalizedPath.startsWith(`${normalizedPattern}/`);
+    });
 }
 </script>
 

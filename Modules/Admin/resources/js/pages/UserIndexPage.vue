@@ -47,7 +47,7 @@ const columns = computed(() =>
     <ModuleContentShell :breadcrumbs="breadcrumbs">
         <div class="space-y-4">
             <div>
-                <h2 class="text-sm font-semibold">Daftar Pengguna</h2>
+                <h2 class="text-lg font-bold tracking-tight text-foreground">Daftar Pengguna</h2>
             </div>
             <DataTable
                 :data="users"

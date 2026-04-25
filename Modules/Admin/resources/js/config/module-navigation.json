@@ -2,7 +2,7 @@
     "module": {
         "key": "admin",
         "name": "Admin",
-        "title": "Menu Admin",
+        "title": "Admin",
         "anchor": "admin",
         "description": "Pengelolaan akun pengguna dan hak akses sistem.",
         "iconImage": "img/logo/logo.png",

@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { media } from '@/lib/media';
 import { Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
-import { ChevronRight, Grid3X3, List, Search, ShieldCheck } from 'lucide-vue-next';
+import { ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
-import {
-    type ModuleNavigationBreadcrumbItem,
-    type ModuleNavigationMenuItem,
-} from '../../../../Shared/resources/js/lib/module-navigation';
+import { type ModuleNavigationBreadcrumbItem, type ModuleNavigationMenuItem } from '../../../../Shared/resources/js/lib/module-navigation';
 import { getCoreModuleEntries, useCoreMenuHashSection } from '../lib/core-menu';
 
 const HOME_BREADCRUMBS: ModuleNavigationBreadcrumbItem[] = [{ label: 'Home' }];
@@ -26,8 +21,6 @@ type CoreMenuUiItem = Omit<ModuleNavigationMenuItem, 'href'> & {
 };
 
 const activeModule = computed(() => moduleEntries.value.find((item) => item.menu.key === activeModuleKey.value) ?? null);
-const viewMode = ref<'grid' | 'list'>('grid');
-const search = ref('');
 const brokenIconKeys = ref<Record<string, true>>({});
 
 const homeMenuItems = computed<CoreMenuUiItem[]>(() =>
@@ -55,24 +48,6 @@ const moduleMenuItems = computed<CoreMenuUiItem[]>(() => {
 });
 
 const currentMenuItems = computed<CoreMenuUiItem[]>(() => (activeModule.value ? moduleMenuItems.value : homeMenuItems.value));
-
-const filteredItems = computed<CoreMenuUiItem[]>(() => {
-    const keyword = search.value.trim().toLowerCase();
-
-    if (!keyword) {
-        return currentMenuItems.value;
-    }
-
-    return currentMenuItems.value.filter((item) => {
-        const directMatch = item.title.toLowerCase().includes(keyword);
-
-        if (directMatch) {
-            return true;
-        }
-
-        return item.searchText?.includes(keyword) ?? false;
-    });
-});
 
 const menuBreadcrumbs = computed<Array<ModuleNavigationBreadcrumbItem & { onClick?: () => void }>>(() => {
     const homeCrumb = {
@@ -113,41 +88,10 @@ function markBrokenIcon(itemKey: string): void {
 <template>
     <div>
         <ModuleContentShell :breadcrumbs="activeModule ? menuBreadcrumbs : HOME_BREADCRUMBS" body-variant="hub">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 shadow-sm">
-                    <Search class="h-4 w-4 text-muted-foreground" />
-                    <input
-                        v-model="search"
-                        type="text"
-                        placeholder="Cari menu ..."
-                        class="w-full border-0 bg-transparent p-0 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                    />
-                </div>
-                <div class="ml-auto flex items-center gap-2 rounded-xl bg-muted p-1">
-                    <Button
-                        size="icon"
-                        :variant="viewMode === 'list' ? 'default' : 'ghost'"
-                        class="h-9 w-9 cursor-pointer"
-                        :class="viewMode === 'list' ? '' : 'text-muted-foreground'"
-                        @click="viewMode = 'list'"
-                    >
-                        <List class="h-4 w-4" />
-                    </Button>
-                    <Button
-                        size="icon"
-                        :variant="viewMode === 'grid' ? 'default' : 'ghost'"
-                        class="h-9 w-9 cursor-pointer"
-                        @click="viewMode = 'grid'"
-                    >
-                        <Grid3X3 class="h-4 w-4" />
-                    </Button>
-                </div>
-            </div>
-
             <!-- Grid View -->
-            <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-x-4 gap-y-8 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            <div class="grid grid-cols-3 gap-x-4 gap-y-8 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 <component
-                    v-for="item in filteredItems"
+                    v-for="item in currentMenuItems"
                     :key="`grid-${item.key}`"
                     :is="item.href ? Link : 'button'"
                     v-bind="item.href ? { href: item.href } : { type: 'button' }"
@@ -155,7 +99,9 @@ function markBrokenIcon(itemKey: string): void {
                     @click="!item.href ? handleSelect(item) : undefined"
                 >
                     <div class="group flex flex-col items-center gap-3 transition hover:-translate-y-1">
-                        <div class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition group-hover:shadow-md md:h-24 md:w-24">
+                        <div
+                            class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition group-hover:shadow-md md:h-24 md:w-24"
+                        >
                             <img
                                 v-if="item.iconImage && !brokenIconKeys[item.key]"
                                 :src="media + item.iconImage"
@@ -165,48 +111,14 @@ function markBrokenIcon(itemKey: string): void {
                             />
                             <ShieldCheck v-else class="h-10 w-10 text-primary md:h-12 md:w-12" />
                         </div>
-                        <p class="line-clamp-2 max-w-[100px] text-center text-[12px] leading-tight font-semibold text-foreground group-hover:text-primary md:max-w-[140px] md:text-[13px]">
+                        <p
+                            class="line-clamp-2 min-h-[2.5em] w-full max-w-[110px] text-center text-[12px] leading-tight text-foreground group-hover:text-primary md:min-h-[2.8em] md:max-w-[140px] md:text-[13px]"
+                        >
                             {{ item.title }}
                         </p>
                     </div>
                 </component>
             </div>
-
-            <!-- List View -->
-            <div v-else class="space-y-2">
-                <component
-                    v-for="item in filteredItems"
-                    :key="`list-${item.key}`"
-                    :is="item.href ? Link : 'button'"
-                    v-bind="item.href ? { href: item.href } : { type: 'button' }"
-                    class="block w-full cursor-pointer text-left"
-                    @click="!item.href ? handleSelect(item) : undefined"
-                >
-                    <Card class="rounded-xl border-border py-0 shadow-sm transition hover:shadow-md">
-                        <CardContent class="flex items-center gap-3 p-3">
-                            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-primary/15 bg-accent">
-                                <img
-                                    v-if="item.iconImage && !brokenIconKeys[item.key]"
-                                    :src="media + item.iconImage"
-                                    :alt="`${item.title} icon`"
-                                    class="h-5 w-5 object-contain"
-                                    @error="markBrokenIcon(item.key)"
-                                />
-                                <ShieldCheck v-else class="h-5 w-5 text-primary" />
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-medium text-foreground">{{ item.title }}</p>
-                                <p v-if="item.description" class="hidden truncate text-xs text-muted-foreground md:block">{{ item.description }}</p>
-                            </div>
-                            <ChevronRight class="h-4 w-4 text-muted-foreground" />
-                        </CardContent>
-                    </Card>
-                </component>
-            </div>
-
-            <Card v-if="filteredItems.length === 0" class="rounded-xl border-border py-0">
-                <CardContent class="p-5 text-sm text-muted-foreground">Tidak ada menu yang cocok dengan pencarian.</CardContent>
-            </Card>
         </ModuleContentShell>
     </div>
 </template>
