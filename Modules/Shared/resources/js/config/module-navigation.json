@@ -5,7 +5,7 @@
         "title": "Aplikasi Eksternal BPS",
         "anchor": "external-bps",
         "iconImage": "img/logo/logo.png",
-        "order": 4
+        "order": 999
     },
     "pages": [
         {

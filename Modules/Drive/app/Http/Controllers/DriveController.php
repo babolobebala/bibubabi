@@ -3,8 +3,14 @@
 namespace Modules\Drive\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Drive\Http\Requests\StoreDriveRequest;
+use Modules\Drive\Http\Requests\UpdateDriveRequest;
+use Modules\Drive\Models\Drive;
+use Spatie\Permission\Models\Role;
 
 class DriveController extends Controller
 {
@@ -13,7 +19,10 @@ class DriveController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Drive::DriveIndexPage');
+        $drives = Drive::with(['personalUser', 'timRole'])->latest()->get();
+        return Inertia::render('Drive::DriveIndexPage', [
+            'drives' => $drives
+        ]);
     }
 
     /**
@@ -21,6 +30,72 @@ class DriveController extends Controller
      */
     public function admin(): Response
     {
-        return Inertia::render('Drive::DriveAdminPage');
+        $drives = Drive::with(['personalUser', 'timRole'])->latest()->get();
+        
+        $availableUsers = User::orderBy('nama')->get()->map(fn ($user) => [
+            'value' => (string) $user->id,
+            'label' => $user->nama,
+        ]);
+
+        $availableRoles = Role::orderBy('name')->get()->map(fn ($role) => [
+            'value' => (string) $role->id,
+            'label' => $role->name,
+        ]);
+
+        return Inertia::render('Drive::DriveAdminPage', [
+            'drives' => $drives,
+            'availableUsers' => $availableUsers,
+            'availableRoles' => $availableRoles,
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreDriveRequest $request)
+    {
+        $validated = $request->validated();
+
+        Drive::create([
+            'nama' => $validated['nama'],
+            'link' => $validated['link'],
+            'jenis' => $validated['jenis'],
+            'personal' => $validated['personal'] ?? null,
+            'tim' => $validated['tim'] ?? null,
+            'akses' => $validated['akses'],
+            'created_by' => Auth::user()?->username ?? 'unknown',
+        ]);
+
+        return back()->with('success', 'Drive berhasil ditambahkan');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateDriveRequest $request, Drive $drive)
+    {
+        $validated = $request->validated();
+
+        $drive->update([
+            'nama' => $validated['nama'],
+            'link' => $validated['link'],
+            'jenis' => $validated['jenis'],
+            'personal' => $validated['personal'] ?? null,
+            'tim' => $validated['tim'] ?? null,
+            'akses' => $validated['akses'],
+            'updated_by' => Auth::user()?->username ?? 'unknown',
+        ]);
+
+        return back()->with('success', 'Drive berhasil diperbarui');
+    }
+
+    /**
+     * Remove the specified resource in storage.
+     */
+    public function destroy(Drive $drive)
+    {
+        $drive->delete();
+
+        return back()->with('success', 'Drive berhasil dihapus');
     }
 }
