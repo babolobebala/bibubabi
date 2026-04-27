@@ -1,56 +1,51 @@
 ---
-description: membuat module Laravel baru dengan nwidart, routing, Inertia page, dan module-navigation.json
+description: create a new Laravel module with nwidart, routing, Inertia page, and module-navigation.json
 ---
 
-## Konteks
+## Context
 
-Module baru akan ditambahkan ke `Modules/` menggunakan `nwidart/laravel-modules`.
-Sebelum mulai, tanyakan user:
-1. Nama module (PascalCase, contoh: `Report`)
-2. Slug / key module (lowercase-dash, contoh: `report`)
-3. Deskripsi singkat module (untuk `module-navigation.json`)
-4. Apakah module perlu backend (Model, Controller, migration) atau hanya frontend?
+A new module will be added to `Modules/` using `nwidart/laravel-modules` (v13 compatible).
+Before starting, ask the user for:
+1. Module name (PascalCase, e.g., `Report`)
+2. Module slug / key (lowercase-dash, e.g., `report`)
+3. Brief description of the module (for `module-navigation.json`)
+4. Does the module need a backend (Model, Controller, migration) or only a frontend?
 
 ---
 
-## Langkah
+## Steps
 
 ### 1. Generate scaffold module
 
 ```bash
 php artisan module:make {Name} --no-interaction
 ```
+*(Note: Do not use the `--inertia` flag provided by v13, as we need to maintain our custom `SharedModuleLayout` hub/page setup and specific directory structures.)*
 
-### 2. Bersihkan file stub yang tidak diperlukan
+### 2. Clean up unnecessary stub files
 
-Hapus atau kosongkan controller default jika tidak relevan. Sesuaikan `module.json` dengan metadata yang benar:
+Delete or empty the default controller if not relevant. Update `module.json` with the correct metadata:
 - `name`, `description`, `keyword`, `providers`
 
-### 3. Buat `module-navigation.json`
+### 3. Create `module-navigation.json`
 
-Buat file `Modules/{Name}/resources/js/config/module-navigation.json`:
+Create the file `Modules/{Name}/resources/js/config/module-navigation.json`:
 
 ```json
 {
     "module": {
         "key": "{slug}",
         "name": "{Name}",
-        "title": "{Judul Tampilan}",
+        "title": "{Display Title}",
         "anchor": "{slug}",
-        "description": "{deskripsi module}",
+        "description": "{module description}",
         "iconImage": "img/logo/logo.png"
     },
     "pages": []
 }
 ```
 
-### 4. Buat `navigation.ts` helper
-
-Buat `Modules/{Name}/resources/js/lib/navigation.ts` mengacu pada pola modul `Tool` atau `Know`:
-- Import config dari `../config/module-navigation.json`
-- Export fungsi `getModulePages()` dan `getModuleBreadcrumb()`
-
-### 5. Buat route web
+### 4. Create web route
 
 Edit `Modules/{Name}/routes/web.php`:
 
@@ -62,9 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 ```
 
-### 6. Update Controller
+### 5. Update Controller
 
-Edit `Modules/{Name}/app/Http/Controllers/{Name}Controller.php` untuk menambahkan method `index`:
+Edit `Modules/{Name}/app/Http/Controllers/{Name}Controller.php` to add the `index` method:
 
 ```php
 public function index(): \Inertia\Response
@@ -73,37 +68,44 @@ public function index(): \Inertia\Response
 }
 ```
 
-### 7. Buat Inertia page utama
+### 6. Create main Inertia page
 
-Buat `Modules/{Name}/resources/js/pages/{Name}Page.vue`:
+Create `Modules/{Name}/resources/js/pages/{Name}Page.vue`:
 
 ```vue
 <script setup lang="ts">
-// import komponen yang dibutuhkan
+import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
+import {
+    getModulePageBreadcrumbs,
+    type ModuleNavigationConfig,
+} from '../../../../Shared/resources/js/lib/module-navigation';
+import moduleNavigation from '../config/module-navigation.json';
+
+const pageBreadcrumbs = getModulePageBreadcrumbs(moduleNavigation as ModuleNavigationConfig, '');
 </script>
 
 <template>
-  <ModuleContentShell :module="{slug}" body-variant="hub">
-    <!-- konten -->
+  <ModuleContentShell :module="{slug}" body-variant="hub" :breadcrumbs="pageBreadcrumbs">
+    <!-- content -->
   </ModuleContentShell>
 </template>
 ```
 
-Ingat: **jangan set layout manual** — `SharedModuleLayout` otomatis dipasang via `app.ts`.
+Remember: **do not set the layout manually** — `SharedModuleLayout` is automatically applied via `app.ts`.
 
-### 8. Daftarkan module di Vite (jika ada asset frontend)
+### 7. Register module in Vite (if there are frontend assets)
 
-Cek `vite.config.ts` root dan pastikan module baru tercakup oleh glob include pattern. Lihat pola module `Tool` sebagai referensi `Modules/{Name}/vite.config.js`.
+Check the root `vite.config.ts` (or `vite.config.js`) and ensure the new module is covered by the glob include pattern. See the pattern from the `Tool` module as a reference for `Modules/{Name}/vite.config.js` or `vite.config.ts`.
 
-### 9. Jalankan migrate (jika ada migration baru)
+### 8. Run migrate (if there's a new migration)
 
 ```bash
 php artisan migrate
 ```
 
-### 10. Build / restart dev server
+### 9. Build / restart dev server
 
-Minta user untuk restart dev server atau jalankan:
+Ask the user to restart the dev server or run:
 
 ```bash
 pnpm run build
@@ -111,12 +113,12 @@ pnpm run build
 
 ---
 
-## Checklist Akhir
+## Final Checklist
 
-- [ ] `module.json` sudah diisi dengan benar
-- [ ] `module-navigation.json` sudah ada dan valid
-- [ ] Route terdaftar dengan middleware `auth` + `verified`
-- [ ] Controller mereturn `Inertia::render()`
-- [ ] Page Inertia ada di `resources/js/pages/`
-- [ ] Layout **tidak** di-set manual di page
-- [ ] Module muncul di menu `/app` setelah build
+- [ ] `module.json` is correctly filled out
+- [ ] `module-navigation.json` exists and is valid
+- [ ] Route is registered with `auth` + `verified` middleware
+- [ ] Controller returns `Inertia::render()`
+- [ ] Inertia page is located in `resources/js/pages/`
+- [ ] Layout is **not** manually set on the page
+- [ ] Module appears in the `/app` menu after build

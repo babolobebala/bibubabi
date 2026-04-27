@@ -1,0 +1,30 @@
+{
+    "module": {
+        "key": "drive",
+        "name": "Drive",
+        "title": "Drive",
+        "anchor": "drive",
+        "description": "Internal drive link and file management.",
+        "iconImage": "img/logo/logo.png"
+    },
+    "pages": [
+        {
+            "key": "drive-index",
+            "title": "Kumpulan Drive",
+            "level": 2,
+            "href": "/app/drive/index",
+            "componentKey": "drive.index",
+            "description": "Drive",
+            "iconImage": "img/logo/logo.png"
+        },
+        {
+            "key": "drive-admin",
+            "title": "Admin Drive",
+            "level": 2,
+            "href": "/app/drive/admin",
+            "componentKey": "drive.admin",
+            "description": "Drive",
+            "iconImage": "img/logo/logo.png"
+        }
+    ]
+}
