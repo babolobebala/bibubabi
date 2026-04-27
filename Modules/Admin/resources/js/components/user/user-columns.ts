@@ -127,7 +127,15 @@ export const getUserColumns = (actions: {
                 ]),
         },
 
-        // Kolom 3: Email Gmail
+        // Kolom 3: Username
+        {
+            accessorKey: 'username',
+            header: 'Username',
+            cell: ({ row }) => h('span', { class: 'text-foreground' }, row.original.username),
+            meta: { hideOnMobile: true },
+        },
+
+        // Kolom 4: Email Gmail
         {
             accessorKey: 'email_gmail',
             header: 'Email',

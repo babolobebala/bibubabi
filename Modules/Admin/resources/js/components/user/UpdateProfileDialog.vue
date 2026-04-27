@@ -75,7 +75,7 @@ watch(
                     :form="profileForm"
                     name="email_gmail"
                     type="email"
-                    label="Email Gmail"
+                    label="Gmail"
                     placeholder="nama@gmail.com"
                     :validators="{
                         onChange: ({ value }: any) => {

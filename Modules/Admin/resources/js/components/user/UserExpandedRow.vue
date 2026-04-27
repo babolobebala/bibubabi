@@ -22,9 +22,15 @@ function isAktif(status: string | null): boolean {
 
 <template>
     <div class="grid grid-cols-2 gap-x-6 gap-y-4 py-1 text-sm">
+        <!-- Username (Hanya Mobile) -->
+        <div class="md:hidden">
+            <p class="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">Username</p>
+            <p class="mt-0.5 truncate text-xs font-semibold text-foreground">{{ original.username }}</p>
+        </div>
+
         <!-- Email Gmail (Hanya Mobile) -->
         <div class="md:hidden">
-            <p class="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">Email Gmail</p>
+            <p class="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">Gmail</p>
             <p class="mt-0.5 truncate text-xs text-foreground">{{ original.email_gmail ?? '-' }}</p>
         </div>
 

@@ -13,7 +13,7 @@ Todo 4 maret 2026
 2a. seragamkan input field nya pakai tanstack form.
 
 3. di halaman core, belum ada menu khusus admin untuk mengatur user user uhuy. di app internal
-   sidebar juga tambahkan AKUN YANG LOGIN skrg
+   sidebar juga tambahkan AKUN YANG LOGIN skrg <!-- DONE --> 
 
 4. di halaman core, belum ada menu untuk list aplikasi BPS (ini taroh di shared aja kali ya) <!-- DONE -->
 
@@ -35,3 +35,8 @@ Todo 4 maret 2026
    dan juga di dalam git ignore dia itu tidak include. <!-- DONE -->
 
 11. perbarui AI untuk menambahkan multiple select (combobox multiple select)
+
+12. sederhanakan UI menjadi app launcher sepenuhnya  <!-- DONE -->
+
+13. next todo urgent : module onedrive . then module knowledge management system. then module PST. besok target sampai 
+   module kms aja. pakai contoh yang sudah ada. kerjakan di kantor kalau bisa.

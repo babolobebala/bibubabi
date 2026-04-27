@@ -275,7 +275,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                                         class="flex cursor-pointer items-center gap-0.5 font-medium text-primary lowercase hover:underline"
                                                     >
                                                         <Pencil class="h-2.5 w-2.5" />
-                                                        ganti gmail</button
+                                                        Ganti Gmail</button
                                                     >)
                                                 </p>
                                                 <p class="text-sm font-medium text-foreground">{{ authUser?.email_gmail ?? '-' }}</p>
