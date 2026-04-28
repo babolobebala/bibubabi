@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-vue-next';
 import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
 import { getModulePageBreadcrumbs, type ModuleNavigationConfig } from '../../../../Shared/resources/js/lib/module-navigation';
 import moduleNavigation from '../config/module-navigation.json';
@@ -9,11 +11,28 @@ interface DriveLink {
     id: number;
     nama: string;
     link: string;
+    jenis: 'personal' | 'tim';
+    personal: number | null;
+    tim: number | null;
+    personal_user?: {
+        username: string;
+    } | null;
+    tim_role?: {
+        name: string;
+    } | null;
 }
 
 defineProps<{
     drives: DriveLink[];
 }>();
+
+const getDriveInfoText = (drive: DriveLink): string => {
+    if (drive.jenis === 'personal') {
+        return `Personal:\n${drive.personal_user?.username ?? '-'}`;
+    }
+
+    return `Role:\n${drive.tim_role?.name ?? '-'}`;
+};
 </script>
 
 <template>
@@ -38,22 +57,29 @@ defineProps<{
             <!-- Compact Bold List -->
             <div class="w-full max-w-[340px] space-y-2.5">
                 <template v-if="drives && drives.length > 0">
-                    <a
-                        v-for="drive in drives"
-                        :key="drive.id"
-                        :href="drive.link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="group relative flex w-full items-center justify-center rounded-lg border-2 border-primary bg-background p-3 text-center transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:shadow-primary/20 active:scale-[0.98]"
-                    >
-                        <span class="text-xs font-extrabold uppercase tracking-widest">{{ drive.nama }}</span>
+                    <TooltipProvider :delay-duration="0">
+                        <div v-for="drive in drives" :key="drive.id" class="flex items-center gap-2">
+                            <a
+                                :href="drive.link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="group relative flex w-full items-center justify-center rounded-lg border-2 border-primary bg-background p-3 text-center transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:shadow-primary/20 active:scale-[0.98]"
+                            >
+                                <span class="text-xs font-extrabold uppercase tracking-widest">{{ drive.nama }}</span>
+                            </a>
 
-                        <div class="absolute right-3 opacity-0 transition-all duration-200 group-hover:translate-x-1 group-hover:opacity-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7-7 7" />
-                            </svg>
+                            <Tooltip>
+                                <TooltipTrigger as-child>
+                                    <button type="button" class="shrink-0 cursor-default text-muted-foreground transition-colors hover:text-primary" aria-label="Informasi drive">
+                                        <Info class="h-4 w-4" />
+                                    </button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right" class="text-[10px] font-semibold tracking-wide">
+                                    <span class="block leading-tight whitespace-pre-line">{{ getDriveInfoText(drive) }}</span>
+                                </TooltipContent>
+                            </Tooltip>
                         </div>
-                    </a>
+                    </TooltipProvider>
                 </template>
 
                 <div v-else class="rounded-xl border-2 border-dashed border-muted bg-muted/20 py-8 text-center">

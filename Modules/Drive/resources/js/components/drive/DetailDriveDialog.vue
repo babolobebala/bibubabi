@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ExternalLink, User, Users, Shield, CheckCircle2, XCircle, FileText, Info, Link2 } from 'lucide-vue-next';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { TanStackCombobox, TanStackInput, TanStackSelect } from '@/components/ui/form';
+import { useForm } from '@tanstack/vue-form';
+import { CheckCircle2, Edit, Eye, User, Users, XCircle } from 'lucide-vue-next';
+import { computed, watch } from 'vue';
 import type { DriveItem } from './drive-columns';
 
-defineProps<{
+const props = defineProps<{
     open: boolean;
     drive: DriveItem | null;
 }>();
@@ -12,105 +14,148 @@ defineProps<{
 const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
+
+const detailDriveForm = useForm({
+    defaultValues: {
+        nama: '',
+        link: '',
+        jenis: 'personal' as 'personal' | 'tim',
+        personal: '',
+        tim: '',
+        akses: 'edit' as 'edit' | 'view',
+        status: 'success' as 'success' | 'error',
+        catatan: '',
+    },
+    onSubmit: async () => {
+        return;
+    },
+});
+
+const personalOptions = computed(() => {
+    if (!props.drive?.personal_user) {
+        return [];
+    }
+
+    return [
+        {
+            value: String(props.drive.personal_user.id),
+            label: props.drive.personal_user.nama,
+        },
+    ];
+});
+
+const timOptions = computed(() => {
+    if (!props.drive?.tim_role) {
+        return [];
+    }
+
+    return [
+        {
+            value: String(props.drive.tim_role.id),
+            label: props.drive.tim_role.name,
+        },
+    ];
+});
+
+watch(
+    () => props.open,
+    (isOpen) => {
+        if (isOpen && props.drive) {
+            detailDriveForm.reset({
+                nama: props.drive.nama || '',
+                link: props.drive.link || '',
+                jenis: props.drive.jenis,
+                personal: props.drive.personal ? String(props.drive.personal) : '',
+                tim: props.drive.tim ? String(props.drive.tim) : '',
+                akses: props.drive.akses,
+                status: props.drive.status,
+                catatan: props.drive.catatan || '',
+            });
+        }
+    },
+);
 </script>
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent class="max-h-[90vh] overflow-y-auto border-t-4 border-t-primary sm:max-w-[450px]">
+        <DialogContent class="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
             <DialogHeader>
-                <div class="mb-1 flex items-center gap-2 text-primary">
-                    <Info class="h-5 w-5" />
-                    <span class="text-xs font-bold tracking-widest uppercase">Detail Informasi</span>
-                </div>
-                <DialogTitle class="text-2xl font-extrabold tracking-tight">Lihat Drive</DialogTitle>
+                <DialogTitle>Detail Drive</DialogTitle>
+                <DialogDescription>Informasi link drive dalam mode baca saja.</DialogDescription>
             </DialogHeader>
 
-            <div v-if="drive" class="relative space-y-5 py-4">
-                <!-- Art Background (Watermark) -->
-                <div class="pointer-events-none absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 transform opacity-[0.03]">
-                    <Link2 class="h-64 w-64 rotate-12" />
-                </div>
+            <form class="space-y-4 py-4">
+                <div class="read-only-fields space-y-4 pointer-events-none">
+                    <TanStackInput :form="detailDriveForm" name="nama" label="Nama Drive*" />
 
-                <!-- Nama Drive -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-muted-foreground uppercase">Nama Drive</label>
-                    <div class="rounded-lg border border-muted-foreground/10 bg-muted/30 p-3 font-bold text-slate-800">
-                        {{ drive.nama }}
+                    <TanStackInput :form="detailDriveForm" name="link" label="URL / Link Drive*" />
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <TanStackSelect
+                            :form="detailDriveForm"
+                            name="jenis"
+                            label="Jenis*"
+                            :options="[
+                                { value: 'personal', label: 'Personal', icon: User, iconClass: '!text-primary' },
+                                { value: 'tim', label: 'Tim', icon: Users, iconClass: '!text-primary' },
+                            ]"
+                        />
+
+                        <TanStackSelect
+                            :form="detailDriveForm"
+                            name="akses"
+                            label="Akses*"
+                            :options="[
+                                { value: 'edit', label: 'Edit', icon: Edit, iconClass: '!text-primary' },
+                                { value: 'view', label: 'View', icon: Eye, iconClass: '!text-slate-400' },
+                            ]"
+                        />
                     </div>
-                </div>
 
-                <!-- Link Drive -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-muted-foreground uppercase">URL / Link Drive</label>
-                    <a
-                        :href="drive.link || '#'"
-                        target="_blank"
-                        class="group flex items-center justify-between rounded-lg border border-blue-200/50 bg-blue-50/50 p-3 transition-all hover:bg-blue-50"
-                    >
-                        <span class="mr-2 truncate text-sm font-semibold text-blue-600">{{ drive.link }}</span>
-                        <ExternalLink class="h-4 w-4 shrink-0 text-blue-500 transition-transform group-hover:scale-110" />
-                    </a>
-                </div>
+                    <detailDriveForm.Subscribe>
+                        <template #default="state">
+                            <TanStackCombobox
+                                v-if="state.values.jenis === 'personal'"
+                                :form="detailDriveForm"
+                                name="personal"
+                                label="Pilih Pemilik*"
+                                :options="personalOptions"
+                                placeholder="Cari nama..."
+                            />
+                            <TanStackCombobox
+                                v-else
+                                :form="detailDriveForm"
+                                name="tim"
+                                label="Pilih Tim/Role*"
+                                :options="timOptions"
+                                placeholder="Cari nama tim..."
+                            />
+                        </template>
+                    </detailDriveForm.Subscribe>
 
-                <!-- Jenis & Akses (Grid only on desktop) -->
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-muted-foreground uppercase">Jenis</label>
-                        <div class="flex items-center gap-2 rounded-lg border border-muted-foreground/10 bg-muted/30 p-2.5">
-                            <component :is="drive.jenis === 'personal' ? User : Users" class="h-4 w-4 text-primary" />
-                            <span class="text-sm font-bold capitalize">{{ drive.jenis }}</span>
-                        </div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-muted-foreground uppercase">Akses</label>
-                        <div class="flex items-center gap-2 rounded-lg border border-muted-foreground/10 bg-muted/30 p-2.5">
-                            <Shield class="h-4 w-4 text-primary" />
-                            <span class="text-sm font-bold capitalize">{{ drive.akses }}</span>
-                        </div>
-                    </div>
-                </div>
+                    <TanStackSelect
+                        :form="detailDriveForm"
+                        name="status"
+                        label="Status*"
+                        :options="[
+                            { value: 'success', label: 'Success', icon: CheckCircle2, iconClass: '!text-emerald-500' },
+                            { value: 'error', label: 'Error', icon: XCircle, iconClass: '!text-red-500' },
+                        ]"
+                    />
 
-                <!-- Pilih Pemilik -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-muted-foreground uppercase">Pemilik / Tim</label>
-                    <div class="flex items-center gap-3 rounded-lg border border-muted-foreground/10 bg-muted/30 p-3">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                            <User v-if="drive.jenis === 'personal'" class="h-4 w-4 text-primary" />
-                            <Users v-else class="h-4 w-4 text-primary" />
-                        </div>
-                        <span class="text-sm font-bold text-slate-800">
-                            {{ drive.jenis === 'personal' ? drive.personal_user?.nama || 'N/A' : drive.tim_role?.name || 'N/A' }}
-                        </span>
-                    </div>
+                    <TanStackInput :form="detailDriveForm" name="catatan" label="Catatan" />
                 </div>
-
-                <!-- Status -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-muted-foreground uppercase">Status</label>
-                    <div
-                        class="flex items-center gap-2 rounded-lg border p-3"
-                        :class="
-                            drive.status === 'success' ? 'border-green-200 bg-green-50/50 text-green-700' : 'border-red-200 bg-red-50/50 text-red-700'
-                        "
-                    >
-                        <component :is="drive.status === 'success' ? CheckCircle2 : XCircle" class="h-5 w-5" />
-                        <span class="text-sm font-black capitalize">{{ drive.status }}</span>
-                    </div>
-                </div>
-
-                <!-- Catatan -->
-                <div v-if="drive.catatan" class="space-y-1.5">
-                    <label class="text-xs font-bold text-muted-foreground uppercase">Catatan</label>
-                    <div class="flex gap-2 rounded-lg border border-amber-100 bg-amber-50/30 p-3 italic">
-                        <FileText class="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-                        <p class="text-sm leading-relaxed text-slate-600">{{ drive.catatan }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <DialogFooter class="gap-2 sm:justify-end">
-                <Button variant="outline" class="w-full cursor-pointer sm:w-auto" @click="emit('update:open', false)"> Tutup </Button>
-            </DialogFooter>
+            </form>
         </DialogContent>
     </Dialog>
 </template>
+
+<style scoped>
+.read-only-fields :deep(input),
+.read-only-fields :deep(button[role='combobox']) {
+    background-color: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--border));
+    cursor: not-allowed;
+}
+</style>

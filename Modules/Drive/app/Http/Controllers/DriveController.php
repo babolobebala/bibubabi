@@ -23,6 +23,7 @@ class DriveController extends Controller
         $roleIds = $user->roles->pluck('id');
 
         $drives = Drive::query()
+            ->with(['personalUser:id,username', 'timRole:id,name'])
             ->where(function ($query) use ($user, $roleIds) {
                 $query->where(function ($q) use ($user) {
                     $q->where('jenis', 'personal')
@@ -32,6 +33,7 @@ class DriveController extends Controller
                         ->whereIn('tim', $roleIds);
                 });
             })
+            ->orderByRaw("CASE WHEN jenis = 'personal' THEN 0 ELSE 1 END")
             ->latest()
             ->get();
 
@@ -45,9 +47,12 @@ class DriveController extends Controller
      */
     public function admin(): Response
     {
-        $drives = Drive::with(['personalUser', 'timRole'])->latest()->get();
+        $drives = Drive::with(['personalUser', 'timRole'])
+            ->orderByRaw("CASE WHEN jenis = 'personal' THEN 0 ELSE 1 END")
+            ->latest()
+            ->get();
 
-        $availableUsers = User::orderBy('nama')->get()->map(fn ($user) => [
+        $availableUsers = User::orderBy('nama', 'asc')->get()->map(fn ($user) => [
             'value' => (string) $user->id,
             'label' => $user->nama,
         ]);
