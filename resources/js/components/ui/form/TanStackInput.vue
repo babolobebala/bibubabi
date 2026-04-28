@@ -12,6 +12,7 @@ const props = defineProps<{
     type?: 'text' | 'password' | 'email';
     placeholder?: string;
     validators?: any;
+    spellcheck?: boolean;
 }>();
 
 const showPassword = ref(false);
@@ -31,6 +32,7 @@ const showPassword = ref(false);
                         :type="type === 'password' && showPassword ? 'text' : (type || 'text')"
                         :placeholder="placeholder"
                         :model-value="field.state.value"
+                        :spellcheck="spellcheck ?? false"
                         @blur="field.handleBlur"
                         @input="(e: Event) => field.handleChange((e.target as HTMLInputElement).value)"
                     />

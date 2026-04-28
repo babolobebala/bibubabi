@@ -1,56 +1,75 @@
 <script setup lang="ts">
 import ModuleContentShell from '../../../../Shared/resources/js/components/modules/ModuleContentShell.vue';
-import {
-    getModulePageBreadcrumbs,
-    type ModuleNavigationConfig,
-} from '../../../../Shared/resources/js/lib/module-navigation';
+import { getModulePageBreadcrumbs, type ModuleNavigationConfig } from '../../../../Shared/resources/js/lib/module-navigation';
 import moduleNavigation from '../config/module-navigation.json';
 
 const pageBreadcrumbs = getModulePageBreadcrumbs(moduleNavigation as ModuleNavigationConfig, 'drive-index');
+
+interface DriveLink {
+    id: number;
+    nama: string;
+    link: string;
+}
+
+defineProps<{
+    drives: DriveLink[];
+}>();
 </script>
 
 <template>
-    <ModuleContentShell :module="'drive'" body-variant="hub" :breadcrumbs="pageBreadcrumbs">
-        <div class="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
-            <div class="w-24 h-24 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0112 3m0 0a10.003 10.003 0 017.143 17.513l-.054.091m-9.696-10.74A4 4 0 1115.95 6.05M12 11a4 4 0 10-3.95-4.95M12 11c0 3.517 1.009 6.799-2.753 9.571M12 11c1.744 2.772 2.753 6.054 2.753 9.571m-9.696-10.74c.903 0 1.744.25 2.463.689M12 11c-.903 0-1.744.25-2.463.689m9.156-10.74c-.903 0-1.744.25-2.463.689M12 11c.903 0 1.744.25 2.463.689m-9.156 0c.903 0 1.744-.25 2.463-.689" />
-                </svg>
+    <ModuleContentShell :breadcrumbs="pageBreadcrumbs">
+        <div class="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center px-4 py-4">
+            <!-- Profile/Header Area -->
+            <div class="mb-4 text-center">
+                <div class="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary/20 bg-primary/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                        />
+                    </svg>
+                </div>
+                <h1 class="text-lg font-bold text-foreground">Direktori Drive</h1>
+                <p class="text-xs text-muted-foreground italic">Kumpulan akses penyimpanan dokumen digital</p>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4 tracking-tight">Kumpulan Drive</h1>
-            <p class="text-lg text-gray-600 max-w-lg mb-8 leading-relaxed">
-                Akses cepat ke berbagai penyimpanan dokumen digital dan resource penting melalui daftar drive berikut.
-            </p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
-                <a href="#" class="group p-6 bg-white border border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300">
-                    <div class="flex items-center space-x-4">
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </div>
-                        <div class="text-left">
-                            <h3 class="font-semibold text-gray-900">Google Drive Utama</h3>
-                            <p class="text-sm text-gray-500">Penyimpanan dokumen operasional harian.</p>
-                        </div>
-                    </div>
-                </a>
 
-                <a href="#" class="group p-6 bg-white border border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300">
-                    <div class="flex items-center space-x-4">
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            <!-- Linktree Style List -->
+            <div class="w-full max-w-[450px] space-y-3">
+                <template v-if="drives && drives.length > 0">
+                    <a
+                        v-for="drive in drives"
+                        :key="drive.id"
+                        :href="drive.link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group relative flex w-full items-center justify-center rounded-lg border border-muted-foreground/20 bg-background p-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-primary-foreground active:translate-y-0"
+                    >
+                        <span class="text-sm font-semibold tracking-wide">{{ drive.nama }}</span>
+
+                        <!-- Subtle external link icon on hover -->
+                        <div class="absolute right-3 opacity-0 transition-opacity group-hover:opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
                             </svg>
                         </div>
-                        <div class="text-left">
-                            <h3 class="font-semibold text-gray-900">Arsip Backup</h3>
-                            <p class="text-sm text-gray-500">Dokumen lama dan arsip data historis.</p>
-                        </div>
-                    </div>
-                </a>
+                    </a>
+                </template>
+
+                <div v-else class="rounded-2xl border-2 border-dashed border-muted bg-muted/50 py-12 text-center">
+                    <p class="text-muted-foreground italic">Belum ada link drive yang tersedia.</p>
+                </div>
             </div>
         </div>
     </ModuleContentShell>
 </template>
+
+<style scoped>
+/* Optional: Add custom animations if needed */
+</style>

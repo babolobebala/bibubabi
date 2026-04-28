@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { destroy } from '@/actions/Modules/Drive/Http/Controllers/DriveController';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { destroy } from '@/routes/drive';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import type { DriveItem } from './drive-columns';

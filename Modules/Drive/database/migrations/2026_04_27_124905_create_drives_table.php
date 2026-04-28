@@ -16,14 +16,16 @@ return new class extends Migration
             $table->string('nama')->nullable();
             $table->string('link')->nullable();
             $table->enum('jenis', ['personal', 'tim']);
-            
+
             $table->unsignedBigInteger('personal')->nullable();
             $table->foreign('personal')->references('id')->on('users')->onDelete('set null');
-            
+
             $table->unsignedBigInteger('tim')->nullable();
             $table->foreign('tim')->references('id')->on('roles')->onDelete('set null');
 
             $table->enum('akses', ['edit', 'view'])->default('edit');
+            $table->enum('status', ['success', 'error'])->default('success');
+            $table->text('catatan')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

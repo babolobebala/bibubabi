@@ -20,8 +20,9 @@ class DriveController extends Controller
     public function index(): Response
     {
         $drives = Drive::with(['personalUser', 'timRole'])->latest()->get();
+
         return Inertia::render('Drive::DriveIndexPage', [
-            'drives' => $drives
+            'drives' => $drives,
         ]);
     }
 
@@ -31,7 +32,7 @@ class DriveController extends Controller
     public function admin(): Response
     {
         $drives = Drive::with(['personalUser', 'timRole'])->latest()->get();
-        
+
         $availableUsers = User::orderBy('nama')->get()->map(fn ($user) => [
             'value' => (string) $user->id,
             'label' => $user->nama,
@@ -63,6 +64,8 @@ class DriveController extends Controller
             'personal' => $validated['personal'] ?? null,
             'tim' => $validated['tim'] ?? null,
             'akses' => $validated['akses'],
+            'status' => $validated['status'] ?? 'success',
+            'catatan' => $validated['catatan'] ?? null,
             'created_by' => Auth::user()?->username ?? 'unknown',
         ]);
 
@@ -83,6 +86,8 @@ class DriveController extends Controller
             'personal' => $validated['personal'] ?? null,
             'tim' => $validated['tim'] ?? null,
             'akses' => $validated['akses'],
+            'status' => $validated['status'],
+            'catatan' => $validated['catatan'] ?? null,
             'updated_by' => Auth::user()?->username ?? 'unknown',
         ]);
 

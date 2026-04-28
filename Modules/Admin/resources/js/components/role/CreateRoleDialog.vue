@@ -46,7 +46,7 @@ watch(
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
             <DialogHeader>
                 <DialogTitle>Tambah Role</DialogTitle>
                 <DialogDescription>Buat role baru untuk sistem aplikasi.</DialogDescription>
@@ -55,19 +55,13 @@ watch(
                 <TanStackInput
                     :form="createRoleForm"
                     name="name"
-                    label="Nama Role *"
-                    placeholder="Misal: admin, operator, dll..."
+                    label="Nama Role*"
                     :validators="{
                         onChange: ({ value }: any) => (!value ? 'Nama Role wajib diisi' : undefined),
                     }"
                 />
 
-                <TanStackInput
-                    :form="createRoleForm"
-                    name="description"
-                    label="Deskripsi"
-                    placeholder="Jelaskan kegunaan role ini..."
-                />
+                <TanStackInput :form="createRoleForm" name="description" label="Deskripsi" />
 
                 <DialogFooter>
                     <createRoleForm.Subscribe :selector="(state) => state.isSubmitting">

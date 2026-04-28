@@ -57,7 +57,7 @@ export const getRoleColumns = (actions: {
         {
             accessorKey: 'name',
             header: 'Nama Role',
-            enableSorting: false,
+            enableSorting: true,
             cell: ({ row }) =>
                 h('div', { class: 'flex items-center gap-2' }, [
                     h(Badge, { variant: roleVariant(row.original.name), class: 'text-xs' }, () =>

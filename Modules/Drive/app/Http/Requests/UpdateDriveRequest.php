@@ -18,7 +18,21 @@ class UpdateDriveRequest extends FormRequest
             'personal' => 'required_if:jenis,personal|nullable|integer|exists:users,id',
             'tim' => 'required_if:jenis,tim|nullable|integer|exists:roles,id',
             'akses' => 'required|in:edit,view',
+            'status' => 'required|in:success,error',
+            'catatan' => 'nullable|string',
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->link && ! preg_match('/^https?:\/\//i', $this->link)) {
+            $this->merge([
+                'link' => 'https://'.$this->link,
+            ]);
+        }
     }
 
     /**

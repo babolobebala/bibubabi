@@ -18,7 +18,22 @@ class StoreDriveRequest extends FormRequest
             'personal' => 'required_if:jenis,personal|nullable|integer|exists:users,id',
             'tim' => 'required_if:jenis,tim|nullable|integer|exists:roles,id',
             'akses' => 'required|in:edit,view',
+            // Status and Catatan are not required on create, defaults used in controller/DB
+            'status' => 'sometimes|in:success,error',
+            'catatan' => 'sometimes|nullable|string',
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->link && ! preg_match('/^https?:\/\//i', $this->link)) {
+            $this->merge([
+                'link' => 'https://'.$this->link,
+            ]);
+        }
     }
 
     /**

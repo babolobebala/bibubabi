@@ -7,6 +7,7 @@ import ModuleContentShell from '../../../../Shared/resources/js/components/modul
 import { getModulePageBreadcrumbs, type ModuleNavigationConfig } from '../../../../Shared/resources/js/lib/module-navigation';
 import CreateDriveDialog from '../components/drive/CreateDriveDialog.vue';
 import DeleteDriveDialog from '../components/drive/DeleteDriveDialog.vue';
+import DetailDriveDialog from '../components/drive/DetailDriveDialog.vue';
 import { getDriveColumns, type DriveItem } from '../components/drive/drive-columns';
 import UpdateDriveDialog from '../components/drive/UpdateDriveDialog.vue';
 import moduleNavigation from '../config/module-navigation.json';
@@ -22,7 +23,13 @@ const breadcrumbs = getModulePageBreadcrumbs(moduleNavigation as ModuleNavigatio
 const isCreateModalOpen = ref(false);
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isDetailModalOpen = ref(false);
 const selectedDrive = ref<DriveItem | null>(null);
+
+const handleViewDrive = (drive: DriveItem) => {
+    selectedDrive.value = drive;
+    isDetailModalOpen.value = true;
+};
 
 const handleEditDrive = (drive: DriveItem) => {
     selectedDrive.value = drive;
@@ -35,25 +42,17 @@ const handleDeleteDrive = (drive: DriveItem) => {
 };
 
 const columns = getDriveColumns({
+    onView: handleViewDrive,
     onEdit: handleEditDrive,
     onDelete: handleDeleteDrive,
 });
 </script>
 
 <template>
-    <ModuleContentShell :module="'drive'" body-variant="page" :breadcrumbs="breadcrumbs">
-        <div class="p-4 md:p-6 space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Admin Drive</h1>
-                    <p class="text-sm text-muted-foreground mt-1">
-                        Kelola seluruh link drive internal, akses, dan kepemilikan tim.
-                    </p>
-                </div>
-                <Button class="w-full md:w-auto cursor-pointer" @click="isCreateModalOpen = true">
-                    <Plus class="mr-2 h-4 w-4" />
-                    Tambah Drive Baru
-                </Button>
+    <ModuleContentShell :breadcrumbs="breadcrumbs">
+        <div class="space-y-4">
+            <div>
+                <h2 class="text-lg font-bold tracking-tight text-foreground">Admin Drive</h2>
             </div>
 
             <DataTable
@@ -61,7 +60,14 @@ const columns = getDriveColumns({
                 :data="drives"
                 search-placeholder="Cari nama drive..."
                 search-column="nama"
-            />
+            >
+                <template #actions>
+                    <Button @click="isCreateModalOpen = true" size="sm" class="h-8 cursor-pointer gap-1.5">
+                        <Plus class="h-4 w-4" />
+                        <span class="hidden sm:inline">Tambah Drive Baru</span>
+                    </Button>
+                </template>
+            </DataTable>
         </div>
 
         <!-- Dialogs -->
@@ -78,6 +84,10 @@ const columns = getDriveColumns({
         />
         <DeleteDriveDialog 
             v-model:open="isDeleteModalOpen" 
+            :drive="selectedDrive" 
+        />
+        <DetailDriveDialog 
+            v-model:open="isDetailModalOpen" 
             :drive="selectedDrive" 
         />
     </ModuleContentShell>

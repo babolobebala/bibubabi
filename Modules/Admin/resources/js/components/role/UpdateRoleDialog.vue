@@ -68,8 +68,7 @@ watch(
                 <TanStackInput
                     :form="updateRoleForm"
                     name="name"
-                    label="Nama Role *"
-                    placeholder="Misal: admin, operator, dll..."
+                    label="Nama Role*"
                     :validators="{
                         onChange: ({ value }: any) => (!value ? 'Nama Role wajib diisi' : undefined),
                     }"
@@ -79,7 +78,6 @@ watch(
                     :form="updateRoleForm"
                     name="description"
                     label="Deskripsi"
-                    placeholder="Jelaskan kegunaan role ini..."
                 />
 
                 <TanStackCombobox

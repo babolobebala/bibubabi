@@ -272,7 +272,7 @@ function isNavItemActive(path: string, item: SharedNavItem): boolean {
                                                 >
                                                     Gmail (<button
                                                         @click.prevent="emailModalOpen = true"
-                                                        class="flex cursor-pointer items-center gap-0.5 font-medium text-primary lowercase hover:underline"
+                                                        class="flex cursor-pointer items-center gap-0.5 font-medium text-primary hover:underline"
                                                     >
                                                         <Pencil class="h-2.5 w-2.5" />
                                                         Ganti Gmail</button

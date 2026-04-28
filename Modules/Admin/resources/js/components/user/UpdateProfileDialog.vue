@@ -65,7 +65,7 @@ watch(
 
 <template>
     <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-        <DialogContent class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
             <DialogHeader>
                 <DialogTitle>Ubah Profil</DialogTitle>
                 <DialogDescription> Perbarui profil dan role untuk {{ userName }}. </DialogDescription>
@@ -76,7 +76,6 @@ watch(
                     name="email_gmail"
                     type="email"
                     label="Gmail"
-                    placeholder="nama@gmail.com"
                     :validators="{
                         onChange: ({ value }: any) => {
                             if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Format email tidak valid.';
@@ -88,7 +87,7 @@ watch(
                 <TanStackCombobox
                     :form="profileForm"
                     name="status_pegawai"
-                    label="Status Pegawai *"
+                    label="Status Pegawai*"
                     :options="statusOptions"
                     :validators="{
                         onChange: ({ value }: any) => (!value ? 'Status Pegawai harus dipilih' : undefined),
@@ -98,7 +97,7 @@ watch(
                 <TanStackCombobox
                     :form="profileForm"
                     name="roles"
-                    label="Pilih Role *"
+                    label="Pilih Role*"
                     :options="availableRoles"
                     multiple
                     :validators="{
