@@ -19,7 +19,21 @@ class DriveController extends Controller
      */
     public function index(): Response
     {
-        $drives = Drive::with(['personalUser', 'timRole'])->latest()->get();
+        $user = Auth::user();
+        $roleIds = $user->roles->pluck('id');
+
+        $drives = Drive::query()
+            ->where(function ($query) use ($user, $roleIds) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('jenis', 'personal')
+                        ->where('personal', $user->id);
+                })->orWhere(function ($q) use ($roleIds) {
+                    $q->where('jenis', 'tim')
+                        ->whereIn('tim', $roleIds);
+                });
+            })
+            ->latest()
+            ->get();
 
         return Inertia::render('Drive::DriveIndexPage', [
             'drives' => $drives,

@@ -10,20 +10,20 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
 - php - 8.3
-- inertiajs/inertia-laravel (INERTIA_LARAVEL) - v2
-- laravel/framework (LARAVEL) - v12
+- inertiajs/inertia-laravel (INERTIA_LARAVEL) - v3
+- laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
 - laravel/wayfinder (WAYFINDER) - v0
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0
 - laravel/pail (PAIL) - v1
 - laravel/pint (PINT) - v1
-- pestphp/pest (PEST) - v3
-- phpunit/phpunit (PHPUNIT) - v11
-- @inertiajs/vue3 (INERTIA_VUE) - v2
+- pestphp/pest (PEST) - v4
+- phpunit/phpunit (PHPUNIT) - v12
+- \@inertiajs/vue3 (INERTIA_VUE) - v3
 - tailwindcss (TAILWINDCSS) - v4
 - vue (VUE) - v3
-- @laravel/vite-plugin-wayfinder (WAYFINDER_VITE) - v0
+- \@laravel/vite-plugin-wayfinder (WAYFINDER_VITE) - v0
 - eslint (ESLINT) - v9
 - prettier (PRETTIER) - v3
 
@@ -104,6 +104,12 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
 
+=== deployments rules ===
+
+# Deployment
+
+- Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
+
 === inertia-laravel/core rules ===
 
 # Inertia
@@ -113,11 +119,19 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
-# Inertia v2
+# Inertia v3
 
-- Use all Inertia features from v1 and v2. Check the documentation before making changes to ensure the correct approach.
-- New features: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
+- Use all Inertia features from v1, v2, and v3. Check the documentation before making changes to ensure the correct approach.
+- New v3 features: standalone HTTP requests (`useHttp` hook), optimistic updates with automatic rollback, layout props (`useLayoutProps` hook), instant visits, simplified SSR via `@inertiajs/vite` plugin, custom exception handling for error pages.
+- Carried over from v2: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
+- Axios has been removed. Use the built-in XHR client with interceptors, or install Axios separately if needed.
+- `Inertia::lazy()` / `LazyProp` has been removed. Use `Inertia::optional()` instead.
+- Prop types (`Inertia::optional()`, `Inertia::defer()`, `Inertia::merge()`) work inside nested arrays with dot-notation paths.
+- SSR works automatically in Vite dev mode with `@inertiajs/vite` - no separate Node.js server needed during development.
+- Event renames: `invalid` is now `httpException`, `exception` is now `networkError`.
+- `router.cancel()` replaced by `router.cancelAll()`.
+- The `future` configuration namespace has been removed - all v2 future options are now always enabled.
 
 === laravel/core rules ===
 
@@ -149,42 +163,11 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `pnpm run build` or ask the user to run `pnpm run dev` or `composer run dev`.
 
-=== laravel/v12 rules ===
-
-# Laravel 12
-
-- CRITICAL: ALWAYS use `search-docs` tool for version-specific Laravel documentation and updated code examples.
-- Since Laravel 11, Laravel has a new streamlined file structure which this project uses.
-
-## Laravel 12 Structure
-
-- In Laravel 12, middleware are no longer registered in `app\Http/Kernel.php`.
-- Middleware are configured declaratively in `bootstrap/app.php` using `Application::configure()->withMiddleware()`.
-- `bootstrap/app.php` is the file to register middleware, exceptions, and routing files.
-- `bootstrap/providers.php` contains application specific service providers.
-- The `app\Console/Kernel.php` file no longer exists; use `bootstrap/app.php` or `routes/console.php` for console configuration.
-- Console commands in `app\Console/Commands/` are automatically available and do not require manual registration.
-
-## Database
-
-- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
-- Laravel 12 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
-
-### Models
-
-- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
-
 === wayfinder/core rules ===
 
 # Laravel Wayfinder
 
-Wayfinder generates TypeScript functions for Laravel routes. Import from `@/actions/` (controllers) or `@/routes/` (named routes).
-
-- IMPORTANT: Activate `wayfinder-development` skill whenever referencing backend routes in frontend components.
-- Invokable Controllers: `import StorePost from '@/actions/.../StorePostController'; StorePost()`.
-- Parameter Binding: Detects route keys (`{post:slug}`) — `show({ slug: "my-post" })`.
-- Query Merging: `show(1, { mergeQuery: { page: 2, sort: null } })` merges with current URL, `null` removes params.
-- Inertia: Use `.form()` with `<Form>` component or `form.submit(store())` with useForm.
+Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `@/actions/` (controllers) or `@/routes/` (named routes).
 
 === pint/core rules ===
 
@@ -209,118 +192,3 @@ Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
 </laravel-boost-guidelines>
-
-=== project/dev-commands ===
-
-# Dev Commands
-
-- Dev: `composer run dev` (serve + queue + vite sekaligus)
-- Frontend only: `pnpm run dev` | Build: `pnpm run build`
-- Test: `php artisan test --compact`
-- Format PHP: `vendor/bin/pint --dirty --format agent`
-- Cache clear: `php artisan config:clear && php artisan cache:clear`
-- Migrate: `php artisan migrate`
-
-=== project/module-architecture ===
-
-# Module Architecture (nwidart/laravel-modules)
-
-Semua module di `Modules/`. Scaffold: `php artisan module:make {Name} --no-interaction`.
-
-| Module | Fungsi | URL |
-|--------|--------|-----|
-| `Core` | Hub utama + owner `/welcome` | `/app` |
-| `Shared` | Layout shell + komponen reusable | — |
-| `Tool` | Utilitas internal | `/app#tools` |
-| `Know` | Knowledge internal | `/app#know` |
-| `Umum` | Landing page publik (diload Core) | — |
-
-**Struktur frontend per module:** `resources/js/{pages, components, config/module-navigation.json, lib/navigation.ts}`
-
-**Route:** prefix `app/{module-key}`, middleware `['auth', 'verified']`, nama `{module-key}.{feature}`.
-
-**Inertia page:** `Inertia::render('{name}::{PageName}')`. Layout `SharedModuleLayout` **otomatis** via `app.ts` — jangan set manual. Opt-out publik: `defineOptions({ layout: null })`.
-
-**Shared components penting:**
-- `ModuleContentShell` — breadcrumb + body wrapper, prop `body-variant`: `hub`/`page`
-- `ModuleHubContent` — grid/list menu hub dengan search
-- `SharedModuleLayout` — shell sidebar + navbar
-- `LoginContent` — form login reusable
-
-=== project/module-navigation-schema ===
-
-# module-navigation.json
-
-Path: `Modules/{Name}/resources/js/config/module-navigation.json`
-Dibaca otomatis Core via `import.meta.glob` — tidak perlu registrasi manual.
-Module `Core` tidak memiliki file ini (dihapus — Core adalah shell, bukan module berkonten).
-
-**Schema lengkap:**
-```json
-{
-  "module": {
-    "key": "slug",
-    "name": "Name",
-    "title": "Label Tampil",
-    "anchor": "slug",
-    "description": "...",
-    "iconImage": "img/logo/logo.png",
-    "roles": ["nama_role"]
-  },
-  "pages": [
-    {
-      "key": "slug-fitur",
-      "title": "Label",
-      "level": 2,
-      "href": "/app/{module}/{fitur}",
-      "componentKey": "{module}.{fitur}",
-      "description": "...",
-      "iconImage": "img/logo/logo.png",
-      "roles": ["nama_role"]
-    }
-  ]
-}
-```
-
-## Field `roles` — Role-Based Visibility (Opsional)
-
-Field `roles` bersifat **opsional** di dua level. Jika tidak didefinisikan, item tampil untuk **semua user**.
-
-| Level | Efek jika roles didefinisikan |
-|-------|-------------------------------|
-| `module.roles` | Seluruh tile modul + semua page-nya disembunyikan jika user tidak punya role yang cocok |
-| `pages[].roles` | Hanya page tersebut yang disembunyikan; tile modul tetap muncul |
-
-**Nilai roles:** sesuai nama role di Spatie Permission (contoh: `"Superadmin"`, `"admin"`).
-**Multi-role:** user hanya perlu memiliki **salah satu** role yang terdaftar (OR logic).
-
-**Alur sistem:**
-1. `HandleInertiaRequests.php` → share `auth.roles` (array string dari Spatie) ke semua halaman
-2. `CorePage.vue` → baca `auth.roles` dari `usePage().props`, pass ke `getCoreModuleEntries(userRoles)`
-3. `core-menu.ts` → filter module (level atas) dengan `hasRoleAccess()`, filter pages dengan `filterPagesByRoles()`
-4. Helper ada di `Modules/Shared/resources/js/lib/module-navigation.ts`: `hasRoleAccess()` dan `filterPagesByRoles()`
-
-**Contoh — filter level module** (semua page ikut tersembunyi):
-```json
-"module": { "key": "admin", "anchor": "admin", "roles": ["Superadmin"] }
-```
-
-**Contoh — filter level page** (tile modul tetap muncul, hanya page tertentu yang dibatasi):
-```json
-{ "key": "laporan-sensitif", "level": 2, "href": "...", "roles": ["Superadmin", "admin"] }
-```
-
-Setiap feature page baru wajib tambah entry di `pages[]`.
-
-=== project/ui-guidelines ===
-
-# UI & Responsiveness
-
-- Seluruh UI komponen yang dibuat HARUS didasari atas dasar responsivitas (Mobile-first approach).
-- Pastikan tampilan tidak berantakan di layar kecil (mobile) dengan menggunakan utility classes Tailwind yang tepat seperti `flex-col`, `flex-wrap`, dan breakpoint modifiers (misal `sm:flex-row`, `md:gap-4`).
-- Jangan buat elemen statis yang terlalu lebar atau melampaui layar. Gunakan `w-full`, `max-w-full`, atau `truncate` saat dibutuhkan.
-- Test dan pertimbangkan tampilan UI dari ukuran mobile (`<640px`) hingga desktop.
-
-## Penghapusan Data (Delete)
-- **WAJIB menggunakan Modal Konfirmasi UI** (misalnya komponen `Dialog` / `AlertDialog` dari Shadcn-Vue, contoh: `DeleteRoleDialog.vue`) saat mengimplementasikan aksi hapus. 
-- **DILARANG KERAS** menggunakan fungsi native browser `window.confirm()`. Hal ini mutlak agar User Experience dan konsistensi UI sistem terjaga dengan baik.

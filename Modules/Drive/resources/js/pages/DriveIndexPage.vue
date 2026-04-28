@@ -18,25 +18,25 @@ defineProps<{
 
 <template>
     <ModuleContentShell :breadcrumbs="pageBreadcrumbs">
-        <div class="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center px-4 py-4">
+        <div class="flex min-h-[calc(100vh-250px)] flex-col items-center justify-center px-4 py-6">
             <!-- Profile/Header Area -->
-            <div class="mb-4 text-center">
-                <div class="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary/20 bg-primary/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mb-6 text-center">
+                <div class="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl border-2 border-primary bg-primary/10 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            stroke-width="1.5"
+                            stroke-width="2"
                             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
                         />
                     </svg>
                 </div>
-                <h1 class="text-lg font-bold text-foreground">Direktori Drive</h1>
-                <p class="text-xs text-muted-foreground italic">Kumpulan akses penyimpanan dokumen digital</p>
+                <h1 class="text-lg font-black tracking-tighter text-foreground uppercase">Direktori Drive</h1>
+                <p class="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Storage Access</p>
             </div>
 
-            <!-- Linktree Style List -->
-            <div class="w-full max-w-[450px] space-y-3">
+            <!-- Compact Bold List -->
+            <div class="w-full max-w-[340px] space-y-2.5">
                 <template v-if="drives && drives.length > 0">
                     <a
                         v-for="drive in drives"
@@ -44,26 +44,20 @@ defineProps<{
                         :href="drive.link"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="group relative flex w-full items-center justify-center rounded-lg border border-muted-foreground/20 bg-background p-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-primary-foreground active:translate-y-0"
+                        class="group relative flex w-full items-center justify-center rounded-lg border-2 border-primary bg-background p-3 text-center transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:shadow-primary/20 active:scale-[0.98]"
                     >
-                        <span class="text-sm font-semibold tracking-wide">{{ drive.nama }}</span>
+                        <span class="text-xs font-extrabold uppercase tracking-widest">{{ drive.nama }}</span>
 
-                        <!-- Subtle external link icon on hover -->
-                        <div class="absolute right-3 opacity-0 transition-opacity group-hover:opacity-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                />
+                        <div class="absolute right-3 opacity-0 transition-all duration-200 group-hover:translate-x-1 group-hover:opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7-7 7" />
                             </svg>
                         </div>
                     </a>
                 </template>
 
-                <div v-else class="rounded-2xl border-2 border-dashed border-muted bg-muted/50 py-12 text-center">
-                    <p class="text-muted-foreground italic">Belum ada link drive yang tersedia.</p>
+                <div v-else class="rounded-xl border-2 border-dashed border-muted bg-muted/20 py-8 text-center">
+                    <p class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest italic">No links available</p>
                 </div>
             </div>
         </div>
