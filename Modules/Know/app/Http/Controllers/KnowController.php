@@ -43,7 +43,9 @@ class KnowController extends Controller
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'link' => 'nullable|array',
-            'link.*' => 'nullable|string|max:1000',
+            'link.*' => 'nullable|array',
+            'link.*.nama' => 'nullable|string|max:255',
+            'link.*.link' => 'nullable|string|max:1000',
             'pic' => 'nullable|string|max:255',
             'tanggal_pelaksanaan' => 'nullable|date',
             'kategori' => 'nullable|array',
@@ -51,7 +53,23 @@ class KnowController extends Controller
         ]);
 
         $links = collect($validated['link'] ?? [])
-            ->map(fn ($item) => is_string($item) ? trim($item) : '')
+            ->map(function ($item): ?array {
+                if (! is_array($item)) {
+                    return null;
+                }
+
+                $name = is_string($item['nama'] ?? null) ? trim($item['nama']) : '';
+                $link = is_string($item['link'] ?? null) ? trim($item['link']) : '';
+
+                if ($name === '' && $link === '') {
+                    return null;
+                }
+
+                return [
+                    'nama' => $name,
+                    'link' => $link,
+                ];
+            })
             ->filter()
             ->values()
             ->all();
