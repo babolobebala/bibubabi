@@ -37,12 +37,12 @@ class Know extends Model
 
     public function creator()
     {
-        return $this->hasOne(User::class, 'username', 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function updater()
     {
-        return $this->hasOne(User::class, 'username', 'updated_by');
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     protected static function boot()
@@ -50,11 +50,11 @@ class Know extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = Auth::user()?->username ?? 'unknown';
+            $model->created_by = Auth::id();
         });
 
         static::updating(function ($model) {
-            $model->updated_by = Auth::user()?->username ?? 'unknown';
+            $model->updated_by = Auth::id();
         });
     }
 }

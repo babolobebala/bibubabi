@@ -3,7 +3,7 @@
         "key": "know",
         "name": "Know",
         "title": "Know",
-        "href": "/knows",
+        "href": "/app/know/index",
         "description": "Lihat knowledge yang tersedia.",
         "iconImage": "img/logo/logo.png",
         "order": 3

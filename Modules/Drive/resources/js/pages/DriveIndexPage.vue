@@ -51,7 +51,7 @@ const getDriveInfoText = (drive: DriveLink): string => {
                     </svg>
                 </div>
                 <h1 class="text-lg font-black tracking-tighter text-foreground uppercase">Direktori Drive</h1>
-                <p class="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Storage Access</p>
+                <p class="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase">Storage Access</p>
             </div>
 
             <!-- Compact Bold List -->
@@ -65,12 +65,16 @@ const getDriveInfoText = (drive: DriveLink): string => {
                                 rel="noopener noreferrer"
                                 class="group relative flex w-full items-center justify-center rounded-lg border-2 border-primary bg-background p-3 text-center transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:shadow-primary/20 active:scale-[0.98]"
                             >
-                                <span class="text-xs font-extrabold uppercase tracking-widest">{{ drive.nama }}</span>
+                                <span class="text-xs font-extrabold tracking-widest uppercase">{{ drive.nama }}</span>
                             </a>
 
                             <Tooltip>
                                 <TooltipTrigger as-child>
-                                    <button type="button" class="shrink-0 cursor-default text-muted-foreground transition-colors hover:text-primary" aria-label="Informasi drive">
+                                    <button
+                                        type="button"
+                                        class="shrink-0 cursor-default text-muted-foreground transition-colors hover:text-primary"
+                                        aria-label="Informasi drive"
+                                    >
                                         <Info class="h-4 w-4" />
                                     </button>
                                 </TooltipTrigger>
@@ -83,7 +87,7 @@ const getDriveInfoText = (drive: DriveLink): string => {
                 </template>
 
                 <div v-else class="rounded-xl border-2 border-dashed border-muted bg-muted/20 py-8 text-center">
-                    <p class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest italic">No links available</p>
+                    <p class="text-[10px] font-bold tracking-widest text-muted-foreground/50 uppercase italic">No links available</p>
                 </div>
             </div>
         </div>
