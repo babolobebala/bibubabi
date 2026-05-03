@@ -64,31 +64,31 @@ const columns = getDriveColumns({
                 <template #actions>
                     <Button @click="isCreateModalOpen = true" size="sm" class="h-8 cursor-pointer gap-1.5">
                         <Plus class="h-4 w-4" />
-                        <span class="hidden sm:inline">Tambah Drive Baru</span>
+                        <span class="">Tambah Drive Baru</span>
                     </Button>
                 </template>
             </DataTable>
         </div>
 
         <!-- Dialogs -->
-        <CreateDriveDialog 
-            v-model:open="isCreateModalOpen" 
+        <CreateDriveDialog
+            v-model:open="isCreateModalOpen"
             :available-users="availableUsers"
             :available-roles="availableRoles"
         />
-        <UpdateDriveDialog 
-            v-model:open="isUpdateModalOpen" 
-            :drive="selectedDrive" 
+        <UpdateDriveDialog
+            v-model:open="isUpdateModalOpen"
+            :drive="selectedDrive"
             :available-users="availableUsers"
             :available-roles="availableRoles"
         />
-        <DeleteDriveDialog 
-            v-model:open="isDeleteModalOpen" 
-            :drive="selectedDrive" 
+        <DeleteDriveDialog
+            v-model:open="isDeleteModalOpen"
+            :drive="selectedDrive"
         />
-        <DetailDriveDialog 
-            v-model:open="isDetailModalOpen" 
-            :drive="selectedDrive" 
+        <DetailDriveDialog
+            v-model:open="isDetailModalOpen"
+            :drive="selectedDrive"
         />
     </ModuleContentShell>
 </template>

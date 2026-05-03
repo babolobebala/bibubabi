@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { TanStackDatePicker, TanStackInput, TanStackTextarea } from '@/components/ui/form';
+import { TanStackCombobox, TanStackDatePicker, TanStackInput, TanStackTextarea } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { store } from '@/routes/know';
 import { router, usePage } from '@inertiajs/vue3';
 import { useForm } from '@tanstack/vue-form';
 import { Plus, Trash2 } from 'lucide-vue-next';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 
 interface LinkEntry {
     nama: string;
@@ -24,6 +24,7 @@ interface LinkFormField {
 
 const props = defineProps<{
     open: boolean;
+    availableCategories: string[];
 }>();
 
 const emit = defineEmits<{
@@ -31,6 +32,27 @@ const emit = defineEmits<{
 }>();
 
 const page = usePage();
+const availableCategoryOptions = ref<string[]>([]);
+
+const normalizeCategoryOptions = (categories: string[]): string[] => {
+    const seen = new Set<string>();
+    const normalized: string[] = [];
+
+    for (const category of categories) {
+        const trimmed = category.trim();
+        if (trimmed === '') {
+            continue;
+        }
+
+        const key = trimmed.toLowerCase();
+        if (!seen.has(key)) {
+            seen.add(key);
+            normalized.push(trimmed);
+        }
+    }
+
+    return normalized.sort((left, right) => left.localeCompare(right));
+};
 
 const emptyLinkEntry = (): LinkEntry => ({
     nama: '',
@@ -74,7 +96,7 @@ const createKnowForm = useForm({
         pic: '',
         tanggal_pelaksanaan: '',
         links: [emptyLinkEntry()],
-        categoriesText: '',
+        kategori: [] as string[],
     },
     onSubmit: async ({ value, formApi }) => {
         const links = value.links
@@ -93,10 +115,7 @@ const createKnowForm = useForm({
                     pic: value.pic || null,
                     tanggal_pelaksanaan: value.tanggal_pelaksanaan || null,
                     link: links,
-                    kategori: value.categoriesText
-                        .split(',')
-                        .map((item) => item.trim())
-                        .filter(Boolean),
+                    kategori: value.kategori,
                 },
                 {
                     onSuccess: () => {
@@ -111,11 +130,20 @@ const createKnowForm = useForm({
 });
 
 watch(
+    () => props.availableCategories,
+    (categories) => {
+        availableCategoryOptions.value = normalizeCategoryOptions(categories);
+    },
+    { immediate: true },
+);
+
+watch(
     () => props.open,
     (isOpen) => {
         if (isOpen) {
             createKnowForm.reset();
             page.props.errors = {};
+            availableCategoryOptions.value = normalizeCategoryOptions(props.availableCategories);
         }
     },
 );
@@ -212,22 +240,14 @@ watch(
                     </template>
                 </createKnowForm.Field>
 
-                <createKnowForm.Field name="categoriesText">
-                    <template #default="{ field }">
-                        <div class="space-y-2">
-                            <Label for="categoriesText">Kategori (pisahkan dengan koma)</Label>
-                            <Input
-                                id="categoriesText"
-                                type="text"
-                                placeholder="Pelatihan, Dashboard, SOP"
-                                :model-value="field.state.value"
-                                @blur="field.handleBlur"
-                                @input="(e: Event) => field.handleChange((e.target as HTMLInputElement).value)"
-                            />
-                            <p v-if="page.props.errors?.kategori" class="text-xs text-destructive">{{ page.props.errors.kategori }}</p>
-                        </div>
-                    </template>
-                </createKnowForm.Field>
+                <TanStackCombobox
+                    :form="createKnowForm"
+                    name="kategori"
+                    label="Kategori"
+                    :options="availableCategoryOptions"
+                    placeholder="Pilih"
+                    multiple
+                />
 
                 <DialogFooter>
                     <createKnowForm.Subscribe :selector="(state) => state.isSubmitting">

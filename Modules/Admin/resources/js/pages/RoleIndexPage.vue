@@ -50,7 +50,7 @@ const tableColumns = getRoleColumns({
                 <template #actions>
                     <Button @click="isCreateModalOpen = true" size="sm" class="h-8 cursor-pointer gap-1.5">
                         <Plus class="h-4 w-4" />
-                        <span class="hidden sm:inline">Tambah Role</span>
+                        <span class="">Tambah Role</span>
                     </Button>
                 </template>
                 <template #expanded-row="{ original }">

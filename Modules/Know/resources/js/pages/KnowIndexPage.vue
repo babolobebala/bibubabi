@@ -17,6 +17,7 @@ const isCreateModalOpen = ref(false);
 
 defineProps<{
     knows: KnowItem[];
+    availableCategories: string[];
 }>();
 </script>
 
@@ -31,12 +32,12 @@ defineProps<{
                 <template #actions>
                     <Button size="sm" class="h-8 cursor-pointer gap-1.5" @click="isCreateModalOpen = true">
                         <Plus class="h-4 w-4" />
-                        <span class="hidden sm:inline">Tambah Knowledge</span>
+                        <span class="">Tambah Knowledge</span>
                     </Button>
                 </template>
             </DataTable>
         </div>
 
-        <CreateKnowDialog v-model:open="isCreateModalOpen" />
+        <CreateKnowDialog v-model:open="isCreateModalOpen" :available-categories="availableCategories" />
     </ModuleContentShell>
 </template>

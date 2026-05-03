@@ -5,7 +5,8 @@
         "title": "Drive",
         "anchor": "drive",
         "description": "Internal drive link and file management.",
-        "iconImage": "img/logo/logo.png"
+        "iconImage": "img/logo/logo.png",
+        "order": 4
     },
     "pages": [
         {

@@ -5,9 +5,11 @@ namespace Modules\Know\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Know\Models\Know;
+use Modules\Know\Models\KnowCategory;
 
 class KnowController extends Controller
 {
@@ -29,12 +31,33 @@ class KnowController extends Controller
                 'kategori' => $know->kategori ?? [],
             ]);
 
+        $availableCategories = KnowCategory::query()
+            ->orderBy('nama')
+            ->pluck('nama')
+            ->all();
+
         return Inertia::render(
             'know::KnowIndexPage',
             [
                 'knows' => $knows,
+                'availableCategories' => $availableCategories,
             ]
         );
+    }
+
+    public function admin(): Response
+    {
+        $categories = KnowCategory::query()
+            ->orderBy('nama')
+            ->get()
+            ->map(fn (KnowCategory $category) => [
+                'id' => $category->id,
+                'nama' => $category->nama,
+            ]);
+
+        return Inertia::render('know::KnowAdminPage', [
+            'categories' => $categories,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -77,8 +100,19 @@ class KnowController extends Controller
         $categories = collect($validated['kategori'] ?? [])
             ->map(fn ($item) => is_string($item) ? trim($item) : '')
             ->filter()
+            ->unique()
             ->values()
             ->all();
+
+        if ($categories !== []) {
+            KnowCategory::query()->insertOrIgnore(
+                collect($categories)
+                    ->map(fn (string $category): array => [
+                        'nama' => $category,
+                    ])
+                    ->all()
+            );
+        }
 
         Know::create([
             'nama' => $validated['nama'],
@@ -90,5 +124,53 @@ class KnowController extends Controller
         ]);
 
         return back()->with('success', 'Knowledge berhasil ditambahkan');
+    }
+
+    public function storeCategory(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:100', 'unique:app_know_kategori,nama'],
+        ]);
+
+        KnowCategory::create([
+            'nama' => trim($validated['nama']),
+        ]);
+
+        return back()->with('success', 'Kategori berhasil ditambahkan');
+    }
+
+    public function updateCategory(Request $request, KnowCategory $knowCategory): RedirectResponse
+    {
+        $validated = $request->validate([
+            'nama' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('app_know_kategori', 'nama')->ignore($knowCategory->id),
+            ],
+        ]);
+
+        $knowCategory->update([
+            'nama' => trim($validated['nama']),
+        ]);
+
+        return back()->with('success', 'Kategori berhasil diperbarui');
+    }
+
+    public function destroyCategory(KnowCategory $knowCategory): RedirectResponse
+    {
+        $usageCount = Know::query()
+            ->whereJsonContains('kategori', $knowCategory->nama)
+            ->count();
+
+        if ($usageCount > 0) {
+            return back()->withErrors([
+                'error' => 'Gagal! Kategori ini masih digunakan oleh '.$usageCount.' knowledge.',
+            ]);
+        }
+
+        $knowCategory->delete();
+
+        return back()->with('success', 'Kategori berhasil dihapus');
     }
 }
