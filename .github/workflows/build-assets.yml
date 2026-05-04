@@ -3,7 +3,7 @@ name: Build Assets & Deploy
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
