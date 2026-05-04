@@ -1,0 +1,13 @@
+{
+    "name": "Notulensi",
+    "alias": "notulensi",
+    "description": "Notulensi module.",
+    "keywords": [
+        "notulensi"
+    ],
+    "priority": 0,
+    "providers": [
+        "Modules\\Notulensi\\Providers\\NotulensiServiceProvider"
+    ],
+    "files": []
+}

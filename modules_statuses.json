@@ -7,5 +7,6 @@
     "Admin": true,
     "Debugging": true,
     "Drive": true,
-    "Pst": true
+    "Pst": true,
+    "Notulensi": true
 }

@@ -1,0 +1,11 @@
+{
+    "module": {
+        "key": "notulensi",
+        "name": "Notulensi",
+        "title": "Notulensi",
+        "anchor": "notulensi",
+        "description": "Notulensi module.",
+        "iconImage": "img/logo/logo.png"
+    },
+    "pages": []
+}
