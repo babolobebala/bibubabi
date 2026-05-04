@@ -1,0 +1,13 @@
+{
+    "name": "Pst",
+    "alias": "pst",
+    "description": "Pst module.",
+    "keywords": [
+        "pst"
+    ],
+    "priority": 1,
+    "providers": [
+        "Modules\\Pst\\Providers\\PstServiceProvider"
+    ],
+    "files": []
+}

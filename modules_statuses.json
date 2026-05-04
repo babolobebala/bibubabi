@@ -6,5 +6,6 @@
     "Shared": true,
     "Admin": true,
     "Debugging": true,
-    "Drive": true
+    "Drive": true,
+    "Pst": true
 }

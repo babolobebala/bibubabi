@@ -1,0 +1,30 @@
+{
+    "module": {
+        "key": "pst",
+        "name": "Pst",
+        "title": "Pst",
+        "anchor": "pst",
+        "description": "Pst module.",
+        "iconImage": "img/logo/logo.png"
+    },
+    "pages": [
+        {
+            "key": "pst-index",
+            "title": "Index Pst",
+            "level": 2,
+            "href": "/app/pst/index",
+            "componentKey": "pst.index",
+            "description": "Halaman index modul Pst.",
+            "iconImage": "img/logo/logo.png"
+        },
+        {
+            "key": "pst-admin",
+            "title": "Admin Pst",
+            "level": 2,
+            "href": "/app/pst/admin",
+            "componentKey": "pst.admin",
+            "description": "Halaman admin modul Pst.",
+            "iconImage": "img/logo/logo.png"
+        }
+    ]
+}
