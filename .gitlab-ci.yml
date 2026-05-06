@@ -1,0 +1,55 @@
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == "master"'
+    - when: never
+
+stages:
+  - build
+
+build:
+  stage: build
+  image: php:8.3
+  environment:
+    name: production
+  script:
+    # 1) Checkout (handled automatically by GitLab Runner)
+
+    # 2) Setup pnpm
+    - apt-get update
+    - apt-get install -y curl git unzip ca-certificates gnupg lftp
+    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+    - apt-get install -y nodejs
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+
+    # 3) Setup PHP
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+    # 4) Setup Node (installed in step 2 for GitLab compatibility)
+
+    # 5) Install Dependencies
+    - pnpm install --frozen-lockfile
+
+    # 6) Install PHP Dependencies
+    - composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    # 7) Copy Environment File
+    - cp .env.example .env
+
+    # 8) Build Vite Assets
+    - pnpm run build
+
+    # 9) Deploy to cPanel via FTP
+    - >
+      lftp -e "set ftp:ssl-allow no;
+      open -p ${FTP_PORT} ${FTP_SERVER};
+      user ${FTP_USERNAME} ${FTP_PASSWORD};
+      mirror -R
+      --exclude-glob .git*
+      --exclude-glob .github/
+      --exclude-glob node_modules/
+      --exclude-glob vendor/
+      --exclude-glob storage/
+      --exclude-glob .env
+      ./ ${FTP_SERVER_DIR};
+      bye"
