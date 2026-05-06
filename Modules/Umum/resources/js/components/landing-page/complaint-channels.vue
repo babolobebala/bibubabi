@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Card, CardContent } from '@/components/ui/card';
+import { media } from '@/lib/media';
 import { Activity } from 'lucide-vue-next';
 import { defineComponent, h } from 'vue';
 
@@ -19,7 +20,7 @@ const channels: ComplaintChannel[] = [
     {
         title: 'Website SAKU',
         description: 'Buat pengaduan langsung di website dengan memasukkan email',
-        image: '/img/logo/saku.png',
+        image: 'img/logo/saku.png',
         badge: 'Pengaduan Website',
         responseTime: 'Terstruktur',
         availability: '24/7',
@@ -30,7 +31,7 @@ const channels: ComplaintChannel[] = [
     {
         title: 'WhatsApp',
         description: 'Pelayanan dan pengaduan cepat tanggap ',
-        image: '/img/logo/wa.svg',
+        image: 'img/logo/wa.svg',
         badge: 'Cepat',
         responseTime: 'Cepat',
         availability: 'Jam kerja',
@@ -41,7 +42,7 @@ const channels: ComplaintChannel[] = [
     {
         title: 'Datang Langsung',
         description: 'Cocok jika perlu klarifikasi detail atau membawa dokumen.',
-        image: '/img/logo/logo.png',
+        image: 'img/logo/logo.png',
         badge: 'Tatap muka',
         responseTime: 'Antrean',
         availability: 'Jam kantor',
@@ -55,21 +56,21 @@ const channels: ComplaintChannel[] = [
                 return () =>
                     h('div', { class: 'flex items-center justify-center gap-3 mt-1.5' }, [
                         h('img', {
-                            src: '/img/logo/ig.svg',
+                            src: media + 'img/logo/ig.svg',
                             class: 'h-4 w-4 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all',
                         }),
                         h('img', {
-                            src: '/img/logo/fb.svg',
+                            src: media + 'img/logo/fb.svg',
                             class: 'h-4 w-4 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all',
                         }),
                         h('img', {
-                            src: '/img/logo/wa.svg',
+                            src: media + 'img/logo/wa.svg',
                             class: 'h-4 w-4 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all',
                         }),
                     ]);
             },
         }),
-        image: '/img/logo/ig.svg',
+        image: 'img/logo/ig.svg',
         badge: 'Publik',
         responseTime: 'Bervariasi',
         availability: 'Tergantung kanal',
@@ -79,7 +80,7 @@ const channels: ComplaintChannel[] = [
     {
         title: 'SP4N-LAPOR!',
         description: 'Jalur pengaduan nasional yang formal dan terdokumentasi.',
-        image: '/img/logo/landing-span.png',
+        image: 'img/logo/landing-span.png',
         badge: 'Resmi',
         responseTime: 'Mekanisme',
         availability: '24/7',
@@ -117,7 +118,7 @@ const channels: ComplaintChannel[] = [
                     <Card class="h-full rounded-lg border-border py-0 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                         <CardContent class="flex h-full flex-col items-center gap-2 p-3.5 text-center">
                             <div class="grid h-12 w-12 place-items-center rounded-full border border-primary/15 bg-accent p-2">
-                                <img :src="channel.image" :alt="channel.title" class="h-full w-full object-contain" />
+                                <img :src="media + channel.image" :alt="channel.title" class="h-full w-full object-contain" />
                             </div>
                             <p class="line-clamp-2 min-h-9 text-[13px] leading-4 font-medium text-foreground">
                                 {{ channel.title }}
