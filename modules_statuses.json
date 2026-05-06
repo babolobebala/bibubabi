@@ -2,10 +2,10 @@
     "Umum": true,
     "Know": true,
     "Core": true,
-    "Tool": true,
+    "Tool": false,
     "Shared": true,
     "Admin": true,
-    "Debugging": true,
+    "Debugging": false,
     "Drive": true,
     "Pst": true,
     "Notulensi": true

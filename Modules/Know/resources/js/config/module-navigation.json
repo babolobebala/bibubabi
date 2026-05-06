@@ -2,11 +2,11 @@
     "module": {
         "key": "know",
         "name": "Know",
-        "title": "Know",
+        "title": "Link Arsip",
         "anchor": "know",
         "description": "knowledge yang tersedia.",
         "iconImage": "img/logo/logo.png",
-        "order": 3
+        "order": 4
     },
     "pages": [
         {
@@ -20,12 +20,13 @@
         },
         {
             "key": "know-admin",
-            "title": "Admin Know",
+            "title": "Kelola Kategori KMS",
             "level": 2,
             "href": "/app/know/admin",
             "componentKey": "know.admin",
             "description": "Admin Know",
-            "iconImage": "img/logo/logo.png"
+            "iconImage": "img/logo/logo.png",
+            "roles": ["Superadmin"]
         }
     ]
 }

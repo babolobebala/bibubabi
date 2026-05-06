@@ -60,7 +60,7 @@ function togglePasswordVisibility(): void {
         <div class="space-y-1 bg-muted/20 px-4 pt-4 pb-1 text-center">
             <img :src="media + 'img/logo/saku.png'" alt="Logo SAKU" class="mx-auto h-20 w-20 object-contain" />
             <div class="space-y-0.5 text-center">
-                <h2 class="text-lg font-semibold tracking-tight text-foreground">Selamat datang di SAKU COY</h2>
+                <h2 class="text-lg font-semibold tracking-tight text-foreground">Selamat datang di SAKU</h2>
                 <p class="text-[11px] text-muted-foreground">Silahkan login untuk masuk ke aplikasi internal.</p>
             </div>
         </div>

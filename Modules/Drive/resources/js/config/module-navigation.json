@@ -2,16 +2,16 @@
     "module": {
         "key": "drive",
         "name": "Drive",
-        "title": "Drive",
+        "title": "Drive Kolaborasi",
         "anchor": "drive",
         "description": "Internal drive link and file management.",
         "iconImage": "img/logo/logo.png",
-        "order": 4
+        "order": 3
     },
     "pages": [
         {
             "key": "drive-index",
-            "title": "Kumpulan Drive",
+            "title": "Daftar Drive",
             "level": 2,
             "href": "/app/drive/index",
             "componentKey": "drive.index",
@@ -25,7 +25,8 @@
             "href": "/app/drive/admin",
             "componentKey": "drive.admin",
             "description": "Drive",
-            "iconImage": "img/logo/logo.png"
+            "iconImage": "img/logo/logo.png",
+            "roles": ["Superadmin"]
         }
     ]
 }
