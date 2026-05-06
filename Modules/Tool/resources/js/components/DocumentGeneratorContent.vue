@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { generateDocument as wayfinderGenerateDocument } from '@/actions/Modules/Tool/Http/Controllers/ToolController';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
@@ -22,6 +21,7 @@ interface ImageState {
 }
 
 type ImageTarget = 'foto_satu' | 'foto_dua';
+const documentGenerateEndpoint = '/app/tools/generator-dokumen/generate';
 
 const form = ref<DocumentFormState>({
     nama_petugas: '',
@@ -117,7 +117,7 @@ async function generateDocument(): Promise<void> {
             formData.append('foto_dua', fotoDua.value.file, fotoDua.value.file.name);
         }
 
-        const response = await fetch(wayfinderGenerateDocument.url(), {
+        const response = await fetch(documentGenerateEndpoint, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
