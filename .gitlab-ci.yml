@@ -12,7 +12,7 @@ build:
   environment:
     name: production
   script:
-    # 1) Checkout (handled automatically by GitLab Runner)
+    # 1) Checkout (handled automatically by GitLab Runner) Update
 
     # 2) Setup pnpm
     - apt-get update
