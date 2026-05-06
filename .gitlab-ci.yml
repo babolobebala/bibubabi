@@ -8,48 +8,51 @@ stages:
 
 build:
   stage: build
-  image: php:8.3
   environment:
     name: production
   script:
-    # 1) Checkout (handled automatically by GitLab Runner) Update
+    # 1) Checkout (handled automatically by GitLab Runner)
 
     # 2) Setup pnpm
-    - apt-get update
-    - apt-get install -y curl git unzip ca-certificates gnupg lftp
-    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
-    - apt-get install -y nodejs
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
+    - 'if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw "Node.js is not installed on this runner host." }'
+    - '$nodeMajor = [int]((node -v).TrimStart("v").Split(".")[0]); if ($nodeMajor -ne 24) { throw "Node.js 24 is required. Current: $(node -v)" }'
+    - 'corepack enable'
+    - 'corepack prepare pnpm@latest --activate'
 
     # 3) Setup PHP
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - 'if (-not (Get-Command php -ErrorAction SilentlyContinue)) { throw "PHP is not installed on this runner host." }'
+    - 'if (-not (Get-Command composer -ErrorAction SilentlyContinue)) { throw "Composer is not installed on this runner host." }'
 
-    # 4) Setup Node (installed in step 2 for GitLab compatibility)
+    # 4) Setup Node (validated in step 2 for Windows shell runner)
 
     # 5) Install Dependencies
-    - pnpm install --frozen-lockfile
+    - 'pnpm install --frozen-lockfile'
 
     # 6) Install PHP Dependencies
-    - composer install --no-interaction --prefer-dist --optimize-autoloader
+    - 'composer install --no-interaction --prefer-dist --optimize-autoloader'
 
     # 7) Copy Environment File
-    - cp .env.example .env
+    - 'Copy-Item .env.example .env -Force'
 
     # 8) Build Vite Assets
-    - pnpm run build
+    - 'pnpm run build'
 
     # 9) Deploy to cPanel via FTP
-    - >
-      lftp -e "set ftp:ssl-allow no;
-      open -p ${FTP_PORT} ${FTP_SERVER};
-      user ${FTP_USERNAME} ${FTP_PASSWORD};
-      mirror -R
-      --exclude-glob .git*
-      --exclude-glob .github/
-      --exclude-glob node_modules/
-      --exclude-glob vendor/
-      --exclude-glob storage/
-      --exclude-glob .env
-      ./ ${FTP_SERVER_DIR};
-      bye"
+    - |
+      $winScp = (Get-Command WinSCP.com -ErrorAction SilentlyContinue).Source
+      if (-not $winScp) {
+        throw "WinSCP.com is not installed or not in PATH on this runner host."
+      }
+
+      $ftpUrl = "ftp://$($env:FTP_SERVER):$($env:FTP_PORT)/"
+      $scriptPath = Join-Path $env:TEMP "winscp-deploy.txt"
+
+      @"
+      option batch abort
+      option confirm off
+      open $ftpUrl -username="$($env:FTP_USERNAME)" -password="$($env:FTP_PASSWORD)" -passive=on
+      synchronize remote -mirror -delete -filemask="|.git*;.github/;node_modules/;vendor/;storage/;.env" "$($env:CI_PROJECT_DIR)" "$($env:FTP_SERVER_DIR)"
+      exit
+      "@ | Set-Content -Path $scriptPath -Encoding ASCII
+
+      & $winScp /ini=nul /script="$scriptPath"
