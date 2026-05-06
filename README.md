@@ -1,4 +1,4 @@
-# Saku NG
+# Saku NG New Era
            **/Modules/Debugging/**
            
 Project modular Laravel 12 + Inertia v2 + Vue 3 + Vite untuk aplikasi internal dengan pola navigasi berbasis module.
