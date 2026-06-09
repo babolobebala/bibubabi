@@ -1,9 +1,9 @@
-$ErrorActionPreference = 'Stop'
-
 param(
     [string]$Remote = 'gitbps',
     [string]$DeployBranch = 'deploy'
 )
+
+$ErrorActionPreference = 'Stop'
 
 function Invoke-CommandChecked {
     param(
