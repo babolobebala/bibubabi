@@ -1,17 +1,64 @@
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
-git checkout master
-Remove-Item -Recurse -Force public/build -ErrorAction SilentlyContinue
-pnpm build
+param(
+    [string]$Remote = 'gitbps',
+    [string]$DeployBranch = 'deploy'
+)
 
-git checkout -B deploy
-git add -A
-git add -f public/build
+function Invoke-CommandChecked {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath,
 
-git commit -m "Deploy build $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" || Write-Host "Tidak ada perubahan untuk commit."
+        [string[]]$Arguments = @()
+    )
 
-git push -f gitbps deploy
+    & $FilePath @Arguments
 
-git checkout master
+    if ($LASTEXITCODE -ne 0) {
+        throw "Command failed: $FilePath $($Arguments -join ' ')"
+    }
+}
 
-Write-Host "Selesai deploy ke Git BPS branch deploy."
+$originalBranch = (git rev-parse --abbrev-ref HEAD).Trim()
+
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($originalBranch)) {
+    throw 'Gagal membaca branch aktif.'
+}
+
+$statusBeforeBuild = git status --short
+
+if ($LASTEXITCODE -ne 0) {
+    throw 'Gagal membaca status git.'
+}
+
+if (-not [string]::IsNullOrWhiteSpace(($statusBeforeBuild | Out-String).Trim())) {
+    throw 'Working tree tidak bersih. Commit atau stash perubahan dulu sebelum deploy.'
+}
+
+try {
+    Invoke-CommandChecked -FilePath 'pnpm' -Arguments @('run', 'build')
+
+    Invoke-CommandChecked -FilePath 'git' -Arguments @('switch', '-C', $DeployBranch)
+    Invoke-CommandChecked -FilePath 'git' -Arguments @('add', '-A')
+    Invoke-CommandChecked -FilePath 'git' -Arguments @('add', '-f', 'public/build')
+
+    & git diff --cached --quiet --exit-code
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host 'Tidak ada perubahan untuk deploy.'
+        return
+    }
+
+    $commitMessage = 'Deploy build {0}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+
+    Invoke-CommandChecked -FilePath 'git' -Arguments @('commit', '-m', $commitMessage)
+    Invoke-CommandChecked -FilePath 'git' -Arguments @('push', '--force-with-lease', $Remote, $DeployBranch)
+
+    Write-Host "Selesai deploy ke remote '$Remote' branch '$DeployBranch'."
+}
+finally {
+    if (-not [string]::IsNullOrWhiteSpace($originalBranch)) {
+        & git switch $originalBranch | Out-Null
+    }
+}

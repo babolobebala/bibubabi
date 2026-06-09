@@ -64,7 +64,13 @@ self.addEventListener('fetch', function (event) {
                 })
                 .catch(function () {
                     return caches.match(request).then(function (cached) {
-                        return cached || caches.match('/');
+                        if (cached) {
+                            return cached;
+                        }
+
+                        return caches.match('/').then(function (fallback) {
+                            return fallback || Response.error();
+                        });
                     });
                 }),
         );
@@ -83,7 +89,7 @@ self.addEventListener('fetch', function (event) {
                         return response;
                     })
                     .catch(function () {
-                        return cached;
+                        return cached || Response.error();
                     });
 
                 return cached || networkFetch;

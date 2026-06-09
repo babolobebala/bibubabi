@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -29,6 +30,13 @@ class AppServiceProvider extends ServiceProvider
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
+
+        $applicationUrl = rtrim((string) config('app.url'), '/');
+
+        if (app()->isProduction() && str_starts_with($applicationUrl, 'https://')) {
+            URL::forceScheme('https');
+            URL::forceRootUrl($applicationUrl);
+        }
 
         DB::prohibitDestructiveCommands(
             app()->isProduction(),
